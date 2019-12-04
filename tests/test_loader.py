@@ -9,7 +9,9 @@ def construct_product(product, recipe_count=10):
 
 def discard_cases():
     return {
+        '__': True,
         '1kg beef': True,
+        'céy': False,
         'tomato': False,
     }.items()
 
