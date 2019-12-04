@@ -9,13 +9,16 @@ def discard(product):
     if product['recipe_count'] < 5:
         return True
     # Discard separator items
-    if re.match('[-_]{3}', product['product']):
+    if re.match('[-_]+', product['product']):
         return True
     # Discard items with leading quantities
     if re.match('\\d+', product['product']):
         return True
     # Discard items with embedded quantities
     if re.search('[(, /]+\\d+', product['product']):
+        return True
+    # Products must contain at least three-letter word terms
+    if not re.search('\\S{3}', product['product']):
         return True
 
     # Discard full ingredient descriptions
