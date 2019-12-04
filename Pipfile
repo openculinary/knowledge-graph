@@ -9,6 +9,10 @@ python_version = "3.7"
 [packages]
 flask = "==1.1.1"
 gunicorn = "==20.0.4"
+hashedindex = "==0.5.0"
+ingreedypy = { git = "https://github.com/openculinary/ingreedy-py.git", ref = "5135f7a" }
+requests = "==2.22.0"
+stop-words = "==2018.7.23"
 
 [dev-packages]
 flake8 = "*"
