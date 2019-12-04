@@ -1,0 +1,12 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: python-template-ingress
+spec:
+  rules:
+  - host: python-template
+    http:
+      paths:
+      - backend:
+          serviceName: python-template-service
+          servicePort: 80
