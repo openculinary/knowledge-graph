@@ -3,6 +3,12 @@ import json
 import re
 import requests
 
+from scripts.search import (
+    add_to_search_index,
+    build_search_index,
+    execute_queries,
+)
+
 
 def discard(product):
     # Discard rare items
@@ -44,15 +50,29 @@ def retrieve_products(filename=None):
     for line in reader():
         product = json.loads(line)
         if not discard(product):
-            yield product
+            yield product['product']
 
 
-def load_product_terms(product):
-    pass
+def find_related_products(index, product):
+    results = execute_queries(index, [product])
+    children = results.keys()
+    return set(children)
 
 
 if __name__ == '__main__':
+    index = build_search_index()
+
+    products_by_id = {}
     products = retrieve_products(filename='products.json')
-    for product in products:
-        load_product_terms(product)
-        print(f"* Loaded {product['product']}")
+    for product_id, product in enumerate(products):
+        products_by_id[product_id] = {'id': product_id, 'product': product}
+        add_to_search_index(index, product_id, product)
+
+    for product_id, product in products_by_id.items():
+        related = find_related_products(index, product['product'])
+        related.remove(product_id)
+
+        for related_id in related:
+            products_by_id[related_id]['parent'] = product_id
+
+        print(product)
