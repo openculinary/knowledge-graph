@@ -53,26 +53,43 @@ def retrieve_products(filename=None):
             yield product['product']
 
 
-def find_related_products(index, product):
-    results = execute_queries(index, [product])
-    children = results.keys()
-    return set(children)
+def find_parent_products(index, product):
+    results = execute_queries(index, [product['product']])
+    children = set(results.keys())
+    if product['id'] in children:
+        children.remove(product['id'])
+    return children
 
 
 if __name__ == '__main__':
     index = build_search_index()
 
+    # Build a document list and search index
     products_by_id = {}
     products = retrieve_products(filename='products.json')
     for product_id, product in enumerate(products):
-        products_by_id[product_id] = {'id': product_id, 'product': product}
+        products_by_id[product_id] = {
+            'id': product_id,
+            'product': product,
+            'parents': list(),
+            'roots': list(),
+        }
         add_to_search_index(index, product_id, product)
 
+    # Collect a list of parents for each product
     for product_id, product in products_by_id.items():
-        related = find_related_products(index, product['product'])
-        related.remove(product_id)
+        related_ids = find_parent_products(index, product)
+        for related_id in related_ids:
+            products_by_id[related_id]['parents'].append(product)
 
-        for related_id in related:
-            products_by_id[related_id]['parent'] = product_id
+    # Identify root elements for each product
+    for product_id, product in products_by_id.items():
+        for parent in product['parents']:
+            if not parent['parents']:
+                product['roots'].append(parent)
 
-        print(product)
+    # Render root products for inspection
+    for product_id, product in products_by_id.items():
+        print(f'''
+            {product['product']} ->
+            {[root['product'] for root in product['roots']]}''')

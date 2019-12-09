@@ -1,14 +1,11 @@
 from collections import defaultdict
 
 from hashedindex import HashedIndex, textparser
-from stop_words import get_stop_words
-
-stopwords = get_stop_words('en')
 
 
 def add_to_search_index(index, doc_id, doc):
     for ngrams in [1, 2]:
-        for term in textparser.word_tokenize(doc, stopwords, ngrams):
+        for term in textparser.word_tokenize(doc, ngrams=ngrams):
             index.add_term_occurrence(term, doc_id)
 
 
@@ -21,13 +18,9 @@ def build_search_index(docs=None):
 
 def build_query_terms(docs):
     for doc in docs:
-        for ngrams in [2, 1]:
-            for term in textparser.word_tokenize(doc, stopwords, ngrams):
-                yield doc, term
-                break
-            else:
-                continue
-            break
+        ngrams = len(doc.split(' '))
+        for term in textparser.word_tokenize(doc, ngrams=ngrams):
+            yield doc, term
 
 
 def execute_queries(index, queries):
