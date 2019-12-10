@@ -48,7 +48,10 @@ def retrieve_products(filename=None):
     for line in reader():
         product = json.loads(line)
         if not discard(product):
-            yield Product(name=product['product'])
+            yield Product(
+                name=product['product'],
+                frequency=product['recipe_count']
+            )
 
 
 def print_subtree(product, level=0, path=None):

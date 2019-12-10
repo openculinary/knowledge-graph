@@ -2,7 +2,7 @@ from scripts.product import Product
 
 
 def generate_product(name, parent=None):
-    product = Product(name=name)
+    product = Product(name=name, frequency=1)
     product.primary_parent = parent
     return product
 

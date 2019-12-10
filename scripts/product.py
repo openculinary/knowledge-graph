@@ -3,9 +3,10 @@ from pymmh3 import hash_bytes
 
 class Product(object):
 
-    def __init__(self, name):
+    def __init__(self, name, frequency):
         self.id = hash_bytes(name)
         self.name = name
+        self.frequency = frequency
         self.depth = None
         self.children = []
         self.parents = []
