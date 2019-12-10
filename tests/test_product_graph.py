@@ -1,3 +1,5 @@
+from mock import patch
+
 from scripts.product import Product
 from scripts.product_graph import ProductGraph
 
@@ -59,3 +61,24 @@ def test_bell_pepper_categorization():
     assert len(graph.roots) == 1
     root = graph.roots[0]
     assert len([p for p in all_products if p.primary_parent == root]) == 2
+
+
+@patch.object(ProductGraph, 'get_stopwords')
+def test_red_bell_pepper_parent_assignment(stopwords):
+    stopwords.return_value = [('dice',)]
+
+    bell_pepper_diced = generate_product(name='bell pepper, diced')
+    red_bell_pepper = generate_product(name='red bell pepper')
+    red_bell_pepper_diced = generate_product(name='red bell pepper, diced')
+
+    all_products = [
+        bell_pepper_diced,
+        red_bell_pepper,
+        red_bell_pepper_diced,
+    ]
+
+    graph = ProductGraph(products=all_products)
+
+    assert bell_pepper_diced.stopwords == ['dice']
+    assert red_bell_pepper_diced.stopwords == ['dice']
+    assert red_bell_pepper_diced.primary_parent == red_bell_pepper
