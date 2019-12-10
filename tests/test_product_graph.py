@@ -79,6 +79,7 @@ def test_red_bell_pepper_parent_assignment(stopwords):
 
     graph = ProductGraph(products=all_products)
 
+    assert len(graph.roots) == 2
     assert bell_pepper_diced.stopwords == ['dice']
     assert red_bell_pepper_diced.stopwords == ['dice']
     assert red_bell_pepper_diced.primary_parent == red_bell_pepper
