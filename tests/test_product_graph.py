@@ -37,3 +37,25 @@ def test_bananas_common_root():
     graph = ProductGraph(products=[banana, peeled_bananas, whole_banana])
 
     assert len(graph.roots) == 1
+
+
+def test_bell_pepper_categorization():
+    bell_pepper = generate_product(name='bell pepper')
+    red_bell_peppers = generate_product(name='red bell peppers')
+    red_bell_pepper_diced = generate_product(name='red bell pepper, diced')
+    green_bell_pepper = generate_product(name='green bell peppers')
+    green_bell_pepper_halved = generate_product(name='half green bell pepper')
+
+    all_products = [
+        bell_pepper,
+        red_bell_peppers,
+        red_bell_pepper_diced,
+        green_bell_pepper,
+        green_bell_pepper_halved,
+    ]
+
+    graph = ProductGraph(products=all_products)
+
+    assert len(graph.roots) == 1
+    root = graph.roots[0]
+    assert len([p for p in all_products if p.primary_parent == root]) == 2
