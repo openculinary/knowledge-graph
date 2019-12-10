@@ -8,26 +8,29 @@ stemmer = snowballstemmer.stemmer('english')
 class Product(object):
 
     def __init__(self, name, frequency):
-        self.text = name
-        self.name = self.canonicalize_name(name)
+        self.name = name
         self.frequency = frequency
 
-        self.id = hash_bytes(self.name)
         self.depth = None
         self.children = []
         self.parents = []
         self.primary_parent = None
+        self.stopwords = []
 
     def __add__(self, other):
         self.frequency += other.frequency
         return self
 
-    @staticmethod
-    def canonicalize_name(name):
-        ngrams = len(name.split(' '))
+    @property
+    def id(self):
+        return hash_bytes(self.content)
+
+    @property
+    def content(self):
+        ngrams = len(self.name.split(' '))
         tokens = []
-        for name_tokens in textparser.word_tokenize(name, ngrams=ngrams):
-            tokens += list(name_tokens)
+        for t in textparser.word_tokenize(self.name, self.stopwords, ngrams):
+            tokens += t
         tokens = stemmer.stemWords(tokens)
         return ' '.join(tokens)
 

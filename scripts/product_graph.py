@@ -8,6 +8,15 @@ class ProductGraph(object):
 
     def __init__(self, products):
         self.store_products(products)
+        self.build_index()
+
+        stopwords = self.get_stopwords()
+        self.tag_products(stopwords)
+
+        products = self.products_by_id.values()
+        self.store_products(products)
+        self.build_index()
+
         self.build_relationships()
         self.prune_relationships()
         self.calculate_depth()
@@ -20,17 +29,47 @@ class ProductGraph(object):
             else:
                 self.products_by_id[product.id] += product
 
-    @property
-    def index(self):
-        if not hasattr(self, '_index'):
-            self._index = build_search_index(
-                self.products_by_id,
-                lambda product: product.name
-            )
-        return self._index
+    def build_index(self):
+        self.index = build_search_index(
+            self.products_by_id,
+            lambda product: product.content,
+        )
+
+    def tag_products(self, stopwords):
+        for stopword in stopwords:
+            for product_id in self.index.get_documents(stopword):
+                product = self.products_by_id[product_id]
+                product.stopwords += stopword
+
+    def exact_match_exists(self, term):
+        for product_id in self.index.get_documents(term):
+            product = self.products_by_id.get(product_id)
+            if product.content == term[0]:
+                return True
+        return False
+
+    def get_stopwords(self):
+        stopwords = []
+        if not hasattr(self, 'index'):
+            return stopwords
+
+        stopword_exceptions = ['red', 'white']
+        for term in self.index.terms():
+            if len(term) > 1:
+                continue
+            if term[0] in stopword_exceptions:
+                continue
+            tfidf = self.index.get_total_tfidf(term)
+            if tfidf < 250:
+                continue
+            # TODO: Likely inefficient; stopwords have high doc counts
+            if self.exact_match_exists(term):
+                continue
+            stopwords.append(term)
+        return stopwords
 
     def find_children(self, product):
-        results = execute_queries(self.index, [product.name])
+        results = execute_queries(self.index, [product.content])
         children = set(results.keys())
         if product.id in children:
             children.remove(product.id)
