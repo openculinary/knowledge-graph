@@ -4,7 +4,7 @@ from hashedindex import HashedIndex, textparser
 
 
 def add_to_search_index(index, doc_id, doc):
-    for ngrams in [1, 2]:
+    for ngrams in [1, 2, 3]:
         for term in textparser.word_tokenize(doc, ngrams=ngrams):
             index.add_term_occurrence(term, doc_id)
 
