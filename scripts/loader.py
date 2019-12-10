@@ -2,8 +2,6 @@ import json
 import re
 import requests
 
-from ingreedypy import Ingreedy
-
 from scripts.product import Product
 from scripts.product_graph import ProductGraph
 
@@ -24,15 +22,6 @@ def discard(product):
     # Products must contain at least three-letter word terms
     if not re.search('\\S{3}', product['product']):
         return True
-
-    # Discard full ingredient descriptions
-    try:
-        parsed = Ingreedy().parse(product['product'])
-        if parsed.get('amount') or parsed.get('unit'):
-            return True
-    except Exception:
-        pass
-
     return False
 
 
