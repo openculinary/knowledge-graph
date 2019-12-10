@@ -13,7 +13,12 @@ class ProductGraph(object):
         self.calculate_depth()
 
     def store_products(self, products):
-        self.products_by_id = {product.id: product for product in products}
+        self.products_by_id = {}
+        for product in products:
+            if product.id not in self.products_by_id:
+                self.products_by_id[product.id] = product
+            else:
+                self.products_by_id[product.id] += product
 
     @property
     def index(self):

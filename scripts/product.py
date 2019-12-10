@@ -18,6 +18,10 @@ class Product(object):
         self.parents = []
         self.primary_parent = None
 
+    def __add__(self, other):
+        self.frequency += other.frequency
+        return self
+
     @staticmethod
     def canonicalize_name(name):
         ngrams = len(name.split(' '))

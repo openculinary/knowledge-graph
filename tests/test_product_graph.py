@@ -6,6 +6,16 @@ def generate_product(name):
     return Product(name=name, frequency=1)
 
 
+def test_product_aggregation():
+    onion = generate_product(name='onion')
+    onions = generate_product(name='onions')
+
+    graph = ProductGraph(products=[onion, onions])
+
+    assert len(graph.roots) == 1
+    assert graph.roots[0].frequency == 2
+
+
 def test_tofu_hierarchy():
     tofu = generate_product(name='tofu')
     firm_tofu = generate_product(name='firm tofu')
