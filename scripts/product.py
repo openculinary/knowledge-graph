@@ -18,7 +18,7 @@ class Product(object):
         path = path or []
         if self.id in path:
             self.depth = 0
-            return 0
+            return -1
         path.append(self.id)
 
         depth = 0
