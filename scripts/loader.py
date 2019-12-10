@@ -44,7 +44,7 @@ def retrieve_products(filename=None):
 
 
 def print_subtree(product, level=0, path=None):
-    print(product.name)
+    print(product.name + (' *' if product.stopwords else ''))
 
     path = path or []
     for child_id in product.children:
