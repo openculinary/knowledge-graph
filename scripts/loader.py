@@ -1,13 +1,11 @@
-from ingreedypy import Ingreedy
 import json
+from pymmh3 import hash_bytes
 import re
 import requests
 
-from scripts.search import (
-    add_to_search_index,
-    build_search_index,
-    execute_queries,
-)
+from ingreedypy import Ingreedy
+
+from scripts.product_tree import ProductGraph
 
 
 def discard(product):
@@ -50,46 +48,25 @@ def retrieve_products(filename=None):
     for line in reader():
         product = json.loads(line)
         if not discard(product):
-            yield product['product']
+            product['id'] = hash_bytes(product['product'])
+            yield product
 
 
-def find_parent_products(index, product):
-    results = execute_queries(index, [product['product']])
-    children = set(results.keys())
-    if product['id'] in children:
-        children.remove(product['id'])
-    return children
+def print_subtree(product, level=0, path=None):
+    print(product['product'])
+
+    path = path or []
+    for child_id in product['children']:
+        child = graph.products_by_id[child_id]
+        if child['primary_parent'] == product and child_id not in path:
+            print(f" {'  ' * level}\\-- ", end='')
+            path.append(child_id)
+            print_subtree(child, level + 1, path)
 
 
 if __name__ == '__main__':
-    index = build_search_index()
-
-    # Build a document list and search index
-    products_by_id = {}
     products = retrieve_products(filename='products.json')
-    for product_id, product in enumerate(products):
-        products_by_id[product_id] = {
-            'id': product_id,
-            'product': product,
-            'parents': list(),
-            'roots': list(),
-        }
-        add_to_search_index(index, product_id, product)
-
-    # Collect a list of parents for each product
-    for product_id, product in products_by_id.items():
-        related_ids = find_parent_products(index, product)
-        for related_id in related_ids:
-            products_by_id[related_id]['parents'].append(product)
-
-    # Identify root elements for each product
-    for product_id, product in products_by_id.items():
-        for parent in product['parents']:
-            if not parent['parents']:
-                product['roots'].append(parent)
-
-    # Render root products for inspection
-    for product_id, product in products_by_id.items():
-        print(f'''
-            {product['product']} ->
-            {[root['product'] for root in product['roots']]}''')
+    graph = ProductGraph(products)
+    for product_id, product in graph.products_by_id.items():
+        if product['depth'] == 0:
+            print_subtree(product)

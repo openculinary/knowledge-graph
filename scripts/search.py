@@ -9,10 +9,11 @@ def add_to_search_index(index, doc_id, doc):
             index.add_term_occurrence(term, doc_id)
 
 
-def build_search_index(docs=None):
+def build_search_index(docs_by_id, selector):
     index = HashedIndex()
-    for doc_id, doc in enumerate(docs or []):
-        add_to_search_index(index, doc_id, doc)
+    for doc_id, doc in docs_by_id.items():
+        doc_content = selector(doc)
+        add_to_search_index(index, doc_id, doc_content)
     return index
 
 
