@@ -5,7 +5,7 @@ import requests
 
 from ingreedypy import Ingreedy
 
-from scripts.product_tree import ProductGraph
+from scripts.product_graph import ProductGraph
 
 
 def discard(product):
