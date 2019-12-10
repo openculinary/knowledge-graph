@@ -17,3 +17,13 @@ def test_tofu_hierarchy():
     assert tofu in graph.roots
     assert firm_tofu.primary_parent == tofu
     assert soft_tofu.primary_parent == tofu
+
+
+def test_bananas_common_root():
+    banana = generate_product(name='banana')
+    peeled_bananas = generate_product(name='peeled bananas')
+    whole_banana = generate_product(name='whole banana')
+
+    graph = ProductGraph(products=[banana, peeled_bananas, whole_banana])
+
+    assert len(graph.roots) == 1

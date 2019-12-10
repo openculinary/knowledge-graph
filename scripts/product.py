@@ -1,16 +1,31 @@
+from hashedindex import textparser
 from pymmh3 import hash_bytes
+import snowballstemmer
+
+stemmer = snowballstemmer.stemmer('english')
 
 
 class Product(object):
 
     def __init__(self, name, frequency):
-        self.id = hash_bytes(name)
-        self.name = name
+        self.text = name
+        self.name = self.canonicalize_name(name)
         self.frequency = frequency
+
+        self.id = hash_bytes(self.name)
         self.depth = None
         self.children = []
         self.parents = []
         self.primary_parent = None
+
+    @staticmethod
+    def canonicalize_name(name):
+        ngrams = len(name.split(' '))
+        tokens = []
+        for name_tokens in textparser.word_tokenize(name, ngrams=ngrams):
+            tokens += list(name_tokens)
+        tokens = stemmer.stemWords(tokens)
+        return ' '.join(tokens)
 
     def calculate_depth(self, path=None):
         if self.depth is not None:
