@@ -56,3 +56,10 @@ class ProductGraph(object):
     def calculate_depth(self):
         for product in self.products_by_id.values():
             product.calculate_depth()
+
+    @property
+    def roots(self):
+        return [
+            product for product in self.products_by_id.values()
+            if product.depth == 0
+        ]
