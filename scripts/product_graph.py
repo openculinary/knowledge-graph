@@ -94,6 +94,9 @@ class ProductGraph(object):
                 primary_parent_tokens = primary_parent.name.split(' ')
                 if len(parent_tokens) > len(primary_parent_tokens):
                     primary_parent = parent
+                if len(parent_tokens) == len(primary_parent_tokens):
+                    if primary_parent.stopwords and not parent.stopwords:
+                        primary_parent = parent
 
             product.primary_parent = primary_parent
 
