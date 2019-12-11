@@ -1,5 +1,10 @@
+# Colors
+black
 green
+orange
 red
 white
 yellow
+
+# Valid mid-ingredient-phrase tokens
 bell
