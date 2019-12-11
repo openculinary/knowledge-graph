@@ -1,0 +1,6 @@
+chile,chili
+chilli,chili
+cinammon,cinnamon
+coriander,cilantro
+filet,fillet
+yoghurt,yogurt

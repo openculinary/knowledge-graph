@@ -9,6 +9,10 @@ python_version = "3.7"
 [packages]
 flask = "==1.1.1"
 gunicorn = "==20.0.4"
+hashedindex = "==0.6.0"
+pymmh3 = "==0.0.5"
+requests = "==2.22.0"
+snowballstemmer = "==2.0.0"
 
 [dev-packages]
 flake8 = "*"
