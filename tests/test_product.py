@@ -50,5 +50,7 @@ def test_spelling_correction():
 def test_duplicate_consolidation():
     a1 = generate_product(name='sprig thyme')
     a2 = generate_product(name='thyme sprig')
+    a3 = generate_product(name='fresh thyme sprig')
+    a3.stopwords = ['fresh']
 
-    assert a1.id == a2.id
+    assert a1.id == a2.id == a3.id

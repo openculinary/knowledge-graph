@@ -10,11 +10,9 @@ class ProductGraph(object):
         self.store_products(products)
         self.build_index()
 
-        self.load_clearwords()
         stopwords = self.get_stopwords()
-        self.tag_products(stopwords)
+        products = self.filter_products(stopwords)
 
-        products = self.products_by_id.values()
         self.store_products(products)
         self.build_index()
 
@@ -36,11 +34,15 @@ class ProductGraph(object):
             lambda product: product.content,
         )
 
-    def tag_products(self, stopwords):
+    def filter_products(self, stopwords):
         for stopword in stopwords:
             for product_id in self.index.get_documents(stopword):
                 product = self.products_by_id[product_id]
                 product.stopwords += stopword
+        return [
+            product for product in self.products_by_id.values()
+            if product.tokens
+        ]
 
     def exact_match_exists(self, term):
         for product_id in self.index.get_documents(term):
@@ -49,23 +51,21 @@ class ProductGraph(object):
                 return True
         return False
 
-    def load_clearwords(self):
-        self.clearwords = []
+    def get_clearwords(self):
+        clearwords = []
         with open('scripts/data/clear-words.txt') as f:
             for line in f.readlines():
                 if line.startswith('#'):
                     continue
-                self.clearwords.append(line.lower())
+                clearwords.append(line.strip().lower())
+        return clearwords
 
     def get_stopwords(self):
-        stopwords = []
-        if not hasattr(self, 'index'):
-            return stopwords
-
+        clearwords = self.get_clearwords()
         for term in self.index.terms():
             if len(term) > 1:
                 continue
-            if term[0] in self.clearwords:
+            if term[0] in clearwords:
                 continue
             tfidf = self.index.get_total_tfidf(term)
             if tfidf < 100:
@@ -73,8 +73,7 @@ class ProductGraph(object):
             # TODO: Likely inefficient; stopwords have high doc counts
             if self.exact_match_exists(term):
                 continue
-            stopwords.append(term)
-        return stopwords
+            yield term
 
     def find_children(self, product):
         results = execute_queries(self.index, [product.content])
@@ -97,15 +96,8 @@ class ProductGraph(object):
                 parent = self.products_by_id[parent_id]
                 if primary_parent is None:
                     primary_parent = parent
-
-                parent_tokens = parent.name.split(' ')
-                primary_parent_tokens = primary_parent.name.split(' ')
-                if len(parent_tokens) > len(primary_parent_tokens):
+                if len(parent.tokens) > len(primary_parent.tokens):
                     primary_parent = parent
-                if len(parent_tokens) == len(primary_parent_tokens):
-                    if primary_parent.stopwords and not parent.stopwords:
-                        primary_parent = parent
-
             product.primary_parent = primary_parent
 
     def calculate_depth(self):

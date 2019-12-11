@@ -37,9 +37,12 @@ class Product(object):
 
     @property
     def tokens(self):
-        tokens = self.name.split(' ')
-        tokens = [token for token in tokens if token not in self.stopwords]
-        return stemmer.stemWords(tokens)
+        words = self.name.split(' ')
+        words = stemmer.stemWords(words)
+        text = ' '.join(words)
+        for ngrams in range(len(words), 0, -1):
+            for t in textparser.word_tokenize(text, self.stopwords, ngrams):
+                return t
 
     @property
     def id(self):

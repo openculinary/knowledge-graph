@@ -47,18 +47,13 @@ def retrieve_products(filename=None):
 
 
 def print_subtree(product, level=0, path=None):
-    if product.stopwords:
-        return
-
-    print(product.name + (' *' if product.stopwords else ''))
+    print(product.content)
 
     path = path or []
     for child_id in product.children:
         if child_id in path:
             continue
         child = graph.products_by_id[child_id]
-        if child.stopwords:
-            continue
         if child.primary_parent == product:
             print(f" {'  ' * level}\\-- ", end='')
             path.append(child_id)
