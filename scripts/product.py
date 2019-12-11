@@ -36,17 +36,19 @@ class Product(object):
         return ' '.join(words)
 
     @property
+    def tokens(self):
+        tokens = self.name.split(' ')
+        tokens = [token for token in tokens if token not in self.stopwords]
+        return stemmer.stemWords(tokens)
+
+    @property
     def id(self):
-        return hash_bytes(self.content)
+        hash_input = ' '.join(sorted(self.tokens))
+        return hash_bytes(hash_input)
 
     @property
     def content(self):
-        ngrams = len(self.name.split(' '))
-        tokens = []
-        for t in textparser.word_tokenize(self.name, self.stopwords, ngrams):
-            tokens += t
-        tokens = stemmer.stemWords(tokens)
-        return ' '.join(tokens)
+        return ' '.join(self.tokens)
 
     def calculate_depth(self, path=None):
         if self.depth is not None:

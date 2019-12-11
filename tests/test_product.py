@@ -45,3 +45,10 @@ def test_spelling_correction():
     a1 = generate_product(name=name_input)
 
     assert a1.name == name_expected
+
+
+def test_duplicate_consolidation():
+    a1 = generate_product(name='sprig thyme')
+    a2 = generate_product(name='thyme sprig')
+
+    assert a1.id == a2.id
