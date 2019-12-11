@@ -3,19 +3,19 @@ from pymmh3 import hash_bytes
 from scripts.search import tokenize
 
 
-misspellings = {}
-with open('scripts/data/misspellings.txt') as f:
+canonicalizations = {}
+with open('scripts/data/canonicalizations.txt') as f:
     for line in f.readlines():
         if line.startswith('#'):
             continue
-        spelling, correction = line.strip().split(',')
-        misspellings[spelling] = correction
+        source, target = line.strip().split(',')
+        canonicalizations[source] = target
 
 
 class Product(object):
 
     def __init__(self, name, frequency):
-        self.name = self.spell_correct(name)
+        self.name = self.canonicalize(name)
         self.frequency = frequency
 
         self.depth = None
@@ -29,9 +29,9 @@ class Product(object):
         return self
 
     @staticmethod
-    def spell_correct(name):
+    def canonicalize(name):
         words = name.split(' ')
-        words = [misspellings.get(word) or word for word in words]
+        words = [canonicalizations.get(word) or word for word in words]
         return ' '.join(words)
 
     @property

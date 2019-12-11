@@ -38,7 +38,7 @@ def test_calculate_depth_avoids_loop():
     assert a4.depth == 1
 
 
-def test_spelling_correction():
+def test_canonicalization():
     name_input = 'cod filet'
     name_expected = 'cod fillet'
 
