@@ -22,6 +22,9 @@ def discard(product):
     # Products must contain at least three-letter word terms
     if not re.search('\\S{3}', product['product']):
         return True
+    # Drop 'container' items
+    if product['product'].endswith(':'):
+        return True
     return False
 
 
@@ -44,12 +47,19 @@ def retrieve_products(filename=None):
 
 
 def print_subtree(product, level=0, path=None):
+    if product.stopwords:
+        return
+
     print(product.name + (' *' if product.stopwords else ''))
 
     path = path or []
     for child_id in product.children:
+        if child_id in path:
+            continue
         child = graph.products_by_id[child_id]
-        if child.primary_parent == product and child_id not in path:
+        if child.stopwords:
+            continue
+        if child.primary_parent == product:
             print(f" {'  ' * level}\\-- ", end='')
             path.append(child_id)
             print_subtree(child, level + 1, path)

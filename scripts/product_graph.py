@@ -53,14 +53,14 @@ class ProductGraph(object):
         if not hasattr(self, 'index'):
             return stopwords
 
-        stopword_exceptions = ['red', 'white']
+        stopword_exceptions = ['green', 'red', 'white', 'bell']
         for term in self.index.terms():
             if len(term) > 1:
                 continue
             if term[0] in stopword_exceptions:
                 continue
             tfidf = self.index.get_total_tfidf(term)
-            if tfidf < 250:
+            if tfidf < 100:
                 continue
             # TODO: Likely inefficient; stopwords have high doc counts
             if self.exact_match_exists(term):
