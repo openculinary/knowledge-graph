@@ -36,8 +36,12 @@ class Product(object):
 
     @property
     def tokens(self):
+        terms = tuple()
         for term in tokenize(self.name, self.stopwords):
-            return term or []
+            if len(term) > 1:
+                return term
+            terms += term
+        return terms
 
     @property
     def id(self):
