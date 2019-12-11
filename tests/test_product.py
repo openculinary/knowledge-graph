@@ -54,3 +54,10 @@ def test_duplicate_consolidation():
     a3.stopwords = ['fresh']
 
     assert a1.id == a2.id == a3.id
+
+
+def test_content_rendering():
+    a1 = generate_product(name='chopped cooked chicken')
+    a1.stopwords = ['chop', 'cook']
+
+    assert a1.content == 'chicken'
