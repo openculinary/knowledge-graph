@@ -56,6 +56,13 @@ def test_duplicate_consolidation():
     assert a1.id == a2.id == a3.id
 
 
+def test_stopword_token_filtering():
+    a1 = generate_product(name='chopped dried apricot')
+    a1.stopwords = ['dri']
+
+    assert a1.tokens == ('chop', 'apricot')
+
+
 def test_content_rendering():
     a1 = generate_product(name='chopped cooked chicken')
     a1.stopwords = ['chop', 'cook']
