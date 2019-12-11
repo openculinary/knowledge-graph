@@ -1,8 +1,7 @@
-from hashedindex import textparser
 from pymmh3 import hash_bytes
-import snowballstemmer
 
-stemmer = snowballstemmer.stemmer('english')
+from scripts.search import tokenize
+
 
 misspellings = {}
 with open('scripts/data/misspellings.txt') as f:
@@ -37,12 +36,9 @@ class Product(object):
 
     @property
     def tokens(self):
-        words = self.name.split(' ')
-        words = stemmer.stemWords(words)
-        text = ' '.join(words)
-        for ngrams in range(len(words), 0, -1):
-            for t in textparser.word_tokenize(text, self.stopwords, ngrams):
-                return t
+        for ngrams in range(len(self.name.split(' ')), 0, -1):
+            for term in tokenize(self.name, self.stopwords, ngrams):
+                return term
 
     @property
     def id(self):
