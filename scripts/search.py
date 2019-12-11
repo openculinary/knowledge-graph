@@ -9,11 +9,12 @@ stemmer_en = stemmer('english')
 def tokenize(doc, stopwords=None):
     stopwords = stopwords or []
     words = doc.split(' ')
+    # TODO: Push stemming into upstream hashedindex library
     words = stemmer_en.stemWords(words)
     doc = ' '.join(words)
     for ngrams in range(len(words), 0, -1):
         for term in textparser.word_tokenize(doc, stopwords, ngrams):
-            yield term
+            yield tuple(stemmer_en.stemWords(term))
 
 
 def add_to_search_index(index, doc_id, doc, stopwords):
