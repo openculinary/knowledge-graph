@@ -10,6 +10,7 @@ class ProductGraph(object):
         self.store_products(products)
         self.build_index()
 
+        self.load_clearwords()
         stopwords = self.get_stopwords()
         self.tag_products(stopwords)
 
@@ -48,16 +49,23 @@ class ProductGraph(object):
                 return True
         return False
 
+    def load_clearwords(self):
+        self.clearwords = []
+        with open('scripts/data/clear-words.txt') as f:
+            for line in f.readlines():
+                if line.startswith('#'):
+                    continue
+                self.clearwords.append(line.lower())
+
     def get_stopwords(self):
         stopwords = []
         if not hasattr(self, 'index'):
             return stopwords
 
-        stopword_exceptions = ['green', 'red', 'white', 'bell']
         for term in self.index.terms():
             if len(term) > 1:
                 continue
-            if term[0] in stopword_exceptions:
+            if term[0] in self.clearwords:
                 continue
             tfidf = self.index.get_total_tfidf(term)
             if tfidf < 100:
