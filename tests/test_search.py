@@ -5,7 +5,7 @@ def test_tokenize_stopwords():
     content = 'red bell peppers diced'
     stopwords = ['dice']
 
-    tokens = tokenize(content, stopwords, ngrams=3)
+    tokens = tokenize(content, stopwords)
     tokens = [token for token in tokens]
 
-    assert tokens == [('red', 'bell', 'pepper')]
+    assert tokens[0] == ('red', 'bell', 'pepper')

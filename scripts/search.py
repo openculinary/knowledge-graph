@@ -6,18 +6,19 @@ from snowballstemmer import stemmer
 stemmer_en = stemmer('english')
 
 
-def tokenize(doc, stopwords, ngrams):
+def tokenize(doc, stopwords=None):
+    stopwords = stopwords or []
     words = doc.split(' ')
     words = stemmer_en.stemWords(words)
     doc = ' '.join(words)
-    for term in textparser.word_tokenize(doc, stopwords, ngrams):
-        yield term
+    for ngrams in range(len(words), 0, -1):
+        for term in textparser.word_tokenize(doc, stopwords, ngrams):
+            yield term
 
 
 def add_to_search_index(index, doc_id, doc, stopwords):
-    for ngrams in [1, 2, 3]:
-        for term in tokenize(doc, stopwords, ngrams):
-            index.add_term_occurrence(term, doc_id)
+    for term in tokenize(doc, stopwords):
+        index.add_term_occurrence(term, doc_id)
 
 
 def build_search_index(docs_by_id, selector):
@@ -30,8 +31,7 @@ def build_search_index(docs_by_id, selector):
 
 def build_query_terms(docs):
     for doc in docs:
-        ngrams = len(doc.split(' '))
-        for term in tokenize(doc, [], ngrams):
+        for term in tokenize(doc):
             yield doc, term
 
 
@@ -42,7 +42,8 @@ def execute_queries(index, queries):
             for doc_id in index.get_documents(term):
                 hits[doc_id].add(query)
         except IndexError:
-            continue
+            pass
+        break
     return hits
 
 

@@ -36,9 +36,8 @@ class Product(object):
 
     @property
     def tokens(self):
-        for ngrams in range(len(self.name.split(' ')), 0, -1):
-            for term in tokenize(self.name, self.stopwords, ngrams):
-                return term
+        for term in tokenize(self.name, self.stopwords):
+            return term or []
 
     @property
     def id(self):
