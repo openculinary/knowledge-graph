@@ -42,13 +42,18 @@ def retrieve_products(filename):
         headers = {'Host': 'api'}
         reader = requests.get(url, headers=headers, stream=True).iter_lines
 
+    count = 0
     for line in reader():
+        count += 1
         product = json.loads(line)
         if not discard(product):
             yield Product(
                 name=product['product'],
                 frequency=product['recipe_count']
             )
+        if count % 1000 == 0:
+            print(f'- {count} products loaded')
+    print(f'- {count} products loaded')
 
 
 def retrieve_stopwords(filename):

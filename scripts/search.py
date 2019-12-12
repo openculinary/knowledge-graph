@@ -29,10 +29,15 @@ def add_to_search_index(index, doc_id, doc, stopwords):
 
 
 def build_search_index(docs_by_id, selector):
+    count = 0
     index = HashedIndex()
     for doc_id, doc in docs_by_id.items():
+        count += 1
         doc_content = selector(doc)
         add_to_search_index(index, doc_id, doc_content, [])
+        if count % 1000 == 0:
+            print(f'- {count} documents indexed')
+    print(f'- {count} documents indexed')
     return index
 
 
