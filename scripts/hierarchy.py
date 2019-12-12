@@ -13,6 +13,7 @@ from scripts.models.product_graph import ProductGraph
 parser = argparse.ArgumentParser(description='Generate product hierarchies')
 parser.add_argument(
     '--hierarchy',
+    default=CACHE_PATHS['hierarchy'],
     help='Cached hierarchy file to read/write'
 )
 parser.add_argument(
@@ -43,6 +44,6 @@ roots = graph.generate_hierarchy()
 
 output = sys.stdout
 if args.update:
-    output = open(args.products)
+    output = open(args.hierarchy)
 write_items(roots, output)
 output.close()

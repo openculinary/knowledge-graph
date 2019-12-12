@@ -1,3 +1,5 @@
+import json
+
 from scripts.search import tokenize
 
 
@@ -27,11 +29,17 @@ class Product(object):
         return self
 
     def __repr__(self):
-        return (
-            '{'
-            f'"product": "{self.name}", "recipe_count": {self.frequency}'
-            '}'
-        )
+        data = {
+            'product': self.name,
+            'recipe_count': self.frequency
+        }
+        if self.primary_parent:
+            data.update({
+                'id': self.id,
+                'name': ' '.join(self.tokens),
+                'parent_id': self.primary_parent.id
+            })
+        return json.dumps(data, ensure_ascii=False)
 
     @property
     def id(self):

@@ -7,6 +7,7 @@ from scripts.models.product import Product
 
 
 CACHE_PATHS = {
+    'hierarchy': 'scripts/data/generated/hierarchy.json',
     'products': 'scripts/data/generated/ingredients.json',
     'stopwords': 'scripts/data/generated/stopwords.txt',
 }
