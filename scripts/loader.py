@@ -16,6 +16,9 @@ CACHE_PATHS = {
 
 
 def discard(product):
+    # Discard rare items
+    if product['recipe_count'] < 5:
+        return True
     # Discard separator items
     if re.match('[-_]+', product['product']):
         return True
