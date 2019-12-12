@@ -23,22 +23,14 @@ def tokenize(doc, stopwords=None):
             yield term
 
 
-def add_to_search_index(index, doc_id, doc, stopwords):
+def add_to_search_index(index, doc_id, doc, stopwords=None):
+    stopwords = stopwords or []
     for term in tokenize(doc, stopwords):
         index.add_term_occurrence(term, doc_id)
 
 
-def build_search_index(docs_by_id, selector):
-    count = 0
-    index = HashedIndex()
-    for doc_id, doc in docs_by_id.items():
-        count += 1
-        doc_content = selector(doc)
-        add_to_search_index(index, doc_id, doc_content, [])
-        if count % 1000 == 0:
-            print(f'- {count} documents indexed')
-    print(f'- {count} documents indexed')
-    return index
+def build_search_index():
+    return HashedIndex()
 
 
 def build_query_terms(docs):

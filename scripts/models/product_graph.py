@@ -1,4 +1,5 @@
 from scripts.search import (
+    add_to_search_index,
     build_search_index,
     execute_queries,
 )
@@ -7,9 +8,9 @@ from scripts.search import (
 class ProductGraph(object):
 
     def __init__(self, products, stopwords=None):
-        self.store_products(products)
-        self.store_stopwords(stopwords)
-        self.build_index()
+        self.products_by_id = {}
+        self.stopwords = stopwords or []
+        self.index = self.build_index(products)
 
     def generate_hierarchy(self):
         self.build_relationships()
@@ -17,22 +18,21 @@ class ProductGraph(object):
         self.calculate_depth()
         return self.roots
 
-    def store_products(self, products):
-        self.products_by_id = {}
+    def build_index(self, products):
+        index = build_search_index()
+
+        count = 0
         for product in products:
+            count += 1
             if product.id not in self.products_by_id:
                 self.products_by_id[product.id] = product
             else:
                 self.products_by_id[product.id] += product
-
-    def store_stopwords(self, stopwords):
-        self.stopwords = stopwords or self.get_stopwords()
-
-    def build_index(self):
-        self.index = build_search_index(
-            self.products_by_id,
-            lambda product: product.content,
-        )
+            add_to_search_index(index, product.id, product.content)
+            if count % 1000 == 0:
+                print(f'- {count} documents indexed')
+        print(f'- {count} documents indexed')
+        return index
 
     def filter_products(self):
         for stopword in self.stopwords:
