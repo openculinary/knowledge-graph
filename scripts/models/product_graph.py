@@ -6,19 +6,16 @@ from scripts.search import (
 
 class ProductGraph(object):
 
-    def __init__(self, products):
+    def __init__(self, products, stopwords=None):
         self.store_products(products)
+        self.store_stopwords(stopwords)
         self.build_index()
 
-        stopwords = self.get_stopwords()
-        products = self.filter_products(stopwords)
-
-        self.store_products(products)
-        self.build_index()
-
+    def generate_hierarchy(self):
         self.build_relationships()
-        self.prune_relationships()
+        self.assign_parents()
         self.calculate_depth()
+        return self.roots
 
     def store_products(self, products):
         self.products_by_id = {}
@@ -28,14 +25,18 @@ class ProductGraph(object):
             else:
                 self.products_by_id[product.id] += product
 
+    def store_stopwords(self, stopwords):
+        self.stopwords = stopwords or self.get_stopwords()
+
     def build_index(self):
         self.index = build_search_index(
             self.products_by_id,
             lambda product: product.content,
         )
 
-    def filter_products(self, stopwords):
-        for stopword in stopwords:
+    def filter_products(self):
+        for stopword in self.stopwords:
+            stopword = tuple([stopword])
             for product_id in self.index.get_documents(stopword):
                 product = self.products_by_id[product_id]
                 product.stopwords += stopword
@@ -73,7 +74,7 @@ class ProductGraph(object):
             # TODO: Likely inefficient; stopwords have high doc counts
             if self.exact_match_exists(term):
                 continue
-            yield term
+            yield term[0]
 
     def find_children(self, product):
         results = execute_queries(self.index, [product.content])
@@ -89,7 +90,7 @@ class ProductGraph(object):
                 parent.children.append(child_id)
                 self.products_by_id[child_id].parents.append(parent.id)
 
-    def prune_relationships(self):
+    def assign_parents(self):
         for product in self.products_by_id.values():
             primary_parent = None
             for parent_id in product.parents:

@@ -28,6 +28,13 @@ class Product(object):
         self.frequency += other.frequency
         return self
 
+    def __repr__(self):
+        return (
+            '{'
+            f'"product": "{self.name}", "recipe_count": {self.frequency}'
+            '}'
+        )
+
     @staticmethod
     def canonicalize(name):
         words = name.split(' ')

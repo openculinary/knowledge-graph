@@ -1,4 +1,4 @@
-from scripts.product import Product
+from scripts.models.product import Product
 
 
 def generate_product(name, parent=None):
