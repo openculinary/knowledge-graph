@@ -36,6 +36,6 @@ if not stopwords:
 
 output = sys.stdout
 if args.update:
-    output = open(args.stopwords)
+    output = open(args.stopwords, 'w')
 write_items(stopwords, output)
 output.close()

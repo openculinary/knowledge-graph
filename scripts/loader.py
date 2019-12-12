@@ -3,6 +3,8 @@ import os
 import re
 import requests
 
+from ingreedypy import Ingreedy
+
 from scripts.models.product import Product
 
 
@@ -44,16 +46,27 @@ def retrieve_products(filename):
         reader = requests.get(url, headers=headers, stream=True).iter_lines
 
     count = 0
+    ingreedy = Ingreedy()
     for line in reader():
+        line = str(line)
+        if line.startswith('#'):
+            continue
+
         count += 1
-        product = json.loads(line)
-        if not discard(product):
-            yield Product(
-                name=product['product'],
-                frequency=product['recipe_count']
-            )
         if count % 1000 == 0:
             print(f'- {count} products loaded')
+
+        product = json.loads(line)
+        if discard(product):
+            continue
+        try:
+            parse = ingreedy.parse(product['product'])
+        except:
+            continue
+        yield Product(
+            name=parse['ingredient'] or product['product'],
+            frequency=product['recipe_count']
+        )
     print(f'- {count} products loaded')
 
 

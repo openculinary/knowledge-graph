@@ -21,10 +21,10 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-products = retrieve_products(args.products)
+products = list(retrieve_products(args.products))
 
 output = sys.stdout
 if args.update:
-    output = open(args.products)
+    output = open(args.products, 'w')
 write_items(products, output)
 output.close()

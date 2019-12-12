@@ -33,13 +33,20 @@ class Product(object):
             'product': self.name,
             'recipe_count': self.frequency
         }
-        if self.primary_parent:
+
+        tree_rendering = self.children or self.parents
+        if tree_rendering:
             data.update({
                 'id': self.id,
-                'name': ' '.join(self.tokens),
+                'product': ' '.join(self.tokens),
+            })
+
+        if self.primary_parent:
+            data.update({
                 'parent_id': self.primary_parent.id
             })
-        return json.dumps(data, ensure_ascii=False)
+
+        return ('  ' * (self.depth or 0)) + json.dumps(data, ensure_ascii=False)
 
     @property
     def id(self):
