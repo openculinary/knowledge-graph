@@ -1,8 +1,8 @@
 from collections import defaultdict
 
-from hashedindex import HashedIndex, textparser
+from hashedindex import HashedIndex
+from hashedindex.textparser import word_tokenize
 from snowballstemmer import stemmer
-
 
 
 class SnowballStemmer():
@@ -20,7 +20,7 @@ def tokenize(doc, stopwords=None):
     stemmer = SnowballStemmer()
 
     for ngrams in range(len(words), 0, -1):
-        for term in textparser.word_tokenize(doc, stopwords, ngrams, stemmer=stemmer):
+        for term in word_tokenize(doc, stopwords, ngrams, stemmer=stemmer):
             yield term
 
 
