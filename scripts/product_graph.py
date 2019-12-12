@@ -68,7 +68,7 @@ class ProductGraph(object):
             if term[0] in clearwords:
                 continue
             tfidf = self.index.get_total_tfidf(term)
-            if tfidf < 50:
+            if tfidf < 250:
                 continue
             # TODO: Likely inefficient; stopwords have high doc counts
             if self.exact_match_exists(term):
