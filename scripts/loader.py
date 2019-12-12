@@ -1,4 +1,5 @@
 import json
+import os
 import re
 import requests
 
@@ -25,8 +26,9 @@ def discard(product):
     return False
 
 
-def retrieve_products(filename=None):
-    if filename:
+def retrieve_products():
+    filename = 'scripts/data/generated/ingredients.json'
+    if os.path.exists(filename):
         recipe_file = open(filename, 'r')
         reader = recipe_file.readlines
     else:
@@ -58,7 +60,7 @@ def print_subtree(product, level=0, path=None):
 
 
 if __name__ == '__main__':
-    products = retrieve_products(filename='products.json')
+    products = retrieve_products()
     graph = ProductGraph(products)
     for product_id, product in graph.products_by_id.items():
         if product.depth == 0:
