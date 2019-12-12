@@ -1,5 +1,3 @@
-from pymmh3 import hash_bytes
-
 from scripts.search import tokenize
 
 
@@ -35,6 +33,10 @@ class Product(object):
             '}'
         )
 
+    @property
+    def id(self):
+        return '_'.join(sorted(self.tokens))
+
     @staticmethod
     def canonicalize(name):
         words = name.split(' ')
@@ -49,11 +51,6 @@ class Product(object):
                 return term
             terms += term
         return terms
-
-    @property
-    def id(self):
-        hash_input = ' '.join(sorted(self.tokens))
-        return hash_bytes(hash_input)
 
     @property
     def content(self):

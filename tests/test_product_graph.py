@@ -81,13 +81,10 @@ def test_red_bell_pepper_parent_assignment():
     graph = ProductGraph(products=products, stopwords=['dice'])
     roots = graph.generate_hierarchy()
 
-    assert len(roots) == 1
-    assert bell_pepper_diced.stopwords == ['dice']
-    assert red_bell_pepper_diced.stopwords == ['dice']
-
     # TODO: Find a more elegant pattern to handle reference updates
     red_bell_pepper = graph.products_by_id[red_bell_pepper.id]
     red_bell_pepper_diced = graph.products_by_id[red_bell_pepper_diced.id]
 
+    assert len(roots) == 1
     assert red_bell_pepper.primary_parent == roots[0]
     assert red_bell_pepper_diced.primary_parent == roots[0]
