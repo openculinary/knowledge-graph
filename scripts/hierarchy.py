@@ -36,7 +36,7 @@ products = retrieve_products(args.products)
 stopwords = retrieve_stopwords(args.stopwords)
 
 graph = ProductGraph(products, stopwords)
-products = graph.filtered_products()
+products = graph.filter_products()
 
 graph = ProductGraph(products, stopwords)
 roots = graph.generate_hierarchy()
