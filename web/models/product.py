@@ -14,14 +14,14 @@ with open('web/data/canonicalizations.txt') as f:
 
 class Product(object):
 
-    def __init__(self, name, frequency):
+    def __init__(self, name, frequency, parent_id=None):
         self.name = self.canonicalize(name)
         self.frequency = frequency
+        self.parent_id = parent_id
 
         self.depth = None
         self.children = []
         self.parents = []
-        self.parent_id = None
         self.stopwords = []
 
     def __add__(self, other):
