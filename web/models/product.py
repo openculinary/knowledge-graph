@@ -29,20 +29,21 @@ class Product(object):
         return self
 
     def __repr__(self):
+        data = self.to_dict(include_hierarchy=self.children or self.parents)
+        return '  ' * (self.depth or 0) + json.dumps(data, ensure_ascii=False)
+
+    def to_dict(self, include_hierarchy=False):
         data = {
             'product': self.canonicalize(self.name, self.stopwords),
             'recipe_count': self.frequency
         }
-
-        tree_rendering = self.children or self.parents
-        if tree_rendering:
+        if include_hierarchy:
             data.update({
                 'id': self.id,
                 'parent_id': self.parent_id,
                 'depth': self.depth
             })
-
-        return '  ' * (self.depth or 0) + json.dumps(data, ensure_ascii=False)
+        return data
 
     @property
     def id(self):

@@ -100,6 +100,15 @@ class ProductGraph(object):
             children.remove(product.id)
         return children
 
+    def find_parents(self, product):
+        if product.parent_id:
+            parent = self.products_by_id.get(product.parent_id)
+            if not parent:
+                return
+            yield parent
+            for parent in self.find_parents(parent):
+                yield parent
+
     def build_relationships(self):
         for parent in self.products_by_id.values():
             child_ids = self.find_children(parent)
