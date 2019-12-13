@@ -11,7 +11,6 @@ flask = "==1.1.1"
 gunicorn = "==20.0.4"
 hashedindex = "==0.6.0"
 ingreedypy = "==1.2"
-pymmh3 = "==0.0.5"
 requests = "==2.22.0"
 snowballstemmer = "==2.0.0"
 
