@@ -92,7 +92,12 @@ def retrieve_hierarchy(filename):
         for line in f.readlines():
             if line.startswith('#'):
                 continue
-            yield line.strip()
+            product = json.loads(line)
+            yield Product(
+                name=product['product'],
+                frequency=product['recipe_count'],
+                parent_id=product.get('parent_id')
+            )
 
 
 def write_items(items, output):
