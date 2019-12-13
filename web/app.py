@@ -14,7 +14,7 @@ def stream(items):
         yield f'{item}\n'
 
 
-@app.route('/hierarchy')
+@app.route('/ingredients/hierarchy')
 def hierarchy():
     filename = CACHE_PATHS['hierarchy']
     hierarchy = retrieve_hierarchy(filename)
