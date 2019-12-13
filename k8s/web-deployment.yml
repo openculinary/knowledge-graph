@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: python-template-deployment
+  name: ingredient-refinement-deployment
   labels:
-    app: python-template
+    app: ingredient-refinement
 spec:
   selector:
     matchLabels:
-      app: python-template
+      app: ingredient-refinement
       role: web
   template:
     metadata:
       labels:
-        app: python-template
+        app: ingredient-refinement
         role: web
     spec:
       imagePullSecrets:
       - name: gitlab-registry
       containers:
-      - image: registry.gitlab.com/openculinary/python-template
+      - image: registry.gitlab.com/openculinary/ingredient-refinement
         imagePullPolicy: IfNotPresent
-        name: python-template
+        name: ingredient-refinement
         ports:
         - containerPort: 80

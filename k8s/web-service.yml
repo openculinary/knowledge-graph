@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: python-template-service
+  name: ingredient-refinement-service
 spec:
   selector:
-    app: python-template
+    app: ingredient-refinement
     role: web
   ports:
     - protocol: TCP

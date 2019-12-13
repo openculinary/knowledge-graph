@@ -1,12 +1,12 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: python-template-ingress
+  name: ingredient-refinement-ingress
 spec:
   rules:
-  - host: python-template
+  - host: ingredient-refinement
     http:
       paths:
       - backend:
-          serviceName: python-template-service
+          serviceName: ingredient-refinement-service
           servicePort: 80
