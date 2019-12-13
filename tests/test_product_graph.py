@@ -30,8 +30,8 @@ def test_tofu_hierarchy():
 
     assert len(roots) == 1
     assert tofu in roots
-    assert firm_tofu.primary_parent == tofu
-    assert soft_tofu.primary_parent == tofu
+    assert firm_tofu.parent_id == tofu.id
+    assert soft_tofu.parent_id == tofu.id
 
 
 def test_bananas_common_root():
@@ -62,7 +62,7 @@ def test_bell_pepper_categorization():
     roots = generate_hierarchy(products=all_products)
 
     assert len(roots) == 1
-    assert len([p for p in all_products if p.primary_parent == roots[0]]) == 2
+    assert len([p for p in all_products if p.parent_id == roots[0].id]) == 2
 
 
 def test_red_bell_pepper_parent_assignment():
@@ -87,5 +87,5 @@ def test_red_bell_pepper_parent_assignment():
     red_bell_pepper_diced = graph.products_by_id[red_bell_pepper_diced.id]
 
     assert len(roots) == 1
-    assert red_bell_pepper.primary_parent == roots[0]
-    assert red_bell_pepper_diced.primary_parent == roots[0]
+    assert red_bell_pepper.parent_id == roots[0].id
+    assert red_bell_pepper_diced.parent_id == roots[0].id
