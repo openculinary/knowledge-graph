@@ -75,9 +75,10 @@ def test_red_bell_pepper_parent_assignment():
         red_bell_pepper,
         red_bell_pepper_diced,
     ]
-    graph = ProductGraph(products=all_products, stopwords=['dice'])
 
+    graph = ProductGraph(products=all_products, stopwords=['dice'])
     products = graph.filter_products()
+
     graph = ProductGraph(products=products, stopwords=['dice'])
     roots = graph.generate_hierarchy()
 

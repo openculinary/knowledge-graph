@@ -51,10 +51,6 @@ def retrieve_products(filename):
     count = 0
     ingreedy = Ingreedy()
     for line in reader():
-        line = str(line)
-        if line.startswith('#'):
-            continue
-
         count += 1
         if count % 1000 == 0:
             print(f'- {count} products loaded')
@@ -64,7 +60,7 @@ def retrieve_products(filename):
             continue
         try:
             parse = ingreedy.parse(product['product'])
-        except:
+        except Exception:
             continue
         yield Product(
             name=parse['ingredient'] or product['product'],

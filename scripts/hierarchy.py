@@ -34,28 +34,27 @@ parser.add_argument(
 args = parser.parse_args()
 
 products = retrieve_products(args.products)
+stopwords = retrieve_stopwords(args.products)
 
-graph = ProductGraph(products)
+graph = ProductGraph(products, stopwords)
 products = graph.filter_products()
-stopwords = retrieve_stopwords(args.stopwords)
 
 graph = ProductGraph(products, stopwords)
 graph.generate_hierarchy()
 
 
 def node_explorer(graph, node):
-    yield node
     for child_id in node.children:
         child = graph.products_by_id[child_id]
-        if not child.primary_parent == node:
-            continue
-        yield child
-        for node in node_explorer(graph, child):
-            yield node
+        if child.primary_parent == node:
+            yield child
+            for node in node_explorer(graph, child):
+                yield node
 
 
 def graph_explorer(graph):
     for root in graph.roots:
+        yield root
         for node in node_explorer(graph, root):
             yield node
 

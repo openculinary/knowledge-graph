@@ -9,7 +9,7 @@ class ProductGraph(object):
 
     def __init__(self, products, stopwords=None):
         self.products_by_id = {}
-        self.stopwords = stopwords or []
+        self.stopwords = stopwords
         self.index = self.build_index(products)
 
     def generate_hierarchy(self):
@@ -24,32 +24,35 @@ class ProductGraph(object):
         count = 0
         for product in products:
             count += 1
+            if count % 1000 == 0:
+                print(f'- {count} documents indexed')
+
+            add_to_search_index(index, product.id, product.content)
             if product.id not in self.products_by_id:
                 self.products_by_id[product.id] = product
             else:
                 self.products_by_id[product.id] += product
-            add_to_search_index(index, product.id, product.content)
-            if count % 1000 == 0:
-                print(f'- {count} documents indexed')
         print(f'- {count} documents indexed')
         return index
 
     def filter_products(self):
-        for stopword in self.stopwords:
-            stopword = tuple([stopword])
-            for product_id in self.index.get_documents(stopword):
+        for term in self.get_stopterms():
+            if term not in self.index:
+                continue
+            for product_id in self.index.get_documents(term):
                 product = self.products_by_id[product_id]
-                product.stopwords += stopword
+                product.stopwords += term
         return [
             product for product in self.products_by_id.values()
             if product.tokens
         ]
 
-    def exact_match_exists(self, term):
-        for product_id in self.index.get_documents(term):
-            product = self.products_by_id.get(product_id)
-            if product.content == term[0]:
-                return True
+    def exact_match_exists(self, word):
+        term = tuple([word])
+        if term in self.index:
+            for doc_id in self.index.get_documents(term):
+                if self.index.get_document_length(doc_id) == 1:
+                    return True
         return False
 
     def get_clearwords(self):
@@ -58,23 +61,32 @@ class ProductGraph(object):
             for line in f.readlines():
                 if line.startswith('#'):
                     continue
-                clearwords.append(line.strip().lower())
+                line = line.strip().lower()
+                if not line:
+                    continue
+                clearwords.append(line)
         return clearwords
 
     def get_stopwords(self):
-        clearwords = self.get_clearwords()
+        if self.stopwords:
+            for stopword in self.stopwords:
+                yield stopword
         for term in self.index.terms():
             if len(term) > 1:
                 continue
-            if term[0] in clearwords:
-                continue
             tfidf = self.index.get_total_tfidf(term)
-            if tfidf < 250:
-                continue
-            # TODO: Likely inefficient; stopwords have high doc counts
-            if self.exact_match_exists(term):
+            if tfidf < 100:
                 continue
             yield term[0]
+
+    def get_stopterms(self):
+        clearwords = self.get_clearwords()
+        for stopword in self.get_stopwords():
+            if stopword in clearwords:
+                continue
+            if self.exact_match_exists(stopword):
+                continue
+            yield tuple([stopword])
 
     def find_children(self, product):
         results = execute_queries(self.index, [product.content])

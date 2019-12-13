@@ -46,7 +46,7 @@ class Product(object):
                 'parent_id': self.primary_parent.id
             })
 
-        return ('  ' * (self.depth or 0)) + json.dumps(data, ensure_ascii=False)
+        return '  ' * (self.depth or 0) + json.dumps(data, ensure_ascii=False)
 
     @property
     def id(self):
