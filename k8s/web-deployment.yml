@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ingredient-refinement-deployment
+  name: knowledge-graph-deployment
   labels:
-    app: ingredient-refinement
+    app: knowledge-graph
 spec:
   selector:
     matchLabels:
-      app: ingredient-refinement
+      app: knowledge-graph
       role: web
   template:
     metadata:
       labels:
-        app: ingredient-refinement
+        app: knowledge-graph
         role: web
     spec:
       imagePullSecrets:
       - name: gitlab-registry
       containers:
-      - image: registry.gitlab.com/openculinary/ingredient-refinement
+      - image: registry.gitlab.com/openculinary/knowledge-graph
         imagePullPolicy: IfNotPresent
-        name: ingredient-refinement
+        name: knowledge-graph
         ports:
         - containerPort: 80

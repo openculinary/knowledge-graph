@@ -1,8 +1,8 @@
-# RecipeRadar Python Template
+# RecipeRadar Knowledge Graph
 
-This repository provides a template for building RecipeRadar web application services in Python.
+The RecipeRadar knowledge graph stores and provides access to recipe and ingredient relationship information.
 
-A single endpoint and corresponding empty test are provided, along with dependencies to build and run the service.
+This information includes facts such as 'lettuce is-a vegetable' as well as nutritional details about ingredients and potential ingredient substitutions.
 
 ## Install dependencies
 
@@ -25,9 +25,3 @@ To deploy the service to the local infrastructure environment, execute the follo
 sudo sh -x ./build.sh
 sh -x ./deploy.sh
 ```
-
-## Operations
-
-### Note
-
-You shouldn't really find yourself deploying or running the `python-template` service; you should instead copy the contents of this template to a new repository and replace all references to `python-template` with your service name.

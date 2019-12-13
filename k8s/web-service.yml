@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ingredient-refinement-service
+  name: knowledge-graph-service
 spec:
   selector:
-    app: ingredient-refinement
+    app: knowledge-graph
     role: web
   ports:
     - protocol: TCP

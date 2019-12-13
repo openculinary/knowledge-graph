@@ -1,12 +1,12 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: ingredient-refinement-ingress
+  name: knowledge-graph-ingress
 spec:
   rules:
-  - host: ingredient-refinement
+  - host: knowledge-graph
     http:
       paths:
       - backend:
-          serviceName: ingredient-refinement-service
+          serviceName: knowledge-graph-service
           servicePort: 80
