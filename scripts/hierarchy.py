@@ -48,8 +48,8 @@ def node_explorer(graph, node):
         child = graph.products_by_id[child_id]
         if child.primary_parent == node:
             yield child
-            for node in node_explorer(graph, child):
-                yield node
+            for child in node_explorer(graph, child):
+                yield child
 
 
 def graph_explorer(graph):
@@ -59,8 +59,9 @@ def graph_explorer(graph):
             yield node
 
 
-output = sys.stdout
-if args.update:
-    output = open(args.hierarchy, 'w')
-write_items(graph_explorer(graph), output)
-output.close()
+if __name__ == '__main__':
+    output = sys.stdout
+    if args.update:
+        output = open(args.hierarchy, 'w')
+    write_items(graph_explorer(graph), output)
+    output.close()
