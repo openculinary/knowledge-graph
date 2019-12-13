@@ -28,11 +28,11 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-stopwords = retrieve_stopwords(args.stopwords)
-if not stopwords:
+stopwords = list(retrieve_stopwords(args.stopwords))
+if args.update or not stopwords:
     products = retrieve_products(args.products)
     graph = ProductGraph(products)
-    stopwords = graph.get_stopwords()
+    stopwords = sorted(graph.filter_stopwords())
 
 if __name__ == '__main__':
     output = sys.stdout
