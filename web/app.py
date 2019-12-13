@@ -1,12 +1,21 @@
-from flask import Flask, abort, jsonify, request
+from flask import Flask, Response
+
+from web.loader import (
+    CACHE_PATHS,
+    retrieve_hierarchy,
+)
 
 app = Flask(__name__)
 
 
-@app.route('/', methods=['POST'])
-def root():
-    products = request.args.getlist('products[]')
-    if not products:
-        return abort(400)
+# Custom streaming method
+def stream(items):
+    for item in items:
+        yield f'{item}\n'
 
-    return jsonify(products)
+
+@app.route('/hierarchy')
+def hierarchy():
+    filename = CACHE_PATHS['hierarchy']
+    hierarchy = retrieve_hierarchy(filename)
+    return Response(stream(hierarchy), content_type='application/x-ndjson')
