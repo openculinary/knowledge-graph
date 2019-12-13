@@ -43,10 +43,12 @@ def retrieve_products(filename):
         recipe_file = open(filename, 'r')
         reader = recipe_file.readlines
     else:
-        url = 'http://192.168.0.23:30080/api/products'
-        print(f'Streaming product data from: {url}')
-        headers = {'Host': 'api'}
-        reader = requests.get(url, headers=headers, stream=True).iter_lines
+        print(f'Streaming product data from api')
+        reader = requests.get(
+            url='http://api-service/api/products',
+            stream=True,
+            proxies={}
+        ).iter_lines
 
     count = 0
     ingreedy = Ingreedy()
