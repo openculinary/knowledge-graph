@@ -4,8 +4,13 @@ from web.loader import (
     CACHE_PATHS,
     retrieve_hierarchy,
 )
+from web.models.product_graph import ProductGraph
 
 app = Flask(__name__)
+
+filename = CACHE_PATHS['hierarchy']
+hierarchy = retrieve_hierarchy(filename)
+graph = ProductGraph(hierarchy)
 
 
 # Custom streaming method
@@ -16,6 +21,5 @@ def stream(items):
 
 @app.route('/ingredients/hierarchy')
 def hierarchy():
-    filename = CACHE_PATHS['hierarchy']
-    hierarchy = retrieve_hierarchy(filename)
-    return Response(stream(hierarchy), content_type='application/x-ndjson')
+    products = graph.filter_products()
+    return Response(stream(products), content_type='application/x-ndjson')
