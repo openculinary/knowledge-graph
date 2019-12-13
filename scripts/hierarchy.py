@@ -48,7 +48,7 @@ graph.filter_products()
 def node_explorer(graph, node):
     for child_id in node.children:
         child = graph.products_by_id[child_id]
-        if child.primary_parent == node:
+        if child.parent_id == node.id:
             yield child
             for child in node_explorer(graph, child):
                 yield child

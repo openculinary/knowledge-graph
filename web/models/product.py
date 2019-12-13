@@ -21,7 +21,7 @@ class Product(object):
         self.depth = None
         self.children = []
         self.parents = []
-        self.primary_parent = None
+        self.parent_id = None
         self.stopwords = []
 
     def __add__(self, other):
@@ -38,12 +38,8 @@ class Product(object):
         if tree_rendering:
             data.update({
                 'id': self.id,
+                'parent_id': self.parent_id,
                 'depth': self.depth
-            })
-
-        if self.primary_parent:
-            data.update({
-                'parent_id': self.primary_parent.id
             })
 
         return '  ' * (self.depth or 0) + json.dumps(data, ensure_ascii=False)
@@ -72,7 +68,7 @@ class Product(object):
     def content(self):
         return ' '.join(self.tokens)
 
-    def calculate_depth(self, path=None):
+    def calculate_depth(self, graph, path=None):
         if self.depth is not None:
             return self.depth
 
@@ -83,8 +79,9 @@ class Product(object):
         path.append(self.id)
 
         depth = 0
-        if self.primary_parent:
-            depth = self.primary_parent.calculate_depth(path) + 1
+        if self.parent_id:
+            parent = graph.products_by_id[self.parent_id]
+            depth = parent.calculate_depth(graph, path) + 1
 
         self.depth = depth
         return depth
