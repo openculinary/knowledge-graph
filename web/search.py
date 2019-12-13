@@ -33,15 +33,15 @@ def build_search_index():
     return HashedIndex()
 
 
-def build_query_terms(docs):
+def build_query_terms(docs, stopwords):
     for doc in docs:
-        for term in tokenize(doc):
+        for term in tokenize(doc, stopwords):
             yield doc, term
 
 
-def execute_queries(index, queries):
+def execute_queries(index, queries, stopwords=None):
     hits = defaultdict(set)
-    for query, term in build_query_terms(queries):
+    for query, term in build_query_terms(queries, stopwords):
         try:
             for doc_id in index.get_documents(term):
                 hits[doc_id].add(query)
