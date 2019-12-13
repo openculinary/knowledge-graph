@@ -9,7 +9,7 @@ class ProductGraph(object):
 
     def __init__(self, products, stopwords=None):
         self.products_by_id = {}
-        self.stopwords = stopwords
+        self.stopwords = list(stopwords or [])
         self.index = self.build_index(products)
 
     def generate_hierarchy(self):
@@ -71,6 +71,7 @@ class ProductGraph(object):
         if self.stopwords:
             for stopword in self.stopwords:
                 yield stopword
+            return
         for term in self.index.terms():
             if len(term) > 1:
                 continue
@@ -87,6 +88,10 @@ class ProductGraph(object):
             if self.exact_match_exists(stopword):
                 continue
             yield tuple([stopword])
+
+    def filter_stopwords(self):
+        for term in self.get_stopterms():
+            yield term[0]
 
     def find_children(self, product):
         results = execute_queries(self.index, [product.content])

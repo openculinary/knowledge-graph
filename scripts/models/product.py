@@ -30,7 +30,7 @@ class Product(object):
 
     def __repr__(self):
         data = {
-            'product': self.name,
+            'product': self.canonicalize(self.name, self.stopwords),
             'recipe_count': self.frequency
         }
 
@@ -38,7 +38,7 @@ class Product(object):
         if tree_rendering:
             data.update({
                 'id': self.id,
-                'product': ' '.join(self.tokens),
+                'depth': self.depth
             })
 
         if self.primary_parent:
@@ -53,9 +53,10 @@ class Product(object):
         return '_'.join(sorted(self.tokens))
 
     @staticmethod
-    def canonicalize(name):
+    def canonicalize(name, stopwords=None):
         words = name.split(' ')
         words = [canonicalizations.get(word) or word for word in words]
+        words = [word for word in words if list(tokenize(word, stopwords))]
         return ' '.join(words)
 
     @property

@@ -34,13 +34,15 @@ parser.add_argument(
 args = parser.parse_args()
 
 products = retrieve_products(args.products)
-stopwords = retrieve_stopwords(args.products)
+stopwords = retrieve_stopwords(args.stopwords)
 
 graph = ProductGraph(products, stopwords)
 products = graph.filter_products()
+stopwords = graph.filter_stopwords()
 
 graph = ProductGraph(products, stopwords)
 graph.generate_hierarchy()
+graph.filter_products()
 
 
 def node_explorer(graph, node):
