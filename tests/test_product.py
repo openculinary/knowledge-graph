@@ -1,9 +1,17 @@
 from scripts.models.product import Product
 
 
+class MockGraph():
+
+    def __init__(self, products):
+        self.products = products
+        self.products_by_id = {product.id: product for product in products}
+
+
 def generate_product(name, parent=None):
     product = Product(name=name, frequency=1)
-    product.primary_parent = parent
+    if parent:
+        product.parent_id = parent.id
     return product
 
 
@@ -13,7 +21,8 @@ def test_calculate_depth():
     a3 = generate_product(name='a3', parent=a1)
     a4 = generate_product(name='a4', parent=a2)
 
-    [a.calculate_depth() for a in [a1, a2, a3, a4]]
+    graph = MockGraph([a1, a2, a3, a4])
+    [a.calculate_depth(graph) for a in graph.products]
 
     assert a1.depth == 0
     assert a2.depth == 1
@@ -28,9 +37,10 @@ def test_calculate_depth_avoids_loop():
     a4 = generate_product(name='a4', parent=a2)
 
     # Introduce a loop to the graph
-    a1.primary_parent = a4
+    a1.parent_id = a4.id
 
-    [a.calculate_depth() for a in [a1, a2, a3, a4]]
+    graph = MockGraph([a1, a2, a3, a4])
+    [a.calculate_depth(graph) for a in graph.products]
 
     assert a1.depth == 2
     assert a2.depth == 0

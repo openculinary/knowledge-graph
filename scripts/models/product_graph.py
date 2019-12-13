@@ -116,11 +116,12 @@ class ProductGraph(object):
                     primary_parent = parent
                 if len(parent.tokens) > len(primary_parent.tokens):
                     primary_parent = parent
-            product.primary_parent = primary_parent
+            if primary_parent:
+                product.parent_id = primary_parent.id
 
     def calculate_depth(self):
         for product in self.products_by_id.values():
-            product.calculate_depth()
+            product.calculate_depth(self)
 
     @property
     def roots(self):
