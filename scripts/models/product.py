@@ -1,4 +1,4 @@
-from pymmh3 import hash_bytes
+import json
 
 from scripts.search import tokenize
 
@@ -28,10 +28,35 @@ class Product(object):
         self.frequency += other.frequency
         return self
 
+    def __repr__(self):
+        data = {
+            'product': self.canonicalize(self.name, self.stopwords),
+            'recipe_count': self.frequency
+        }
+
+        tree_rendering = self.children or self.parents
+        if tree_rendering:
+            data.update({
+                'id': self.id,
+                'depth': self.depth
+            })
+
+        if self.primary_parent:
+            data.update({
+                'parent_id': self.primary_parent.id
+            })
+
+        return '  ' * (self.depth or 0) + json.dumps(data, ensure_ascii=False)
+
+    @property
+    def id(self):
+        return '_'.join(sorted(self.tokens))
+
     @staticmethod
-    def canonicalize(name):
+    def canonicalize(name, stopwords=None):
         words = name.split(' ')
         words = [canonicalizations.get(word) or word for word in words]
+        words = [word for word in words if list(tokenize(word, stopwords))]
         return ' '.join(words)
 
     @property
@@ -42,11 +67,6 @@ class Product(object):
                 return term
             terms += term
         return terms
-
-    @property
-    def id(self):
-        hash_input = ' '.join(sorted(self.tokens))
-        return hash_bytes(hash_input)
 
     @property
     def content(self):
