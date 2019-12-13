@@ -1,13 +1,13 @@
 import argparse
 import sys
 
-from scripts.loader import (
+from web.loader import (
     CACHE_PATHS,
     retrieve_products,
     retrieve_stopwords,
     write_items,
 )
-from scripts.models.product_graph import ProductGraph
+from web.models.product_graph import ProductGraph
 
 
 parser = argparse.ArgumentParser(description='Generate stopwords')

@@ -1,10 +1,10 @@
 import json
 
-from scripts.search import tokenize
+from web.search import tokenize
 
 
 canonicalizations = {}
-with open('scripts/data/canonicalizations.txt') as f:
+with open('web/data/canonicalizations.txt') as f:
     for line in f.readlines():
         if line.startswith('#'):
             continue

@@ -1,4 +1,4 @@
-from scripts.search import (
+from web.search import (
     add_to_search_index,
     build_search_index,
     execute_queries,
@@ -57,7 +57,7 @@ class ProductGraph(object):
 
     def get_clearwords(self):
         clearwords = []
-        with open('scripts/data/clear-words.txt') as f:
+        with open('web/data/clear-words.txt') as f:
             for line in f.readlines():
                 if line.startswith('#'):
                     continue

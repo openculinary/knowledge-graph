@@ -1,6 +1,6 @@
 import pytest
 
-from scripts.loader import discard
+from web.loader import discard
 
 
 def construct_product(product, recipe_count=10):

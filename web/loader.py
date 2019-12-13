@@ -5,13 +5,13 @@ import requests
 
 from ingreedypy import Ingreedy
 
-from scripts.models.product import Product
+from web.models.product import Product
 
 
 CACHE_PATHS = {
-    'hierarchy': 'scripts/data/generated/hierarchy.json',
-    'products': 'scripts/data/generated/ingredients.json',
-    'stopwords': 'scripts/data/generated/stopwords.txt',
+    'hierarchy': 'web/data/generated/hierarchy.json',
+    'products': 'web/data/generated/ingredients.json',
+    'stopwords': 'web/data/generated/stopwords.txt',
 }
 
 

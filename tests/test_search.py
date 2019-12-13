@@ -1,4 +1,4 @@
-from scripts.search import tokenize
+from web.search import tokenize
 
 
 def test_tokenize_stopwords():
