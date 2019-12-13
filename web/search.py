@@ -39,15 +39,18 @@ def build_query_terms(docs, stopwords):
             yield doc, term
 
 
-def execute_queries(index, queries, stopwords=None):
+def execute_queries(index, queries, stopwords=None, query_limit=1):
     hits = defaultdict(set)
+    query_count = 0
     for query, term in build_query_terms(queries, stopwords):
+        query_count += 1
         try:
             for doc_id in index.get_documents(term):
                 hits[doc_id].add(query)
         except IndexError:
             pass
-        break
+        if query_count == query_limit:
+            break
     return hits
 
 
