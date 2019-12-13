@@ -40,13 +40,13 @@ def build_query_terms(docs, stopwords):
 
 
 def execute_queries(index, queries, stopwords=None, query_limit=1):
-    hits = defaultdict(set)
+    hits = defaultdict(lambda: 0)
     query_count = 0
     for query, term in build_query_terms(queries, stopwords):
         query_count += 1
         try:
             for doc_id in index.get_documents(term):
-                hits[doc_id].add(query)
+                hits[doc_id] += len(term)
         except IndexError:
             pass
         if query_count == query_limit:
