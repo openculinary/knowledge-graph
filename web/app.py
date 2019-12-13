@@ -6,7 +6,11 @@ from web.loader import (
     retrieve_stopwords,
 )
 from web.models.product_graph import ProductGraph
-from web.search import execute_queries
+from web.search import (
+    add_to_search_index,
+    build_search_index,
+    execute_queries,
+)
 
 app = Flask(__name__)
 
@@ -35,25 +39,30 @@ def hierarchy():
 def query():
     descriptions = request.args.getlist('description[]')
 
-    results = []
-    match = None
-    max_score = 0
-    for doc_id, score in execute_queries(
+    candidates = []
+    for doc_id in execute_queries(
         index=graph.index,
         queries=descriptions,
         stopwords=graph.stopwords,
         query_limit=-1
-    ).items():
+    ):
         product = graph.products_by_id[doc_id]
-        if match is None or score > max_score:
-            match = product
-            max_score = score
+        candidates.append(product.name)
 
-    if match:
-        parents = graph.find_parents(match)
-        results.append({
-            'product': match.name,
-            'related': [parent.name for parent in parents],
-        })
+    product_index = build_search_index()
+    for doc_id, doc in enumerate(descriptions):
+        add_to_search_index(product_index, doc_id, doc)
 
-    return jsonify({'results': results})
+    match = None
+    max_score = 0
+    for candidate in candidates:
+        for doc_id, score in execute_queries(
+            index=product_index,
+            queries=[candidate],
+            stopwords=graph.stopwords
+        ).items():
+            if match is None or score > max_score:
+                match = candidate
+                max_score = score
+
+    return jsonify({'results': [match] if match else []})
