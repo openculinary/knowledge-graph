@@ -76,7 +76,7 @@ class ProductGraph(object):
             if len(term) > 1:
                 continue
             tfidf = self.index.get_total_tfidf(term)
-            if tfidf < 50:
+            if tfidf < 25:
                 continue
             yield term[0]
 
