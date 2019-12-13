@@ -23,8 +23,9 @@ args = parser.parse_args()
 
 products = list(retrieve_products(args.products))
 
-output = sys.stdout
-if args.update:
-    output = open(args.products, 'w')
-write_items(products, output)
-output.close()
+if __name__ == '__main__':
+    output = sys.stdout
+    if args.update:
+        output = open(args.products, 'w')
+    write_items(products, output)
+    output.close()

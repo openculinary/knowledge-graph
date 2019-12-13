@@ -34,8 +34,9 @@ if not stopwords:
     graph = ProductGraph(products)
     stopwords = graph.get_stopwords()
 
-output = sys.stdout
-if args.update:
-    output = open(args.stopwords, 'w')
-write_items(stopwords, output)
-output.close()
+if __name__ == '__main__':
+    output = sys.stdout
+    if args.update:
+        output = open(args.stopwords, 'w')
+    write_items(stopwords, output)
+    output.close()
