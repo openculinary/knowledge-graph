@@ -33,6 +33,17 @@ def build_search_index():
     return HashedIndex()
 
 
+def exact_match_exists(index, term):
+    if term not in index:
+        return False
+    for doc_id in index.get_documents(term):
+        frequency = index.get_term_frequency(term, doc_id)
+        doc_length = index.get_document_length(doc_id)
+        if frequency == doc_length:
+            return True
+    return False
+
+
 def build_query_terms(docs, stopwords):
     for doc in docs:
         for term in tokenize(doc, stopwords):

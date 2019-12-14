@@ -1,6 +1,7 @@
 from web.search import (
     add_to_search_index,
     build_search_index,
+    exact_match_exists,
     execute_queries,
 )
 
@@ -47,14 +48,6 @@ class ProductGraph(object):
             if product.tokens
         ]
 
-    def exact_match_exists(self, word):
-        term = tuple([word])
-        if term in self.index:
-            for doc_id in self.index.get_documents(term):
-                if self.index.get_document_length(doc_id) == 1:
-                    return True
-        return False
-
     def get_clearwords(self):
         clearwords = []
         with open('web/data/clear-words.txt') as f:
@@ -85,9 +78,10 @@ class ProductGraph(object):
         for stopword in self.get_stopwords():
             if stopword in clearwords:
                 continue
-            if self.exact_match_exists(stopword):
+            term = tuple([stopword])
+            if exact_match_exists(self.index, term):
                 continue
-            yield tuple([stopword])
+            yield term
 
     def filter_stopwords(self):
         for term in self.get_stopterms():
