@@ -28,7 +28,11 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-stopwords = list(retrieve_stopwords(args.stopwords))
+try:
+    stopwords = list(retrieve_stopwords(args.stopwords))
+except RuntimeError:
+    stopwords = []
+
 if args.update or not stopwords:
     products = retrieve_products(args.products)
     graph = ProductGraph(products)
