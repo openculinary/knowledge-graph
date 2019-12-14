@@ -45,19 +45,21 @@ graph.generate_hierarchy()
 graph.filter_products()
 
 
-def node_explorer(graph, node):
+def node_explorer(graph, node, path):
     for child_id in node.children:
+        if child_id in path:
+            continue
         child = graph.products_by_id[child_id]
         if child.parent_id == node.id:
             yield child
-            for child in node_explorer(graph, child):
+            for child in node_explorer(graph, child, path + [child_id]):
                 yield child
 
 
 def graph_explorer(graph):
     for root in graph.roots:
         yield root
-        for node in node_explorer(graph, root):
+        for node in node_explorer(graph, root, [root.id]):
             yield node
 
 
