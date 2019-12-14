@@ -21,6 +21,7 @@ filename = CACHE_PATHS['stopwords']
 stopwords = retrieve_stopwords(filename)
 
 graph = ProductGraph(hierarchy, stopwords)
+stopwords = graph.filter_stopwords()
 
 
 # Custom streaming method
@@ -43,7 +44,7 @@ def query():
     for doc_id in execute_queries(
         index=graph.index,
         queries=descriptions,
-        stopwords=graph.stopwords,
+        stopwords=stopwords,
         query_limit=-1
     ):
         product = graph.products_by_id[doc_id]
