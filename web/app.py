@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from flask import Flask, jsonify, request, Response
 
 from web.loader import (
@@ -40,29 +42,53 @@ def hierarchy():
 def query():
     descriptions = request.args.getlist('description[]')
 
-    candidates = []
-    for doc_id in execute_queries(
+    # Find all documents matching any of the requested descriptions
+    results = execute_queries(
         index=graph.index,
         queries=descriptions,
         stopwords=stopwords,
         query_limit=-1
-    ):
-        product = graph.products_by_id[doc_id]
-        candidates.append(product.name)
+    )
 
-    product_index = build_search_index()
+    # For each description, retrieve products which matched the search
+    candidates = {}
+    for description, hits in results.items():
+        candidates[description] = [
+            graph.products_by_id[hit['doc_id']]
+            for hit in hits
+        ]
+
+    # Flatten a list of the candidate product names
+    candidates = [
+        candidate.name for candidates
+        in candidates.values() for candidate in candidates
+    ]
+
+    # Build a local search index over the descriptions
+    description_index = build_search_index()
     for doc_id, doc in enumerate(descriptions):
-        add_to_search_index(product_index, doc_id, doc)
+        add_to_search_index(description_index, doc_id, doc)
 
-    match = None
-    max_score = 0
-    for candidate in candidates:
-        for doc_id, score in execute_queries(
-            index=product_index,
-            queries=[candidate]
-        ).items():
-            if match is None or score > max_score:
-                match = candidate
-                max_score = score
+    # Query the list of candidate products within the description index
+    results = execute_queries(
+        index=description_index,
+        queries=candidates
+    )
 
-    return jsonify({'results': [match] if match else []})
+    # Find the best matches for each description
+    description_matches = defaultdict(lambda: {'match': None, 'score': 0})
+    for candidate, hits in results.items():
+        for hit in hits:
+            doc_id, score = hit['doc_id'], hit['score']
+            if score > description_matches[doc_id]['score']:
+                description_matches[doc_id] = {
+                    'match': candidate,
+                    'score': score,
+                }
+
+    return jsonify({
+        'results': {
+            description: description_matches[i]['match']
+            for i, description in enumerate(descriptions)
+        }
+    })

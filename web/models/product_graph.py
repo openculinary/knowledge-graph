@@ -89,9 +89,11 @@ class ProductGraph(object):
 
     def find_children(self, product):
         results = execute_queries(self.index, [product.content])
-        children = set(results.keys())
-        if product.id in children:
-            children.remove(product.id)
+        children = []
+        for query, hits in results.items():
+            children += [hit['doc_id'] for hit in hits]
+        children = set(children)
+        children.discard(product.id)
         return children
 
     def find_parents(self, product):

@@ -46,16 +46,21 @@ def exact_match_exists(index, term):
     return False
 
 
-def build_query_terms(docs, stopwords):
-    for doc in docs:
-        for term in tokenize(doc, stopwords):
-            yield doc, term
-
-
 def execute_queries(index, queries, stopwords=None, query_limit=1):
+    results = {}
+    for query in queries:
+        hits = execute_query(index, query, stopwords, query_limit)
+        results[query] = [{
+            'doc_id': k,
+            'score': v
+        } for k, v in hits.items()]
+    return results
+
+
+def execute_query(index, query, stopwords=None, query_limit=1):
     hits = defaultdict(lambda: 0)
     query_count = 0
-    for query, term in build_query_terms(queries, stopwords):
+    for term in tokenize(query, stopwords):
         query_count += 1
         try:
             for doc_id in index.get_documents(term):

@@ -13,20 +13,19 @@ def product_query_evaluations():
 
 @pytest.mark.parametrize('recipe_id, cases', product_query_evaluations())
 def test_query_evaluation(recipe_id, cases, client):
+    descriptions = [key for key in cases.keys()]
+    results = client.get(
+        '/ingredients/query',
+        query_string={'description[]': descriptions}
+    ).json['results']
+
     matches, exact_matches, misses = 0, 0, {}
     for description, product in cases.items():
-        results = client.get(
-            '/ingredients/query',
-            query_string={'description[]': [description]}
-        ).json['results']
-
-        result = results[0] if results else None
-        if result == product:
-            exact_matches += 1
+        result = results.get(description)
         if result and result in product:
+            exact_matches += result == product
             matches += 1
             continue
-
         misses[description] = {
             'expected': product,
             'actual': result
