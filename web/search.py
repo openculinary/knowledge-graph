@@ -10,7 +10,9 @@ class SnowballStemmer():
     stemmer_en = stemmer('english')
 
     def stem(self, x):
-        return self.stemmer_en.stemWord(x)
+        # TODO: Remove double-stemming
+        # mayonnaise -> mayonnais -> mayonnai
+        return self.stemmer_en.stemWord(self.stemmer_en.stemWord(x))
 
 
 def tokenize(doc, stopwords=None):
