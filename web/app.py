@@ -58,8 +58,7 @@ def query():
     for candidate in candidates:
         for doc_id, score in execute_queries(
             index=product_index,
-            queries=[candidate],
-            stopwords=graph.stopwords
+            queries=[candidate]
         ).items():
             if match is None or score > max_score:
                 match = candidate

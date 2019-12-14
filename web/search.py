@@ -46,7 +46,8 @@ def execute_queries(index, queries, stopwords=None, query_limit=1):
         query_count += 1
         try:
             for doc_id in index.get_documents(term):
-                hits[doc_id] += len(term)
+                doc_length = index.get_document_length(doc_id)
+                hits[doc_id] += len(term) / doc_length
         except IndexError:
             pass
         if query_count == query_limit:
