@@ -8,3 +8,4 @@ yellow
 
 # Valid mid-ingredient-phrase tokens
 bell
+kidney
