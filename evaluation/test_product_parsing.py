@@ -19,16 +19,18 @@ def test_query_evaluation(recipe_id, cases, client):
             '/ingredients/query',
             query_string={'description[]': [description]}
         ).json['results']
-        if results:
-            result = results[0]
-            if result == product:
-                exact_matches += 1
-            if result in product:
-                matches += 1
-            else:
-                misses[product] = result
-        else:
-            misses[product] = None
+
+        result = results[0] if results else None
+        if result == product:
+            exact_matches += 1
+        if result and result in product:
+            matches += 1
+            continue
+
+        misses[description] = {
+            'expected': product,
+            'actual': result
+        }
 
     score = float(matches) / len(cases)
     assert score > 0.75, misses
