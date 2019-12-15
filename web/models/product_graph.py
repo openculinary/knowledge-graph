@@ -1,8 +1,9 @@
 from web.search import (
     add_to_search_index,
     build_search_index,
-    exact_match_exists,
+    execute_exact_query,
     execute_query,
+    tokenize,
 )
 
 
@@ -10,8 +11,9 @@ class ProductGraph(object):
 
     def __init__(self, products, stopwords=None):
         self.products_by_id = {}
-        self.stopwords = list(stopwords or [])
         self.index = self.build_index(products)
+        self.stopwords = list(self.process_stopwords(stopwords))
+        self.stopword_index = self.build_stopword_index()
         self.roots = []
 
     def generate_hierarchy(self):
@@ -37,34 +39,16 @@ class ProductGraph(object):
         print(f'- {count} documents indexed')
         return index
 
-    def filter_products(self):
-        for term in self.get_stopterms():
-            if term not in self.index:
-                continue
-            for product_id in self.index.get_documents(term):
-                product = self.products_by_id[product_id]
-                product.stopwords += term
-        for product in self.products_by_id.values():
-            if product.tokens:
-                yield product
-
     def get_clearwords(self):
-        clearwords = []
         with open('web/data/clear-words.txt') as f:
             for line in f.readlines():
                 if line.startswith('#'):
                     continue
                 line = line.strip().lower()
-                if not line:
-                    continue
-                clearwords.append(line)
-        return clearwords
+                for term in tokenize(line):
+                    yield term[0]
 
-    def get_stopwords(self):
-        if self.stopwords:
-            for stopword in self.stopwords:
-                yield stopword
-            return
+    def calculate_stopwords(self):
         for term in self.index.terms():
             if len(term) > 1:
                 continue
@@ -73,19 +57,32 @@ class ProductGraph(object):
                 continue
             yield term[0]
 
-    def get_stopterms(self):
-        clearwords = self.get_clearwords()
-        for stopword in self.get_stopwords():
-            if stopword in clearwords:
-                continue
-            term = tuple([stopword])
-            if exact_match_exists(self.index, term):
-                continue
-            yield term
+    def process_stopwords(self, stopwords):
+        clearwords = list(self.get_clearwords())
+        stopwords = stopwords or self.calculate_stopwords()
+        for stopword in stopwords:
+            for term in tokenize(stopword, clearwords):
+                if execute_exact_query(self.index, term):
+                    continue
+                yield stopword
+
+    def build_stopword_index(self):
+        index = build_search_index()
+        for doc_id, stopword in enumerate(self.stopwords):
+            add_to_search_index(index, doc_id, stopword)
+        return index
+
+    def filter_products(self):
+        for product in self.products_by_id.values():
+            for term in tokenize(product.name, ngrams=1):
+                doc_id = execute_exact_query(self.stopword_index, term)
+                if doc_id is not None:
+                    product.stopwords.append(self.stopwords[doc_id])
+            if tokenize(product.name, product.stopwords):
+                yield product
 
     def filter_stopwords(self):
-        for term in self.get_stopterms():
-            yield term[0]
+        return self.stopwords
 
     def find_children(self, product):
         hits = execute_query(self.index, product.content)

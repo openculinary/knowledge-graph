@@ -2,7 +2,7 @@ from web.models.product import Product
 from web.search import (
     build_search_index,
     add_to_search_index,
-    exact_match_exists,
+    execute_exact_query,
     execute_queries,
     tokenize,
 )
@@ -46,7 +46,7 @@ def test_exact_match():
     add_to_search_index(index, 0, content, stopwords)
 
     term = ('onion',)
-    assert exact_match_exists(index, term)
+    assert execute_exact_query(index, term) == 0
 
 
 def test_exact_match_duplicate():
@@ -58,4 +58,4 @@ def test_exact_match_duplicate():
     add_to_search_index(index, 0, content, stopwords)
 
     term = ('onion',)
-    assert exact_match_exists(index, term)
+    assert execute_exact_query(index, term) == 0

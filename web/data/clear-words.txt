@@ -12,3 +12,4 @@ kidney
 
 # Valid tokens which do not appear as standalone ingredients
 almond
+confectioners

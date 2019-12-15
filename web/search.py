@@ -21,7 +21,7 @@ def tokenize(doc, stopwords=None, ngrams=None):
 
     word_count = len(doc.split(' '))
     ngrams = ngrams or word_count
-    ngrams = min(word_count, 4)
+    ngrams = min(ngrams, word_count, 4)
     ngrams = max(ngrams, 1)
 
     for ngrams in range(ngrams, 0, -1):
@@ -39,15 +39,14 @@ def build_search_index():
     return HashedIndex()
 
 
-def exact_match_exists(index, term):
+def execute_exact_query(index, term):
     if term not in index:
-        return False
+        return
     for doc_id in index.get_documents(term):
         frequency = index.get_term_frequency(term, doc_id)
         doc_length = index.get_document_length(doc_id)
         if frequency == doc_length:
-            return True
-    return False
+            return doc_id
 
 
 def execute_queries(index, queries, stopwords=None, query_limit=1):
