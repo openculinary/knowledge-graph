@@ -48,15 +48,6 @@ def test_calculate_depth_avoids_loop():
     assert a4.depth == 1
 
 
-def test_canonicalization():
-    name_input = 'cod filet'
-    name_expected = 'cod fillet'
-
-    a1 = generate_product(name=name_input)
-
-    assert a1.name == name_expected
-
-
 def test_duplicate_consolidation():
     a1 = generate_product(name='sprig thyme')
     a2 = generate_product(name='thyme sprig')

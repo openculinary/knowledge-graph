@@ -16,6 +16,15 @@ CACHE_PATHS = {
 }
 
 
+canonicalizations = {}
+with open('web/data/canonicalizations.txt') as f:
+    for line in f.readlines():
+        if line.startswith('#'):
+            continue
+        source, target = line.strip().split(',')
+        canonicalizations[source] = target
+
+
 def discard(product):
     # Discard rare items
     if product['recipe_count'] < 5:
@@ -38,17 +47,27 @@ def discard(product):
     return False
 
 
-def parse(name):
+def canonicalize(name):
+
+    # Remove text enclosed by parentheses
     open_parens = name.find('(')
     close_parens = name.rfind(')')
     if open_parens > 0 and close_parens > open_parens:
         name = name[:open_parens - 1] + name[close_parens + 1:]
 
+    # Remove punctuation in-between words
     name = ' '.join([
         word.strip(string.punctuation)
-        for word in name.split(' ')]
-    )
+        for word in name.split(' ')
+    ])
 
+    # Canonicalize each word
+    name = ' '.join([
+        canonicalizations.get(word) or word
+        for word in name.split(' ')
+    ])
+
+    # Attempt ingreedy-py parsing; drop quantity-related text on success
     try:
         parse = Ingreedy().parse(name)
         return parse['ingredient']
@@ -80,7 +99,7 @@ def retrieve_products(filename):
             continue
 
         yield Product(
-            name=parse(product['product']),
+            name=canonicalize(product['product']),
             frequency=product['recipe_count']
         )
     print(f'- {count} products loaded')

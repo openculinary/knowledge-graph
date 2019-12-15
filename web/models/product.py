@@ -3,15 +3,6 @@ import json
 from web.search import tokenize
 
 
-canonicalizations = {}
-with open('web/data/canonicalizations.txt') as f:
-    for line in f.readlines():
-        if line.startswith('#'):
-            continue
-        source, target = line.strip().split(',')
-        canonicalizations[source] = target
-
-
 class Product(object):
 
     def __init__(self, name, frequency, parent_id=None):
@@ -52,7 +43,6 @@ class Product(object):
     @staticmethod
     def canonicalize(name, stopwords=None):
         words = name.split(' ')
-        words = [canonicalizations.get(word) or word for word in words]
         words = [word for word in words if list(tokenize(word, stopwords))]
         return ' '.join(words)
 
