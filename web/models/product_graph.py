@@ -2,7 +2,7 @@ from web.search import (
     add_to_search_index,
     build_search_index,
     exact_match_exists,
-    execute_queries,
+    execute_query,
 )
 
 
@@ -12,6 +12,7 @@ class ProductGraph(object):
         self.products_by_id = {}
         self.stopwords = list(stopwords or [])
         self.index = self.build_index(products)
+        self.roots = []
 
     def generate_hierarchy(self):
         self.build_relationships()
@@ -43,10 +44,9 @@ class ProductGraph(object):
             for product_id in self.index.get_documents(term):
                 product = self.products_by_id[product_id]
                 product.stopwords += term
-        return [
-            product for product in self.products_by_id.values()
-            if product.tokens
-        ]
+        for product in self.products_by_id.values():
+            if product.tokens:
+                yield product
 
     def get_clearwords(self):
         clearwords = []
@@ -88,13 +88,10 @@ class ProductGraph(object):
             yield term[0]
 
     def find_children(self, product):
-        results = execute_queries(self.index, [product.content])
-        children = []
-        for query, hits in results.items():
-            children += [hit['doc_id'] for hit in hits]
-        children = set(children)
-        children.discard(product.id)
-        return children
+        hits = execute_query(self.index, product.content)
+        for doc_id in hits:
+            if doc_id != product.id:
+                yield doc_id
 
     def find_parents(self, product):
         if product.parent_id:
@@ -127,10 +124,5 @@ class ProductGraph(object):
     def calculate_depth(self):
         for product in self.products_by_id.values():
             product.calculate_depth(self)
-
-    @property
-    def roots(self):
-        return [
-            product for product in self.products_by_id.values()
-            if product.depth == 0
-        ]
+            if product.depth == 0:
+                self.roots.append(product)
