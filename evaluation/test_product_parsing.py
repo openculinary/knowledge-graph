@@ -32,4 +32,4 @@ def test_query_evaluation(recipe_id, cases, client):
         }
 
     score = float(matches) / len(cases)
-    assert score > 0.75, misses
+    assert score >= 0.75, misses
