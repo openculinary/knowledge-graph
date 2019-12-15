@@ -16,14 +16,18 @@ from web.search import (
 
 app = Flask(__name__)
 
-filename = CACHE_PATHS['hierarchy']
-hierarchy = retrieve_hierarchy(filename)
 
-filename = CACHE_PATHS['stopwords']
-stopwords = retrieve_stopwords(filename)
+@app.before_first_request
+def preload_graph():
+    filename = CACHE_PATHS['hierarchy']
+    hierarchy = retrieve_hierarchy(filename)
 
-graph = ProductGraph(hierarchy, stopwords)
-stopwords = graph.filter_stopwords()
+    filename = CACHE_PATHS['stopwords']
+    stopwords = retrieve_stopwords(filename)
+
+    app.graph = ProductGraph(hierarchy, stopwords)
+    app.products = app.graph.filter_products()
+    app.stopwords = app.graph.filter_stopwords()
 
 
 # Custom streaming method
@@ -34,8 +38,7 @@ def stream(items):
 
 @app.route('/ingredients/hierarchy')
 def hierarchy():
-    products = graph.filter_products()
-    return Response(stream(products), content_type='application/x-ndjson')
+    return Response(stream(app.products), content_type='application/x-ndjson')
 
 
 @app.route('/ingredients/query')
@@ -44,9 +47,9 @@ def query():
 
     # Find all documents matching any of the requested descriptions
     results = execute_queries(
-        index=graph.index,
+        index=app.graph.index,
         queries=descriptions,
-        stopwords=stopwords,
+        stopwords=app.stopwords,
         query_limit=-1
     )
 
@@ -54,7 +57,7 @@ def query():
     candidates = {}
     for description, hits in results.items():
         candidates[description] = [
-            graph.products_by_id[hit['doc_id']]
+            app.graph.products_by_id[hit['doc_id']]
             for hit in hits
         ]
 
