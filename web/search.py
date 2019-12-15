@@ -15,12 +15,16 @@ class SnowballStemmer():
         return self.stemmer_en.stemWord(self.stemmer_en.stemWord(x))
 
 
-def tokenize(doc, stopwords=None):
+def tokenize(doc, stopwords=None, ngrams=None):
     stopwords = stopwords or []
     stemmer = SnowballStemmer()
 
     word_count = len(doc.split(' '))
-    for ngrams in range(word_count, 0, -1):
+    ngrams = ngrams or word_count
+    ngrams = min(word_count, 4)
+    ngrams = max(ngrams, 1)
+
+    for ngrams in range(ngrams, 0, -1):
         for term in word_tokenize(doc, stopwords, ngrams, stemmer=stemmer):
             yield term
 
