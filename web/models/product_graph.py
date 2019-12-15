@@ -89,7 +89,8 @@ class ProductGraph(object):
 
     def find_children(self, product):
         hits = execute_query(self.index, product.content)
-        for doc_id in hits:
+        for hit in hits:
+            doc_id = hit['doc_id']
             if doc_id != product.id:
                 yield doc_id
 

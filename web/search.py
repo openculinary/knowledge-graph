@@ -51,14 +51,10 @@ def exact_match_exists(index, term):
 
 
 def execute_queries(index, queries, stopwords=None, query_limit=1):
-    results = {}
     for query in queries:
         hits = execute_query(index, query, stopwords, query_limit)
-        results[query] = [{
-            'doc_id': k,
-            'score': v
-        } for k, v in hits.items()]
-    return results
+        if hits:
+            yield query, hits
 
 
 def execute_query(index, query, stopwords=None, query_limit=1):
@@ -74,7 +70,11 @@ def execute_query(index, query, stopwords=None, query_limit=1):
             pass
         if query_count == query_limit:
             break
-    return hits
+    hits = [
+        {'doc_id': doc_id, 'score': score}
+        for doc_id, score in hits.items()
+    ]
+    return sorted(hits, key=lambda hit: hit['score'], reverse=True)
 
 
 def load_queries(filename):

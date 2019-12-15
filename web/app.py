@@ -54,18 +54,12 @@ def query():
     )
 
     # For each description, retrieve products which matched the search
-    candidates = {}
-    for description, hits in results.items():
-        candidates[description] = [
-            app.graph.products_by_id[hit['doc_id']]
-            for hit in hits
-        ]
-
-    # Flatten a list of the candidate product names
-    candidates = [
-        candidate.name for candidates
-        in candidates.values() for candidate in candidates
-    ]
+    candidates = set()
+    for description, hits in results:
+        for hit in hits:
+            doc_id = hit['doc_id']
+            product = app.graph.products_by_id[doc_id]
+            candidates.add(product.name)
 
     # Build a local search index over the descriptions
     description_index = build_search_index()
@@ -78,20 +72,20 @@ def query():
         queries=candidates
     )
 
-    # Find the best matches for each description
-    description_matches = defaultdict(lambda: {'match': None, 'score': 0})
-    for candidate, hits in results.items():
+    # Pick the best match for each description
+    description_matches = {}
+    description_scores = defaultdict(lambda: 0.0)
+    for candidate, hits in results:
         for hit in hits:
             doc_id, score = hit['doc_id'], hit['score']
-            if score > description_matches[doc_id]['score']:
-                description_matches[doc_id] = {
-                    'match': candidate,
-                    'score': score,
-                }
+            if score > description_scores[doc_id]:
+                description_matches[doc_id] = candidate
+                description_scores[doc_id] = score
+            break
 
     return jsonify({
         'results': {
-            description: description_matches[i]['match']
+            description: description_matches.get(i)
             for i, description in enumerate(descriptions)
         }
     })
