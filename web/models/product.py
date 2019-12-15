@@ -1,10 +1,7 @@
 import json
-import string
 
 from web.search import tokenize
 
-
-punctuation_removal = str.maketrans('', '', string.punctuation)
 
 canonicalizations = {}
 with open('web/data/canonicalizations.txt') as f:
@@ -57,7 +54,6 @@ class Product(object):
         words = name.split(' ')
         words = [canonicalizations.get(word) or word for word in words]
         words = [word for word in words if list(tokenize(word, stopwords))]
-        words = [word.translate(punctuation_removal) for word in words]
         return ' '.join(words)
 
     @property

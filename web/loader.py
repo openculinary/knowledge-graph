@@ -2,6 +2,7 @@ import json
 import os
 import re
 import requests
+import string
 
 from ingreedypy import Ingreedy
 
@@ -37,6 +38,24 @@ def discard(product):
     return False
 
 
+def parse(name):
+    open_parens = name.find('(')
+    close_parens = name.rfind(')')
+    if open_parens > 0 and close_parens > open_parens:
+        name = name[:open_parens - 1] + name[close_parens + 1:]
+
+    name = ' '.join([
+        word.strip(string.punctuation)
+        for word in name.split(' ')]
+    )
+
+    try:
+        parse = Ingreedy().parse(name)
+        return parse['ingredient']
+    except Exception:
+        return name
+
+
 def retrieve_products(filename):
     if os.path.exists(filename):
         print(f'Reading products from: {filename}')
@@ -51,7 +70,6 @@ def retrieve_products(filename):
         ).iter_lines
 
     count = 0
-    ingreedy = Ingreedy()
     for line in reader():
         count += 1
         if count % 1000 == 0:
@@ -60,12 +78,9 @@ def retrieve_products(filename):
         product = json.loads(line)
         if discard(product):
             continue
-        try:
-            parse = ingreedy.parse(product['product'])
-        except Exception:
-            continue
+
         yield Product(
-            name=parse['ingredient'] or product['product'],
+            name=parse(product['product']),
             frequency=product['recipe_count']
         )
     print(f'- {count} products loaded')
