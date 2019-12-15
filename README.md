@@ -14,10 +14,10 @@ The `scripts.products` module performs the following series of operations to loa
 - Individual tokens within each description are canonicalized to reduce duplication
 - Quantity-related tokens are discarded
 - Each ingredient description is assigned a document ID
-- Descriptions are indexed (ngrams=1?) and a list of stopwords is produced based on a [tf-idf](https://en.wikipedia.org/w/index.php?title=tf-idf) threshold.
+- Descriptions are indexed and a list of stopwords is produced based on a [tf-idf](https://en.wikipedia.org/w/index.php?title=tf-idf) threshold.
 - Stopwords are filtered to remove any items which exist as single-word ingredient descriptions
 - Per-document stopwords are identified and recorded for later reference as metadata
-- Descriptions are re-indexed (ngrams=3?) with the filtered stopword list applied
+- Descriptions are re-indexed with the filtered stopword list applied
 - For each product, 'child' documents are identified which contain the product's terms
 - For each product, a 'parent' document is identified based on the best match found
 - Simplified descriptions are exported, including details of their location in the product tree
