@@ -43,3 +43,13 @@ To deploy the service to the local infrastructure environment, execute the follo
 sudo sh -x ./build.sh
 sh -x ./deploy.sh
 ```
+
+## Operations
+
+To update the cached product list, calculate new stopwords, and regenerate the product hierarchy, use the following commands respectively:
+
+```
+pipenv run python -m scripts.products --update
+pipenv run python -m scripts.stopwords --update
+pipenv run python -m scripts.hierarchy --update
+```
