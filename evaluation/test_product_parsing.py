@@ -53,5 +53,5 @@ def test_evaluation_data(description, product, client):
     ).json['results']
 
     result = results.get(description)
-    assert result, product
+    assert result is not None, product
     assert result in product
