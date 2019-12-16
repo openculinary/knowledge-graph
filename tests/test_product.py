@@ -1,4 +1,4 @@
-from scripts.models.product import Product
+from web.models.product import Product
 
 
 class MockGraph():
@@ -46,15 +46,6 @@ def test_calculate_depth_avoids_loop():
     assert a2.depth == 0
     assert a3.depth == 3
     assert a4.depth == 1
-
-
-def test_canonicalization():
-    name_input = 'cod filet'
-    name_expected = 'cod fillet'
-
-    a1 = generate_product(name=name_input)
-
-    assert a1.name == name_expected
 
 
 def test_duplicate_consolidation():

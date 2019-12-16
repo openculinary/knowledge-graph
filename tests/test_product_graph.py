@@ -1,5 +1,5 @@
-from scripts.models.product import Product
-from scripts.models.product_graph import ProductGraph
+from web.models.product import Product
+from web.models.product_graph import ProductGraph
 
 
 def generate_product(name):

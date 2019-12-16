@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from scripts.loader import (
+from web.loader import (
     CACHE_PATHS,
     retrieve_products,
     write_items,

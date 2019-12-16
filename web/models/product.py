@@ -1,27 +1,18 @@
 import json
 
-from scripts.search import tokenize
-
-
-canonicalizations = {}
-with open('scripts/data/canonicalizations.txt') as f:
-    for line in f.readlines():
-        if line.startswith('#'):
-            continue
-        source, target = line.strip().split(',')
-        canonicalizations[source] = target
+from web.search import tokenize
 
 
 class Product(object):
 
-    def __init__(self, name, frequency):
+    def __init__(self, name, frequency, parent_id=None):
         self.name = self.canonicalize(name)
         self.frequency = frequency
+        self.parent_id = parent_id
 
         self.depth = None
         self.children = []
         self.parents = []
-        self.parent_id = None
         self.stopwords = []
 
     def __add__(self, other):
@@ -29,20 +20,21 @@ class Product(object):
         return self
 
     def __repr__(self):
+        data = self.to_dict(include_hierarchy=self.children or self.parents)
+        return '  ' * (self.depth or 0) + json.dumps(data, ensure_ascii=False)
+
+    def to_dict(self, include_hierarchy=False):
         data = {
             'product': self.canonicalize(self.name, self.stopwords),
             'recipe_count': self.frequency
         }
-
-        tree_rendering = self.children or self.parents
-        if tree_rendering:
+        if include_hierarchy:
             data.update({
                 'id': self.id,
                 'parent_id': self.parent_id,
                 'depth': self.depth
             })
-
-        return '  ' * (self.depth or 0) + json.dumps(data, ensure_ascii=False)
+        return data
 
     @property
     def id(self):
@@ -51,7 +43,6 @@ class Product(object):
     @staticmethod
     def canonicalize(name, stopwords=None):
         words = name.split(' ')
-        words = [canonicalizations.get(word) or word for word in words]
         words = [word for word in words if list(tokenize(word, stopwords))]
         return ' '.join(words)
 

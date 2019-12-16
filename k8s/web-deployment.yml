@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: python-template-deployment
+  name: knowledge-graph-deployment
   labels:
-    app: python-template
+    app: knowledge-graph
 spec:
   selector:
     matchLabels:
-      app: python-template
+      app: knowledge-graph
       role: web
   template:
     metadata:
       labels:
-        app: python-template
+        app: knowledge-graph
         role: web
     spec:
       imagePullSecrets:
       - name: gitlab-registry
       containers:
-      - image: registry.gitlab.com/openculinary/python-template
+      - image: registry.gitlab.com/openculinary/knowledge-graph
         imagePullPolicy: IfNotPresent
-        name: python-template
+        name: knowledge-graph
         ports:
         - containerPort: 80

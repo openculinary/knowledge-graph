@@ -1,0 +1,17 @@
+# Colors
+black
+green
+orange
+red
+white
+yellow
+
+# Valid mid-ingredient-phrase tokens
+bell
+kidney
+
+# Valid tokens which do not appear as standalone ingredients
+almond
+baking
+confectioners
+powder

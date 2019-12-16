@@ -1,13 +1,13 @@
 import argparse
 import sys
 
-from scripts.loader import (
+from web.loader import (
     CACHE_PATHS,
     retrieve_products,
     retrieve_stopwords,
     write_items,
 )
-from scripts.models.product_graph import ProductGraph
+from web.models.product_graph import ProductGraph
 
 
 parser = argparse.ArgumentParser(description='Generate stopwords')
@@ -28,7 +28,11 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-stopwords = list(retrieve_stopwords(args.stopwords))
+try:
+    stopwords = list(retrieve_stopwords(args.stopwords))
+except RuntimeError:
+    stopwords = []
+
 if args.update or not stopwords:
     products = retrieve_products(args.products)
     graph = ProductGraph(products)

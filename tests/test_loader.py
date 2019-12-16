@@ -1,6 +1,6 @@
 import pytest
 
-from scripts.loader import discard
+from web.loader import canonicalize, discard
 
 
 def construct_product(product, recipe_count=10):
@@ -23,3 +23,18 @@ def test_discard(product, expected):
     result = discard(product)
 
     assert result is expected
+
+
+def canonicalization_cases():
+    return {
+        'cod filet': 'cod fillet',
+        'black beans (pre-soaked)': 'black beans',
+        'coriander': 'cilantro',
+    }.items()
+
+
+@pytest.mark.parametrize('name,expected', canonicalization_cases())
+def test_canonicalization(name, expected):
+    result = canonicalize(name)
+
+    assert result == expected
