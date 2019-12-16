@@ -13,14 +13,20 @@ The `scripts.products` module performs the following series of operations to loa
 - Raw ingredient descriptions are loaded from file, and known-bad data is discarded
 - Individual tokens within each description are canonicalized to reduce duplication
 - Quantity-related tokens are discarded
-- Each ingredient description is assigned a document ID
 - Descriptions are indexed and a list of stopwords is produced based on a [tf-idf](https://en.wikipedia.org/w/index.php?title=tf-idf) threshold.
-- Stopwords are filtered to remove any items which exist as single-word ingredient descriptions
-- Per-document stopwords are identified and recorded for later reference as metadata
+- Stopwords are filtered to remove cases where exact-match products exist (i.e. 'olive')
+- Per-document stopwords are identified
 - Descriptions are re-indexed with the filtered stopword list applied
 - For each product, 'child' documents are identified which contain the product's terms
 - For each product, a 'parent' document is identified based on the best match found
 - Simplified descriptions are exported, including details of their location in the product tree
+
+Known issues:
+
+- Document IDs are generated dynamically, which works but is 'fragile'
+- Spelling corrections are important but currently handled via manual entry in 'canonicalizations.txt'
+- It'd be useful to provide token [highlighting](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-highlighting) in responses, particularly for cases where the plurality/stemming of the match differs from the input text
+- Stopword metadata is not yet persisted or used effectively; they could, for example, be used to identify the collection of ways in which individual ingredients can be prepared ('diced', 'minced', ...)
 
 ## Install dependencies
 
