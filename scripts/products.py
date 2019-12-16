@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 import sys
 
 from web.loader import (
@@ -26,6 +27,7 @@ products = list(retrieve_products(args.products))
 if __name__ == '__main__':
     output = sys.stdout
     if args.update:
+        Path(args.products).parent.mkdir(parents=True, exist_ok=True)
         output = open(args.products, 'w')
     write_items(products, output)
     output.close()

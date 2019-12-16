@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 import sys
 
 from web.loader import (
@@ -41,6 +42,7 @@ if args.update or not stopwords:
 if __name__ == '__main__':
     output = sys.stdout
     if args.update:
+        Path(args.stopwords).parent.mkdir(parents=True, exist_ok=True)
         output = open(args.stopwords, 'w')
     write_items(stopwords, output)
     output.close()

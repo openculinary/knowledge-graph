@@ -1,4 +1,5 @@
 import argparse
+from pathlib import Path
 import sys
 
 from web.loader import (
@@ -66,6 +67,7 @@ def graph_explorer(graph):
 if __name__ == '__main__':
     output = sys.stdout
     if args.update:
+        Path(args.hierarchy).parent.mkdir(parents=True, exist_ok=True)
         output = open(args.hierarchy, 'w')
     write_items(graph_explorer(graph), output)
     output.close()
