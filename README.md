@@ -6,7 +6,7 @@ This information includes facts such as 'lettuce is-a vegetable' as well as nutr
 
 ### Product Parsing
 
-Ingredient descriptions typically include some combination of a quantity (i.e. `1 kg`) and a product (i.e. `potatoes`).  Since they are typically written in free-text by recipe authors, parsing products can be a challenge.
+Ingredient descriptions generally include some combination of a quantity (i.e. `1 kg`) and a product (i.e. `potatoes`).  Since they are written as unstructured text in most recipes, parsing products can be a challenge.
 
 The `scripts.products` module performs the following series of operations to load, refine and export a list of products which the `knowledge-graph` can use to identify best-matching products in free-text ingredient descriptions:
 
