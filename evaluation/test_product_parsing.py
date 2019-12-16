@@ -15,9 +15,9 @@ def training_data():
 @pytest.mark.parametrize('recipe_id, cases', training_data())
 def test_training_data(recipe_id, cases, client):
     descriptions = [key for key in cases.keys()]
-    results = client.get(
+    results = client.post(
         '/ingredients/query',
-        query_string={'description[]': descriptions}
+        data={'descriptions[]': descriptions}
     ).json['results']
 
     matches, exact_matches, misses = 0, 0, {}
@@ -47,9 +47,9 @@ def evaluation_data():
 
 @pytest.mark.parametrize('description, product', evaluation_data())
 def test_evaluation_data(description, product, client):
-    results = client.get(
+    results = client.post(
         '/ingredients/query',
-        query_string={'description[]': [description]}
+        data={'descriptions[]': [description]}
     ).json['results']
 
     result = results.get(description)

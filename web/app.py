@@ -41,9 +41,9 @@ def hierarchy():
     return Response(stream(app.products), content_type='application/x-ndjson')
 
 
-@app.route('/ingredients/query')
+@app.route('/ingredients/query', methods=['POST'])
 def query():
-    descriptions = request.args.getlist('description[]')
+    descriptions = request.form.getlist('descriptions[]')
 
     # Find all documents matching any of the requested descriptions
     results = execute_queries(
