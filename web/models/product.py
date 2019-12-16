@@ -76,3 +76,9 @@ class Product(object):
 
         self.depth = depth
         return depth
+
+    @property
+    def metadata(self):
+        return {
+            'product': self.name
+        }
