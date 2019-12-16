@@ -94,6 +94,10 @@ def retrieve_products(filename):
         if count % 1000 == 0:
             print(f'- {count} products loaded')
 
+        line = line.decode() if isinstance(line, bytes) else line
+        if line.startswith('#'):
+            continue
+
         product = json.loads(line)
         if discard(product):
             continue
