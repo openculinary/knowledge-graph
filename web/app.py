@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from flask import Flask, jsonify, request, Response
+from flask import Flask, jsonify, request
 
 from web.loader import (
     CACHE_PATHS,
@@ -28,17 +28,6 @@ def preload_graph():
     app.graph = ProductGraph(hierarchy, stopwords)
     app.products = app.graph.filter_products()
     app.stopwords = app.graph.filter_stopwords()
-
-
-# Custom streaming method
-def stream(items):
-    for item in items:
-        yield f'{item}\n'
-
-
-@app.route('/ingredients/hierarchy')
-def hierarchy():
-    return Response(stream(app.products), content_type='application/x-ndjson')
 
 
 @app.route('/ingredients/query', methods=['POST'])
