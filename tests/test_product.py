@@ -69,3 +69,11 @@ def test_content_rendering():
     a1.stopwords = ['chop', 'cook']
 
     assert a1.content == 'chicken'
+
+
+def test_metadata():
+    a1 = generate_product(name='black olives')
+
+    assert a1.metadata['singular'] == 'black olife'
+    assert a1.metadata['plural'] == 'black olives'
+    assert a1.metadata['is_plural'] is True

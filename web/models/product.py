@@ -1,9 +1,12 @@
+import inflect
 import json
 
 from web.search import tokenize
 
 
 class Product(object):
+
+    inflector = inflect.engine()
 
     def __init__(self, name, frequency, parent_id=None):
         self.name = self.canonicalize(name)
@@ -79,6 +82,14 @@ class Product(object):
 
     @property
     def metadata(self):
+        singular = Product.inflector.singular_noun(self.name)
+        singular = singular or self.name
+        plural = Product.inflector.plural_noun(singular)
+        is_plural = self.name == plural
+
         return {
-            'product': self.name
+            'product': self.name,
+            'is_plural': is_plural,
+            'singular': singular,
+            'plural': plural,
         }
