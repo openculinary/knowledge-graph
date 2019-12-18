@@ -22,7 +22,7 @@ def test_training_data(recipe_id, cases, client):
 
     matches, exact_matches, misses = 0, 0, {}
     for description, product in cases.items():
-        result = results.get(description)
+        result = results.get(description, {}).get('product')
         if result and result in product:
             exact_matches += result == product
             matches += 1
@@ -52,6 +52,6 @@ def test_evaluation_data(description, product, client):
         data={'descriptions[]': [description]}
     ).json['results']
 
-    result = results.get(description)
+    result = results.get(description, {}).get('product')
     assert result is not None, product
     assert result in product

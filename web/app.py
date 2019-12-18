@@ -12,6 +12,7 @@ from web.search import (
     add_to_search_index,
     build_search_index,
     execute_queries,
+    execute_query,
 )
 
 app = Flask(__name__)
@@ -30,51 +31,45 @@ def preload_graph():
     app.stopwords = app.graph.filter_stopwords()
 
 
-@app.route('/ingredients/query', methods=['POST'])
-def query():
-    descriptions = request.form.getlist('descriptions[]')
-
-    # Find all documents matching any of the requested descriptions
+def find_product_candidates(descriptions):
     results = execute_queries(
         index=app.graph.index,
         queries=descriptions,
         stopwords=app.stopwords,
         query_limit=-1
     )
-
-    # For each description, retrieve products which matched the search
-    candidates = set()
     for description, hits in results:
         for hit in hits:
-            doc_id = hit['doc_id']
-            product = app.graph.products_by_id[doc_id]
-            candidates.add(product.name)
+            product = app.graph.products_by_id[hit['doc_id']]
+            yield product
+
+
+@app.route('/ingredients/query', methods=['POST'])
+def query():
+    descriptions = request.form.getlist('descriptions[]')
 
     # Build a local search index over the descriptions
     description_index = build_search_index()
     for doc_id, doc in enumerate(descriptions):
         add_to_search_index(description_index, doc_id, doc)
 
-    # Query the list of candidate products within the description index
-    results = execute_queries(
-        index=description_index,
-        queries=candidates
-    )
-
-    # Pick the best match for each description
-    description_matches = {}
-    description_scores = defaultdict(lambda: 0.0)
-    for candidate, hits in results:
+    # Track the best match for each description
+    products = defaultdict(lambda: None)
+    scores = defaultdict(lambda: 0.0)
+    for candidate in find_product_candidates(descriptions):
+        hits = execute_query(
+            index=description_index,
+            query=candidate.name
+        )
         for hit in hits:
             doc_id, score = hit['doc_id'], hit['score']
-            if score > description_scores[doc_id]:
-                description_matches[doc_id] = candidate
-                description_scores[doc_id] = score
-            break
+            if score > scores[doc_id]:
+                products[doc_id] = candidate
+                scores[doc_id] = score
 
     return jsonify({
         'results': {
-            description: description_matches.get(i)
+            description: products[i].metadata if i in products else None
             for i, description in enumerate(descriptions)
         }
     })

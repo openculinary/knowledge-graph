@@ -1,3 +1,5 @@
+import pytest
+
 from web.models.product import Product
 
 
@@ -69,3 +71,55 @@ def test_content_rendering():
     a1.stopwords = ['chop', 'cook']
 
     assert a1.content == 'chicken'
+
+
+def test_metadata():
+    a1 = generate_product(name='black olives')
+
+    assert a1.metadata['singular'] == 'black olife'
+    assert a1.metadata['plural'] == 'black olives'
+    assert a1.metadata['is_plural'] is True
+
+
+def product_categories():
+    return {
+        'olive oil': 'Oil, Vinegar & Condiments',
+        'canola oil': 'Oil, Vinegar & Condiments',
+        'white wine vinegar': 'Oil, Vinegar & Condiments',
+        'ketchup': 'Oil, Vinegar & Condiments',
+    }
+
+
+def test_chicken_contents():
+    product = generate_product(name='chicken')
+
+    assert 'chicken' in product.contents
+    assert 'meat' in product.contents
+
+
+def test_chicken_breast_contents():
+    product = generate_product(name='chicken breast')
+
+    assert 'chicken breast' in product.contents
+    assert 'chicken' in product.contents
+    assert 'meat' in product.contents
+
+
+def test_chicken_exclusion_contents():
+    exclusions = ['broth', 'bouillon', 'soup']
+
+    for exclusion in exclusions:
+        product = generate_product(name=f'chicken {exclusion}')
+
+        assert f'chicken {exclusion}' in product.contents
+        assert 'chicken' not in product.contents
+
+        # TODO: identify meat-derived products
+        # assert 'meat' in contents
+
+
+@pytest.mark.parametrize('name,category', product_categories().items())
+def test_product_categories(name, category):
+    product = generate_product(name=name)
+
+    assert product.category == category
