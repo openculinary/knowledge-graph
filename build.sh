@@ -1,5 +1,5 @@
-REGISTRY='registry.gitlab.com'
-PROJECT='openculinary'
+REGISTRY='registry.openculinary.org'
+PROJECT='reciperadar'
 
 IMAGE_NAME=${REGISTRY}/${PROJECT}/$(basename `git rev-parse --show-toplevel`)
 IMAGE_COMMIT=$(git rev-parse --short HEAD)
