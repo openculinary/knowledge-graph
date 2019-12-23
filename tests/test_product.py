@@ -74,11 +74,18 @@ def test_content_rendering():
 
 
 def test_metadata():
-    a1 = generate_product(name='black olives')
+    a1 = generate_product(name='olives')
+    a2 = generate_product(name='black olives', parent=a1)
+    a3 = generate_product(name='greek black olives', parent=a2)
 
-    assert a1.metadata['singular'] == 'black olife'
-    assert a1.metadata['plural'] == 'black olives'
-    assert a1.metadata['is_plural'] is True
+    graph = MockGraph([a1, a2, a3])
+    metadata = a3.get_metadata(graph)
+
+    # TODO: re-enable after https://github.com/jazzband/inflect/pull/95 merged
+    # assert metadata['singular'] == 'greek black olive'
+    assert metadata['plural'] == 'greek black olives'
+    assert metadata['is_plural'] is True
+    assert 'olives' in metadata['ancestors']
 
 
 def product_categories():

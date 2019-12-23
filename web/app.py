@@ -67,9 +67,14 @@ def query():
                 products[doc_id] = candidate
                 scores[doc_id] = score
 
+    # Build per-product result metadata
+    metadata = defaultdict(lambda: None)
+    for doc_id, product in products.items():
+        metadata[doc_id] = product.get_metadata(app.graph)
+
     return jsonify({
         'results': {
-            description: products[i].metadata if i in products else None
-            for i, description in enumerate(descriptions)
+            description: metadata[doc_id]
+            for doc_id, description in enumerate(descriptions)
         }
     })

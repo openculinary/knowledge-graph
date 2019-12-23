@@ -80,8 +80,7 @@ class Product(object):
         self.depth = depth
         return depth
 
-    @property
-    def metadata(self):
+    def get_metadata(self, graph):
         singular = Product.inflector.singular_noun(self.name)
         singular = singular or self.name
         plural = Product.inflector.plural_noun(singular)
@@ -94,7 +93,17 @@ class Product(object):
             'plural': plural,
             'category': self.category,
             'contents': self.contents,
+            'ancestors': [ancestor.name for ancestor in self.ancestry(graph)],
         }
+
+    def ancestry(self, graph):
+        if not self.parent_id:
+            return
+        parent = graph.products_by_id.get(self.parent_id)
+        if parent:
+            yield parent
+            for ancestor in parent.ancestry(graph):
+                yield ancestor
 
     @property
     def category(self):
