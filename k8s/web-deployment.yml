@@ -15,10 +15,8 @@ spec:
         app: knowledge-graph
         role: web
     spec:
-      imagePullSecrets:
-      - name: gitlab-registry
       containers:
-      - image: registry.gitlab.com/openculinary/knowledge-graph
+      - image: registry.openculinary.org/reciperadar/knowledge-graph
         imagePullPolicy: IfNotPresent
         name: knowledge-graph
         ports:
