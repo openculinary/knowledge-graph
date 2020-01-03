@@ -1,5 +1,6 @@
 chile,chili
 chilli,chili
+chilly,chili
 cinammon,cinnamon
 coriander,cilantro
 filet,fillet
