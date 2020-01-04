@@ -10,11 +10,21 @@ class MockGraph():
         self.products_by_id = {product.id: product for product in products}
 
 
-def generate_product(name, parent=None):
-    product = Product(name=name, frequency=1)
+def generate_product(name, parent=None, frequency=1):
+    product = Product(name=name, frequency=frequency)
     if parent:
         product.parent_id = parent.id
     return product
+
+
+def test_merge_products():
+    a1 = generate_product(name='hickory liquid smoke', frequency=2)
+    a2 = generate_product(name='liquid smoke', frequency=10)
+
+    a1 += a2
+
+    assert a1.frequency == 12
+    assert a1.name == 'liquid smoke'
 
 
 def test_calculate_depth():
