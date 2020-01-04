@@ -19,6 +19,8 @@ class Product(object):
         self.stopwords = []
 
     def __add__(self, other):
+        name = self.name if len(self.name) < len(other.name) else other.name
+        self.name = name
         self.frequency += other.frequency
         return self
 
