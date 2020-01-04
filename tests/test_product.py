@@ -135,6 +135,13 @@ def test_chicken_exclusion_contents():
         # assert 'meat' in contents
 
 
+def test_contents_singularization():
+    product = generate_product(name=f'mushrooms')
+
+    assert 'mushroom' in product.contents
+    assert 'mushrooms' not in product.contents
+
+
 @pytest.mark.parametrize('name,category', product_categories().items())
 def test_product_categories(name, category):
     product = generate_product(name=name)

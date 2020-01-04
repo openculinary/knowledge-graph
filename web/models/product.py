@@ -109,6 +109,19 @@ class Product(object):
 
     @property
     def category(self):
+        content_categories = {
+            'banana': 'fruit_and_veg',
+            'berry': 'fruit_and_veg',
+            'berries': 'fruit_and_veg',
+            'garlic': 'fruit_and_veg',
+            'onion': 'fruit_and_veg',
+            'tomato': 'fruit_and_veg',
+
+            'ketchup': 'oil_and_vinegar_and_condiments',
+            'oil': 'oil_and_vinegar_and_condiments',
+            'soy sauce': 'oil_and_vinegar_and_condiments',
+            'vinegar': 'oil_and_vinegar_and_condiments',
+        }
         category_graph = {
             'bread': 'Bakery',
             'dairy': 'Dairy',
@@ -121,6 +134,10 @@ class Product(object):
         for content in self.contents:
             if content in category_graph:
                 return category_graph[content]
+        for content in content_categories:
+            if content in self.name.split(' '):
+                if content_categories[content] in category_graph:
+                    return category_graph[content_categories[content]]
 
     @property
     def contents(self):
@@ -135,23 +152,6 @@ class Product(object):
             'yoghurt': 'dairy',
             'yogurt': 'dairy',
 
-            'all-purpose flour': 'dry_goods',
-            'baking powder': 'dry_goods',
-            'black pepper': 'dry_goods',
-            'brown sugar': 'dry_goods',
-            'salt': 'dry_goods',
-            'salt and pepper': 'dry_goods',
-            'sugar': 'dry_goods',
-            'vanilla extract': 'dry_goods',
-            'white sugar': 'dry_goods',
-
-            'banana': 'fruit_and_veg',
-            'berry': 'fruit_and_veg',
-            'berries': 'fruit_and_veg',
-            'garlic': 'fruit_and_veg',
-            'onion': 'fruit_and_veg',
-            'tomato': 'fruit_and_veg',
-
             'bacon': 'meat',
             'beef': 'meat',
             'chicken': 'meat',
@@ -162,11 +162,6 @@ class Product(object):
             'steak': 'meat',
             'turkey': 'meat',
             'venison': 'meat',
-
-            'ketchup': 'oil_and_vinegar_and_condiments',
-            'oil': 'oil_and_vinegar_and_condiments',
-            'soy sauce': 'oil_and_vinegar_and_condiments',
-            'vinegar': 'oil_and_vinegar_and_condiments',
         }
         exclusion_graph = {
             'meat': ['stock', 'broth', 'tomato', 'bouillon', 'soup', 'eggs'],
@@ -174,15 +169,17 @@ class Product(object):
             'fruit_and_veg': ['green tomato'],
         }
 
-        contents = {self.name}
+        contents = {Product.inflector.singular_noun(self.name) or self.name}
         for content in content_graph:
             if content in self.name.split():
                 excluded = False
-                for field in [content, content_graph[content]]:
+                fields = [content, content_graph[content]]
+                for field in fields:
                     for excluded_term in exclusion_graph.get(field, []):
                         excluded = excluded or excluded_term in self.name
                 if excluded:
                     continue
-                contents.add(content)
-                contents.add(content_graph[content])
+                for field in fields:
+                    singular = Product.inflector.singular_noun(field) or field
+                    contents.add(singular)
         return list(contents)
