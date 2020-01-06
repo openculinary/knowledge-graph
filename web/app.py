@@ -70,7 +70,8 @@ def query():
     # Build per-product result metadata
     metadata = defaultdict(lambda: None)
     for doc_id, product in products.items():
-        metadata[doc_id] = product.get_metadata(app.graph)
+        description = descriptions[doc_id]
+        metadata[doc_id] = product.get_metadata(description, app.graph)
 
     return jsonify({
         'results': {
