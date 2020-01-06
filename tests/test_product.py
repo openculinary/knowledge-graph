@@ -89,12 +89,12 @@ def test_metadata():
     a3 = generate_product(name='greek black olives', parent=a2)
 
     graph = MockGraph([a1, a2, a3])
-    metadata = a3.get_metadata(graph)
+    metadata = a3.get_metadata('greek black olive', graph)
 
     # TODO: re-enable after https://github.com/jazzband/inflect/pull/95 merged
     # assert metadata['singular'] == 'greek black olive'
     assert metadata['plural'] == 'greek black olives'
-    assert metadata['is_plural'] is True
+    assert metadata['is_plural'] is False
     assert 'olives' in metadata['ancestors']
 
 

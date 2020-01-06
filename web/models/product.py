@@ -82,14 +82,14 @@ class Product(object):
         self.depth = depth
         return depth
 
-    def get_metadata(self, graph):
+    def get_metadata(self, description, graph):
         singular = Product.inflector.singular_noun(self.name)
         singular = singular or self.name
         plural = Product.inflector.plural_noun(singular)
-        is_plural = self.name == plural
+        is_plural = plural in description
 
         return {
-            'product': self.name,
+            'product': plural if is_plural else singular,
             'is_plural': is_plural,
             'singular': singular,
             'plural': plural,
