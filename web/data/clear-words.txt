@@ -16,3 +16,6 @@ seed
 smoke
 sour
 sweet
+
+# Valid tokens which identify ingredient variants
+breast
