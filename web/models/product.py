@@ -128,7 +128,7 @@ class Product(object):
             'vinegar': 'oil_and_vinegar_and_condiments',
         }
         categories = {
-            'bread',
+            'bakery',
             'dairy',
             'dry_goods',
             'fruit_and_veg',
