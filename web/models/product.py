@@ -110,6 +110,9 @@ class Product(object):
     @property
     def category(self):
         content_categories = {
+            'egg': 'dairy',
+            'milk': 'dairy',
+
             'banana': 'fruit_and_veg',
             'berry': 'fruit_and_veg',
             'berries': 'fruit_and_veg',
@@ -117,27 +120,28 @@ class Product(object):
             'onion': 'fruit_and_veg',
             'tomato': 'fruit_and_veg',
 
+            'meat': 'meat_and_deli',
+
             'ketchup': 'oil_and_vinegar_and_condiments',
             'oil': 'oil_and_vinegar_and_condiments',
             'soy sauce': 'oil_and_vinegar_and_condiments',
             'vinegar': 'oil_and_vinegar_and_condiments',
         }
-        category_graph = {
-            'bread': 'Bakery',
-            'dairy': 'Dairy',
-            'dry_goods': 'Dry Goods',
-            'fruit_and_veg': 'Fruit & Vegetables',
-            'egg': 'Dairy',
-            'meat': 'Meat',
-            'oil_and_vinegar_and_condiments': 'Oil, Vinegar & Condiments',
+        categories = {
+            'bread',
+            'dairy',
+            'dry_goods',
+            'fruit_and_veg',
+            'meat_and_deli',
+            'oil_and_vinegar_and_condiments',
         }
         for content in self.contents:
-            if content in category_graph:
-                return category_graph[content]
+            if content in categories:
+                return content
         for content in content_categories:
             if content in self.name.split(' '):
-                if content_categories[content] in category_graph:
-                    return category_graph[content_categories[content]]
+                if content_categories[content] in categories:
+                    return content_categories[content]
 
     @property
     def contents(self):

@@ -100,10 +100,10 @@ def test_metadata():
 
 def product_categories():
     return {
-        'olive oil': 'Oil, Vinegar & Condiments',
-        'canola oil': 'Oil, Vinegar & Condiments',
-        'white wine vinegar': 'Oil, Vinegar & Condiments',
-        'ketchup': 'Oil, Vinegar & Condiments',
+        'olive oil': 'oil_and_vinegar_and_condiments',
+        'canola oil': 'oil_and_vinegar_and_condiments',
+        'white wine vinegar': 'oil_and_vinegar_and_condiments',
+        'ketchup': 'oil_and_vinegar_and_condiments',
     }
 
 
