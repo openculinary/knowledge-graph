@@ -18,4 +18,16 @@ sour
 sweet
 
 # Valid tokens which identify ingredient variants
+boneless
+bouillon
 breast
+french
+italian
+jack
+mexican
+roast
+skinless
+unsalted
+unsweetened
+yolk
+zest
