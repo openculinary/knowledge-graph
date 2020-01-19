@@ -10,7 +10,7 @@ python_version = "3.7"
 flask = "==1.1.1"
 gunicorn = "==20.0.4"
 hashedindex = "==0.6.0"
-inflect = "==3.0.2"
+inflect = { git = "git+https://github.com/openculinary/inflect.git" }
 ingreedypy = "==1.3.1"
 requests = "==2.22.0"
 snowballstemmer = "==2.0.0"
