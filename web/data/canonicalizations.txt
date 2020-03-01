@@ -1,3 +1,4 @@
+beet,beetroot
 chile,chili
 chilli,chili
 chilly,chili
