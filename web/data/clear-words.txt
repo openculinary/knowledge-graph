@@ -15,6 +15,7 @@ ranch
 seed
 smoke
 sour
+soy
 sweet
 
 # Valid tokens which identify ingredient variants
