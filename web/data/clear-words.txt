@@ -10,6 +10,8 @@ yellow
 # Valid tokens which do not appear as standalone ingredients
 baking
 confectioners
+ground
+mixed
 powder
 ranch
 seed
