@@ -72,6 +72,14 @@ class ProductGraph(object):
             add_to_search_index(index, doc_id, stopword)
         return index
 
+    def get_byproducts(self):
+        with open('web/data/byproducts.txt') as f:
+            for line in f.readlines():
+                if line.startswith('#'):
+                    continue
+                byproduct, parent = line.strip().lower().split(',')
+                yield parent, byproduct
+
     def filter_products(self):
         for product in self.products_by_id.values():
             for term in tokenize(product.name, ngrams=1):
@@ -101,7 +109,30 @@ class ProductGraph(object):
                 yield parent
 
     def build_relationships(self):
+
+        # Assign byproducts to their parent ingredients
+        for parent, byproduct in self.get_byproducts():
+
+            # Find the parent product
+            parent_hits = execute_query(self.index, parent)
+            if not parent_hits:
+                continue
+            parent = self.products_by_id.get(parent_hits[0]['doc_id'])
+
+            # Find all of the byproducts the parent relates to
+            hits = execute_query(self.index, byproduct)
+            for hit in hits:
+                child_id = hit['doc_id']
+                parent.children.append(child_id)
+                self.products_by_id[child_id].parents.append(parent.id)
+
         for parent in self.products_by_id.values():
+
+            # Skip ingredients that have already been assigned children
+            if parent.children:
+                continue
+
+            # Find ingredients that are named similarly to the parent element
             child_ids = self.find_children(parent)
             for child_id in child_ids:
                 parent.children.append(child_id)
