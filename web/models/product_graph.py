@@ -117,14 +117,17 @@ class ProductGraph(object):
             parent_hits = execute_query(self.index, parent)
             if not parent_hits:
                 continue
+
             parent = self.products_by_id.get(parent_hits[0]['doc_id'])
+            parent.domain = 'byproducts'
 
             # Find all of the byproducts the parent relates to
             hits = execute_query(self.index, byproduct)
             for hit in hits:
-                child_id = hit['doc_id']
-                parent.children.append(child_id)
-                self.products_by_id[child_id].parents.append(parent.id)
+                child = self.products_by_id[hit['doc_id']]
+                child.domain = 'byproducts'
+                child.parents.append(parent.id)
+                parent.children.append(child.id)
 
         for parent in self.products_by_id.values():
 
@@ -135,11 +138,16 @@ class ProductGraph(object):
             # Find ingredients that are named similarly to the parent element
             child_ids = self.find_children(parent)
             for child_id in child_ids:
-                parent.children.append(child_id)
-                self.products_by_id[child_id].parents.append(parent.id)
+                child = self.products_by_id[child_id]
+                if child.domain is parent.domain:
+                    child.parents.append(parent.id)
+                    parent.children.append(child_id)
 
     def assign_parents(self):
+        # Find a parent product for each product in the graph
         for product in self.products_by_id.values():
+
+            # Find the parent with the most tokens
             primary_parent = None
             for parent_id in product.parents:
                 parent = self.products_by_id[parent_id]
@@ -147,6 +155,8 @@ class ProductGraph(object):
                     primary_parent = parent
                 if len(parent.tokens) > len(primary_parent.tokens):
                     primary_parent = parent
+
+            # Assign the parent
             if primary_parent:
                 product.parent_id = primary_parent.id
 
