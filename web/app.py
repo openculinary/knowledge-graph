@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request
 
 from web.loader import (
     CACHE_PATHS,
+    canonicalize,
     retrieve_hierarchy,
     retrieve_stopwords,
 )
@@ -47,6 +48,7 @@ def find_product_candidates(descriptions):
 @app.route('/ingredients/query', methods=['POST'])
 def query():
     descriptions = request.form.getlist('descriptions[]')
+    descriptions = [canonicalize(description) for description in descriptions]
 
     # Build a local search index over the descriptions
     description_index = build_search_index()
