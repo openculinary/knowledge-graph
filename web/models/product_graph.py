@@ -118,13 +118,17 @@ class ProductGraph(object):
             if not parent_hits:
                 continue
 
-            parent = self.products_by_id.get(parent_hits[0]['doc_id'])
+            parent_id = parent_hits[0]['doc_id']
+            parent = self.products_by_id.get(parent_id)
             parent.domain = 'byproducts'
 
             # Find all of the byproducts the parent relates to
             hits = execute_query(self.index, byproduct)
             for hit in hits:
-                child = self.products_by_id[hit['doc_id']]
+                child_id = hit['doc_id']
+                if child_id == parent_id:
+                    continue
+                child = self.products_by_id[child_id]
                 child.domain = 'byproducts'
                 child.parents.append(parent.id)
                 parent.children.append(child.id)
