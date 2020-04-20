@@ -6,4 +6,5 @@ cinammon,cinnamon
 coriander,cilantro
 filet,fillet
 soya,soy
+soymilk,soy milk
 yoghurt,yogurt
