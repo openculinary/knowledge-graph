@@ -17,6 +17,7 @@ class Product(object):
         self.children = []
         self.parents = []
         self.stopwords = []
+        self.domain = None
 
     def __add__(self, other):
         name = self.name if len(self.name) < len(other.name) else other.name
@@ -36,6 +37,7 @@ class Product(object):
         if include_hierarchy:
             data.update({
                 'id': self.id,
+                'domain': self.domain,
                 'parent_id': self.parent_id,
                 'depth': self.depth
             })
