@@ -47,18 +47,21 @@ def find_product_candidates(descriptions):
 
 @app.route('/ingredients/query', methods=['POST'])
 def query():
+    # Retrieve and canonicalize the query input descriptions
     descriptions = request.form.getlist('descriptions[]')
-    descriptions = [canonicalize(description) for description in descriptions]
+    canonicalizations = [
+        canonicalize(description) for description in descriptions
+    ]
 
-    # Build a local search index over the descriptions
+    # Build a local search index over the canonicalized descriptions
     description_index = build_search_index()
-    for doc_id, doc in enumerate(descriptions):
+    for doc_id, doc in enumerate(canonicalizations):
         add_to_search_index(description_index, doc_id, doc)
 
-    # Track the best match for each description
+    # Track the best match for each canonicalized description
     products = defaultdict(lambda: None)
     scores = defaultdict(lambda: 0.0)
-    for candidate in find_product_candidates(descriptions):
+    for candidate in find_product_candidates(canonicalizations):
         hits = execute_query(
             index=description_index,
             query=candidate.name
