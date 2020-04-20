@@ -126,8 +126,12 @@ class ProductGraph(object):
             hits = execute_query(self.index, byproduct)
             for hit in hits:
                 child_id = hit['doc_id']
+
+                # The byproduct root (e.g. 'stock') may be found as a match;
+                # avoid assigning the root to itself as a parent
                 if child_id == parent_id:
                     continue
+
                 child = self.products_by_id[child_id]
                 child.domain = 'byproducts'
                 child.parents.append(parent.id)
