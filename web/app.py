@@ -4,7 +4,6 @@ from flask import Flask, jsonify, request
 
 from web.loader import (
     CACHE_PATHS,
-    canonicalizations,
     retrieve_hierarchy,
     retrieve_stopwords,
 )
@@ -15,7 +14,6 @@ from web.search import (
     build_search_index,
     execute_queries,
     execute_query,
-    SynonymAnalyzer,
 )
 
 app = Flask(__name__)
@@ -40,7 +38,7 @@ def find_product_candidates(products):
         index=app.graph.index,
         queries=queries,
         stopwords=app.stopwords,
-        analyzer=SynonymAnalyzer(canonicalizations),
+        analyzer=Product.analyzer,
         query_limit=-1
     )
     for description, hits in results:
@@ -53,7 +51,6 @@ def find_product_candidates(products):
 def query():
     descriptions = request.form.getlist('descriptions[]')
     products = [Product(name=description) for description in descriptions]
-    analyzer = SynonymAnalyzer(canonicalizations)
 
     # Build a local search index over the product descriptions
     description_index = build_search_index()
@@ -62,7 +59,7 @@ def query():
             index=description_index,
             doc_id=doc_id,
             doc=product.name,
-            analyzer=analyzer
+            analyzer=product.analyzer
         )
 
     # Track the best match for each product
@@ -72,7 +69,7 @@ def query():
         hits = execute_query(
             index=description_index,
             query=candidate.name,
-            analyzer=analyzer
+            analyzer=candidate.analyzer
         )
         for hit in hits:
             doc_id, score = hit['doc_id'], hit['score']

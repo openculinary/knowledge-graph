@@ -6,6 +6,19 @@ from web.search import tokenize, SynonymAnalyzer
 
 class Product(object):
 
+    class ProductAnalyzer(SynonymAnalyzer):
+
+        def __init__(self):
+            canonicalizations = {}
+            with open('web/data/canonicalizations.txt') as f:
+                for line in f.readlines():
+                    if line.startswith('#'):
+                        continue
+                    source, target = line.strip().split(',')
+                    canonicalizations[source] = target
+            super().__init__(canonicalizations)
+
+    analyzer = ProductAnalyzer()
     inflector = inflect.engine()
 
     def __init__(self, name, frequency=0, parent_id=None):
@@ -49,9 +62,7 @@ class Product(object):
 
     @property
     def tokens(self):
-        from web.loader import canonicalizations
-        analyzer = SynonymAnalyzer(canonicalizations)
-
+        analyzer = Product.ProductAnalyzer()
         for term in tokenize(self.name, self.stopwords, analyzer=analyzer):
             for subterm in term:
                 yield subterm

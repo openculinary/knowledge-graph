@@ -16,15 +16,6 @@ CACHE_PATHS = {
 }
 
 
-canonicalizations = {}
-with open('web/data/canonicalizations.txt') as f:
-    for line in f.readlines():
-        if line.startswith('#'):
-            continue
-        source, target = line.strip().split(',')
-        canonicalizations[source] = target
-
-
 def discard(product):
     # Discard rare items
     if product['recipe_count'] < 5:
@@ -47,7 +38,7 @@ def discard(product):
     return False
 
 
-def canonicalize(name):
+def prefilter(name):
 
     # Remove text enclosed by parentheses
     open_parens = name.find('(')
@@ -97,7 +88,7 @@ def retrieve_products(filename):
             continue
 
         yield Product(
-            name=canonicalize(product['product']),
+            name=prefilter(product['product']),
             frequency=product['recipe_count']
         )
     print(f'- {count} products loaded')
