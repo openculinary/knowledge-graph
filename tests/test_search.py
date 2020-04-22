@@ -46,7 +46,7 @@ def test_stemming_consistency():
     add_to_search_index(index, 0, content.content)
     hits = execute_queries(index, [content.name])
 
-    assert hits
+    assert next(hits)
 
 
 def test_analysis_consistency():
@@ -58,7 +58,7 @@ def test_analysis_consistency():
     add_to_search_index(index, 0, content.content, analyzer=analyzer)
     hits = execute_queries(index, ['soy milk'], analyzer=analyzer)
 
-    assert hits
+    assert next(hits)
 
 
 def test_exact_match():
