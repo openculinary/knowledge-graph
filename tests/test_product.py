@@ -154,7 +154,7 @@ def test_product_categories(name, category):
 def canonicalization_cases():
     return {
         'cod filet': 'cod fillet',
-        'black beans': 'black beans',
+        'black beans': 'black bean',
         'coriander': 'cilantro',
     }.items()
 
