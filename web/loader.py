@@ -2,7 +2,6 @@ import json
 import os
 import re
 import requests
-import string
 
 from ingreedypy import Ingreedy
 
