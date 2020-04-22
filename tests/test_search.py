@@ -10,29 +10,40 @@ from web.search import (
 
 
 def test_tokenize_stopwords():
-    content = 'red bell peppers diced'
+    doc = 'red bell peppers diced'
     stopwords = ['dice']
 
-    tokens = list(tokenize(content, stopwords))
+    tokens = list(tokenize(
+        doc=doc,
+        stopwords=stopwords,
+        stemmer=Product.stemmer
+    ))
 
     assert tokens[0] == ('red', 'bell', 'pepper')
 
 
 def test_token_stemming():
-    content = 'onions, finely chopped'
+    doc = 'onions, finely chopped'
     stopwords = ['fine', 'chop']
 
-    tokens = list(tokenize(content, stopwords))
+    tokens = list(tokenize(
+        doc=doc,
+        stopwords=stopwords,
+        stemmer=Product.stemmer
+    ))
 
     assert tokens[0] == ('onion',)
 
 
 def test_token_synonyms():
-    content = 'soymilk'
+    doc = 'soymilk'
     synonyms = {'soymilk': 'soy milk'}
 
     analyzer = SynonymAnalyzer(synonyms=synonyms)
-    tokens = list(tokenize(content, analyzer=analyzer))
+    tokens = list(tokenize(
+        doc=doc,
+        analyzer=analyzer
+    ))
 
     assert tokens == [('soy', 'milk'), ('soy',), ('milk',)]
 

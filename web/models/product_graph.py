@@ -1,3 +1,4 @@
+from web.models.product import Product
 from web.search import (
     add_to_search_index,
     build_search_index,
@@ -45,7 +46,7 @@ class ProductGraph(object):
                 if line.startswith('#'):
                     continue
                 line = line.strip().lower()
-                for term in tokenize(line):
+                for term in tokenize(line, stemmer=Product.stemmer):
                     yield term[0]
 
     def calculate_stopwords(self):
@@ -61,7 +62,11 @@ class ProductGraph(object):
         clearwords = list(self.get_clearwords())
         stopwords = stopwords or self.calculate_stopwords()
         for stopword in stopwords:
-            for term in tokenize(stopword, clearwords):
+            for term in tokenize(
+                doc=stopword,
+                stopwords=clearwords,
+                stemmer=Product.stemmer
+            ):
                 if execute_exact_query(self.index, term):
                     continue
                 yield stopword
@@ -82,7 +87,11 @@ class ProductGraph(object):
 
     def filter_products(self):
         for product in self.products_by_id.values():
-            for term in tokenize(product.name, ngrams=1):
+            for term in tokenize(
+                doc=product.name,
+                ngrams=1,
+                stemmer=Product.stemmer
+            ):
                 doc_id = execute_exact_query(self.stopword_index, term)
                 if doc_id is not None:
                     product.stopwords.append(self.stopwords[doc_id])

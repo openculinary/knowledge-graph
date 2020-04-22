@@ -1,10 +1,24 @@
 import inflect
 import json
 
-from web.search import tokenize, SnowballStemmer, SynonymAnalyzer
+from snowballstemmer import stemmer
+
+from web.search import (
+    tokenize,
+    SynonymAnalyzer,
+)
 
 
 class Product(object):
+
+    class ProductStemmer:
+
+        stemmer_en = stemmer('english')
+
+        def stem(self, x):
+            # TODO: Remove double-stemming
+            # mayonnaise -> mayonnais -> mayonnai
+            return self.stemmer_en.stemWord(self.stemmer_en.stemWord(x))
 
     class ProductAnalyzer(SynonymAnalyzer):
 
@@ -18,6 +32,7 @@ class Product(object):
                     canonicalizations[source] = target
             super().__init__(canonicalizations)
 
+    stemmer = ProductStemmer()
     analyzer = ProductAnalyzer()
     inflector = inflect.engine()
 
@@ -60,7 +75,7 @@ class Product(object):
         for term in tokenize(
             doc=self.name,
             stopwords=self.stopwords if stopwords else [],
-            stemmer=SnowballStemmer if stemmer else None,
+            stemmer=self.stemmer if stemmer else None,
             analyzer=self.analyzer if analyzer else None
         ):
             for subterm in term:

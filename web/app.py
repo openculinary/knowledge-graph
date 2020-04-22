@@ -38,6 +38,7 @@ def find_product_candidates(products):
         index=app.graph.index,
         queries=queries,
         stopwords=app.stopwords,
+        stemmer=Product.stemmer,
         analyzer=Product.analyzer,
         query_limit=-1
     )
@@ -59,6 +60,7 @@ def query():
             index=description_index,
             doc_id=doc_id,
             doc=product.name,
+            stemmer=product.stemmer,
             analyzer=product.analyzer
         )
 
@@ -69,6 +71,7 @@ def query():
         hits = execute_query(
             index=description_index,
             query=candidate.name,
+            stemmer=candidate.stemmer,
             analyzer=candidate.analyzer
         )
         for hit in hits:
