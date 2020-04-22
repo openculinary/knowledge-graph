@@ -58,6 +58,7 @@ def execute_queries(index, queries, stopwords=None, query_limit=1):
 
 def execute_query(index, query, stopwords=None, query_limit=1):
     hits = defaultdict(lambda: 0)
+    terms = defaultdict(lambda: [])
     query_count = 0
     for term in tokenize(query, stopwords):
         query_count += 1
@@ -65,12 +66,13 @@ def execute_query(index, query, stopwords=None, query_limit=1):
             for doc_id in index.get_documents(term):
                 doc_length = index.get_document_length(doc_id)
                 hits[doc_id] += len(term) / doc_length
+                terms[doc_id].append(term)
         except IndexError:
             pass
         if query_count == query_limit:
             break
     hits = [
-        {'doc_id': doc_id, 'score': score}
+        {'doc_id': doc_id, 'score': score, 'terms': terms[doc_id]}
         for doc_id, score in hits.items()
     ]
     return sorted(hits, key=lambda hit: hit['score'], reverse=True)
