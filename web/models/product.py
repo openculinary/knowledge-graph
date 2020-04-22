@@ -1,4 +1,3 @@
-from hashedindex.textparser import get_ngrams
 import inflect
 import json
 
