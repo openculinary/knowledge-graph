@@ -1,7 +1,7 @@
 import inflect
 import json
 
-from web.search import tokenize, SynonymAnalyzer
+from web.search import tokenize, SnowballStemmer, SynonymAnalyzer
 
 
 class Product(object):
@@ -44,7 +44,7 @@ class Product(object):
 
     def to_dict(self, include_hierarchy=False):
         data = {
-            'product': self.content,
+            'product': self.name,
             'recipe_count': self.frequency
         }
         if include_hierarchy:
@@ -56,22 +56,26 @@ class Product(object):
             })
         return data
 
-    @property
-    def id(self):
-        return '_'.join(sorted(self.tokens))
-
-    @property
-    def tokens(self):
-        analyzer = Product.ProductAnalyzer()
-        for term in tokenize(self.name, self.stopwords, analyzer=analyzer):
+    def tokenize(self, stopwords=True, stemmer=True, analyzer=True):
+        for term in tokenize(
+            doc=self.name,
+            stopwords=self.stopwords if stopwords else [],
+            stemmer=SnowballStemmer if stemmer else None,
+            analyzer=self.analyzer if analyzer else None
+        ):
             for subterm in term:
                 yield subterm
             if len(term) > 1:
                 return
 
     @property
-    def content(self):
-        return ' '.join(self.tokens)
+    def id(self):
+        tokens = self.tokenize()
+        return '_'.join(sorted(tokens))
+
+    def to_doc(self):
+        tokens = self.tokenize()
+        return ' '.join(tokens)
 
     def calculate_depth(self, graph, path=None):
         if self.depth is not None:

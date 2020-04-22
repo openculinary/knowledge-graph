@@ -31,7 +31,7 @@ class ProductGraph(object):
             if count % 1000 == 0:
                 print(f'- {count} documents indexed')
 
-            add_to_search_index(index, product.id, product.content)
+            add_to_search_index(index, product.id, product.to_doc())
             if product.id not in self.products_by_id:
                 self.products_by_id[product.id] = product
             else:
@@ -93,7 +93,7 @@ class ProductGraph(object):
         return self.stopwords
 
     def find_children(self, product):
-        hits = execute_query(self.index, product.content)
+        hits = execute_query(self.index, product.to_doc())
         for hit in hits:
             doc_id = hit['doc_id']
             if doc_id != product.id:
@@ -161,7 +161,10 @@ class ProductGraph(object):
                 parent = self.products_by_id[parent_id]
                 if primary_parent is None:
                     primary_parent = parent
-                if len(list(parent.tokens)) > len(list(primary_parent.tokens)):
+
+                parent_tokens = list(parent.tokenize())
+                primary_tokens = list(primary_parent.tokenize())
+                if len(parent_tokens) > len(primary_tokens):
                     primary_parent = parent
 
             # Assign the parent

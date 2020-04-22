@@ -72,18 +72,18 @@ def test_duplicate_consolidation():
     assert a1.id == a2.id == a3.id
 
 
-def test_stopword_token_filtering():
+def test_stopword_filtering():
     a1 = generate_product(name='chopped dried apricot')
     a1.stopwords = ['dri']
 
-    assert list(a1.tokens) == ['chop', 'apricot']
+    assert a1.to_doc() == 'chop apricot'
 
 
 def test_content_rendering():
     a1 = generate_product(name='chopped cooked chicken')
     a1.stopwords = ['chop', 'cook']
 
-    assert a1.content == 'chicken'
+    assert a1.to_doc() == 'chicken'
 
 
 def test_metadata():
@@ -163,4 +163,4 @@ def canonicalization_cases():
 def test_product_canonicalization(name, expected):
     product = Product(name=name)
 
-    assert product.content == expected
+    assert product.to_doc() == expected
