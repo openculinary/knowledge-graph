@@ -12,7 +12,7 @@ def test_ingredient_query(stopwords, hierarchy, client):
         Product(name='soy milk', frequency=5, parent_id=None),
     ]
     expected_products = {
-        'large onion, diced, ': 'onion',
+        'large onion, diced': 'onion',
         'soymilk': 'soy milk',
     }
 
