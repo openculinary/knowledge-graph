@@ -75,16 +75,16 @@ def query():
             analyzer=candidate.analyzer
         )
         for hit in hits:
-            doc_id, score = hit['doc_id'], hit['score']
+            doc_id, score, terms = hit['doc_id'], hit['score'], hit['terms']
             if score > scores[doc_id]:
-                results[doc_id] = candidate
+                results[doc_id] = candidate, terms
                 scores[doc_id] = score
 
     # Build per-product result metadata
     metadata = defaultdict(lambda: None)
-    for doc_id, product in results.items():
+    for doc_id, (product, terms) in results.items():
         description = descriptions[doc_id]
-        metadata[doc_id] = product.get_metadata(description, app.graph)
+        metadata[doc_id] = product.get_metadata(description, app.graph, terms)
 
     return jsonify({
         'results': {

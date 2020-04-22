@@ -110,13 +110,46 @@ class Product(object):
         self.depth = depth
         return depth
 
-    def get_metadata(self, description, graph):
+    def get_metadata(self, description, graph, terms=None):
         singular = Product.inflector.singular_noun(self.name)
         singular = singular or self.name
         plural = Product.inflector.plural_noun(singular)
         is_plural = plural in description
+        terms = terms or []
+
+        # Apply markup to the input description text
+        markup = ''
+        for term in terms:
+
+            # Generate unstemmed ngrams of the same length as the product match
+            n = len(term)
+            for tokens in tokenize(
+                doc=description,
+                ngrams=n,
+                stemmer=None,
+                analyzer=self.analyzer
+            ):
+                if len(tokens) < n:
+                    break
+
+                # Stem the original text to allow match equality comparsion
+                text = ' '.join(tokens)
+                for stemmed_tokens in tokenize(
+                    doc=text,
+                    ngrams=n,
+                    stemmer=self.stemmer,
+                    analyzer=self.analyzer
+                ):
+                    break
+
+                # Append the original text, marked, when we find a match
+                # Append the first consumed original token when we do not
+                mark = f'<mark>{text}</mark>'
+                markup += mark if stemmed_tokens == term else tokens[0]
+                markup += ' '
 
         return {
+            'markup': markup.strip() or None,
             'product': plural if is_plural else singular,
             'is_plural': is_plural,
             'singular': singular,
