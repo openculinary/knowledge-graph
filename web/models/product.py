@@ -8,7 +8,7 @@ class Product(object):
 
     inflector = inflect.engine()
 
-    def __init__(self, name, frequency, parent_id=None):
+    def __init__(self, name, frequency=0, parent_id=None):
         self.name = self.canonicalize(name)
         self.frequency = frequency
         self.parent_id = parent_id
