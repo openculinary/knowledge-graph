@@ -161,7 +161,7 @@ class ProductGraph(object):
                 parent = self.products_by_id[parent_id]
                 if primary_parent is None:
                     primary_parent = parent
-                if len(parent.tokens) > len(primary_parent.tokens):
+                if len(list(parent.tokens)) > len(list(primary_parent.tokens)):
                     primary_parent = parent
 
             # Assign the parent

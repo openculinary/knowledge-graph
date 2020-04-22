@@ -57,12 +57,11 @@ class Product(object):
 
     @property
     def tokens(self):
-        terms = tuple()
         for term in tokenize(self.name, self.stopwords):
+            for subterm in term:
+                yield subterm
             if len(term) > 1:
-                return term
-            terms += term
-        return terms
+                return
 
     @property
     def content(self):

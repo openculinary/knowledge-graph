@@ -26,6 +26,9 @@ def test_merge_products():
     assert a1.frequency == 12
     assert a1.name == 'liquid smoke'
 
+    assert a1.id == 'liquid_smoke'
+    assert a2.id == a1.id
+
 
 def test_calculate_depth():
     a1 = generate_product(name='a1')
@@ -73,7 +76,7 @@ def test_stopword_token_filtering():
     a1 = generate_product(name='chopped dried apricot')
     a1.stopwords = ['dri']
 
-    assert a1.tokens == ('chop', 'apricot')
+    assert list(a1.tokens) == ['chop', 'apricot']
 
 
 def test_content_rendering():
