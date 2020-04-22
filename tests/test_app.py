@@ -17,6 +17,7 @@ def test_ingredient_query(stopwords, hierarchy, client):
         Product(name='firm tofu', frequency=10, parent_id='tofu'),
         Product(name='soft tofu', frequency=5, parent_id='tofu'),
         Product(name='soy milk', frequency=5, parent_id=None),
+        Product(name='red bell pepper', frequency=5, parent_id=None),
     ]
     expected_products = {
         'large onion, diced': 'onion',
@@ -26,6 +27,7 @@ def test_ingredient_query(stopwords, hierarchy, client):
         'pressed soft tofu': 'soft tofu',
         'soymilk': 'soy milk',
         'quart of soymilk in a cup': 'soy milk',
+        'sliced red bell pepper as filling': 'red bell pepper',
     }
 
     results = client.post(
