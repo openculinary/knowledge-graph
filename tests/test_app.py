@@ -32,10 +32,10 @@ def test_ingredient_query(stopwords, hierarchy, client):
 
     remove_punctuation = str.maketrans('', '', punctuation)
     for description, product in expected_products.items():
-        simplified_description = description.translate(remove_punctuation)
+        basic_description = description.translate(remove_punctuation)
         markup = results[description]['markup']
         tagged_product = f'<mark>{product}</mark>'
 
         assert results[description]['product'] == product
         assert tagged_product in markup
-        assert markup.replace(tagged_product, product) == simplified_description
+        assert markup.replace(tagged_product, product) == basic_description
