@@ -56,9 +56,9 @@ def tokenize(doc, stopwords=None, ngrams=None, stemmer=SnowballStemmer,
             yield term
 
 
-def add_to_search_index(index, doc_id, doc, stopwords=None):
+def add_to_search_index(index, doc_id, doc, stopwords=None, analyzer=None):
     stopwords = stopwords or []
-    for term in tokenize(doc, stopwords):
+    for term in tokenize(doc, stopwords=stopwords, analyzer=analyzer):
         index.add_term_occurrence(term, doc_id)
 
 
@@ -76,17 +76,18 @@ def execute_exact_query(index, term):
             return doc_id
 
 
-def execute_queries(index, queries, stopwords=None, query_limit=1):
+def execute_queries(index, queries, stopwords=None, analyzer=None,
+                    query_limit=1):
     for query in queries:
-        hits = execute_query(index, query, stopwords, query_limit)
+        hits = execute_query(index, query, stopwords, analyzer, query_limit)
         if hits:
             yield query, hits
 
 
-def execute_query(index, query, stopwords=None, query_limit=1):
+def execute_query(index, query, stopwords=None, analyzer=None, query_limit=1):
     hits = defaultdict(lambda: 0)
     query_count = 0
-    for term in tokenize(query, stopwords):
+    for term in tokenize(query, stopwords=stopwords, analyzer=analyzer):
         query_count += 1
         try:
             for doc_id in index.get_documents(term):
