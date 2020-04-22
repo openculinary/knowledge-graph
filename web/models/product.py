@@ -49,8 +49,10 @@ class Product(object):
 
     @staticmethod
     def canonicalize(name, stopwords=None):
+        from web.loader import canonicalizations
         words = name.split(' ')
         words = [word for word in words if list(tokenize(word, stopwords))]
+        words = [canonicalizations.get(word) or word for word in words]
         return ' '.join(words)
 
     @property
