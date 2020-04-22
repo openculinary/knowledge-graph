@@ -49,6 +49,18 @@ def test_stemming_consistency():
     assert hits
 
 
+def test_analysis_consistency():
+    content = Product(name='soymilk', frequency=1)
+    synonyms = {'soymilk': 'soy milk'}
+    analyzer = SynonymAnalyzer(synonyms=synonyms)
+
+    index = build_search_index()
+    add_to_search_index(index, 0, content.content, analyzer=analyzer)
+    hits = execute_queries(index, ['soy milk'], analyzer=analyzer)
+
+    assert hits
+
+
 def test_exact_match():
     content = 'whole onion'
     stopwords = ['whole']
