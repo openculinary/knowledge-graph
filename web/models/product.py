@@ -92,14 +92,25 @@ class Product(object):
         is_plural = plural in description
         terms = terms or []
 
+        # Apply markup to the input description text
         markup = ''
         for term in terms:
+
+            # Generate unstemmed ngrams of the same length as the product match
             n = len(term)
-            for unstemmed_tokens in tokenize(description, ngrams=n, stemmer=None):
-                text = ' '.join(unstemmed_tokens)
+            for tokens in tokenize(description, ngrams=n, stemmer=None):
+                if len(tokens) < n:
+                    break
+
+                # Stem the original text to allow match equality comparsion
+                text = ' '.join(tokens)
                 for stemmed_tokens in tokenize(text, ngrams=n):
                     break
-                markup += f'<mark>{text}</mark>' if stemmed_tokens == term else text
+
+                # Append the original text, marked, when we find a match
+                # Append the first consumed original token when we do not
+                mark = f'<mark>{text}</mark>'
+                markup += mark if stemmed_tokens == term else tokens[0]
                 markup += ' '
 
         return {
