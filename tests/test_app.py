@@ -9,9 +9,12 @@ def test_ingredient_query(stopwords, hierarchy, client):
     stopwords.return_value = []
     hierarchy.return_value = [
         Product(name='onion', frequency=10, parent_id=None),
+        Product(name='baked bean', frequency=5, parent_id='bean'),
+        Product(name='bean', frequency=20, parent_id=None),
     ]
     expected_products = {
         'large onion, diced, ': 'onion',
+        'can of baked beans': 'baked beans',
     }
 
     results = client.post(

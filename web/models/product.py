@@ -1,3 +1,4 @@
+from hashedindex.textparser import get_ngrams
 import inflect
 import json
 
@@ -91,13 +92,18 @@ class Product(object):
         is_plural = plural in description
         terms = terms or []
 
-        markup = description
+        markup = ''
         for term in terms:
-            mark = ' '.join(term)
-            markup = description.replace(mark, f'<mark>{mark}</mark>')
+            n = len(term)
+            for unstemmed_tokens in tokenize(description, ngrams=n, stemmer=None):
+                text = ' '.join(unstemmed_tokens)
+                for stemmed_tokens in tokenize(text, ngrams=n):
+                    break
+                markup += f'<mark>{text}</mark>' if stemmed_tokens == term else text
+                markup += ' '
 
         return {
-            'markup': markup,
+            'markup': markup.strip() or None,
             'product': plural if is_plural else singular,
             'is_plural': is_plural,
             'singular': singular,
