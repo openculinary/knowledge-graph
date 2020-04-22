@@ -45,7 +45,7 @@ def test_token_synonyms():
         analyzer=analyzer
     ))
 
-    assert tokens == [('soy', 'milk'), ('soy',), ('milk',)]
+    assert tokens == [('soy', 'milk'), ('soy',), ('milk',), ()]
 
 
 def test_stemming_consistency():

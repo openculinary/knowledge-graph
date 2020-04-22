@@ -45,6 +45,7 @@ def tokenize(doc, stopwords=None, ngrams=None, stemmer=None, analyzer=None):
     for ngrams in range(ngrams, 0, -1):
         for term in word_tokenize(doc, stopwords, ngrams, stemmer=stemmer):
             yield term
+    yield tuple()
 
 
 def add_to_search_index(index, doc_id, doc, stopwords=None, stemmer=None,
@@ -55,7 +56,8 @@ def add_to_search_index(index, doc_id, doc, stopwords=None, stemmer=None,
             stopwords=stopwords,
             stemmer=stemmer,
             analyzer=analyzer):
-        index.add_term_occurrence(term, doc_id)
+        if term:
+            index.add_term_occurrence(term, doc_id)
 
 
 def build_search_index():

@@ -25,6 +25,7 @@ def test_ingredient_query(stopwords, hierarchy, client):
         'block tofu': 'tofu',
         'pressed soft tofu': 'soft tofu',
         'soymilk': 'soy milk',
+        'quart of soymilk in a cup': 'soy milk',
     }
 
     results = client.post(

@@ -122,7 +122,9 @@ class Product(object):
         for term in terms:
 
             # Generate unstemmed ngrams of the same length as the product match
+            remaining_tokens = None
             n = len(term)
+            tag = 0
             for tokens in tokenize(
                 doc=description,
                 ngrams=n,
@@ -130,7 +132,18 @@ class Product(object):
                 analyzer=self.analyzer
             ):
                 if len(tokens) < n:
+                    markup += ' ' if remaining_tokens else ''
+                    markup += ' '.join(remaining_tokens)
+                    tag = 1 if tag > 0 else 0
+
+                tag -= 1
+                if tag == 0:
+                    markup += '</mark>'
+
+                if len(tokens) < n:
                     break
+
+                markup += ' '
 
                 # Stem the original text to allow match equality comparsion
                 text = ' '.join(tokens)
@@ -142,11 +155,14 @@ class Product(object):
                 ):
                     break
 
-                # Append the original text, marked, when we find a match
-                # Append the first consumed original token when we do not
-                mark = f'<mark>{text}</mark>'
-                markup += mark if stemmed_tokens == term else tokens[0]
-                markup += ' '
+                # Open a tag marker when we find a matching term
+                if stemmed_tokens == term:
+                    markup += f'<mark>'
+                    tag = n
+
+                # Append the next consumed original token when we do not
+                markup += f'{tokens[0]}'
+                remaining_tokens = tokens[1:]
 
         return {
             'markup': markup.strip() or None,
