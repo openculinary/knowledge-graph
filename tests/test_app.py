@@ -24,4 +24,6 @@ def test_ingredient_query(stopwords, hierarchy, client):
 
     for description, product in expected_products.items():
         assert results[description]['product'] == product
-        assert f'<mark>{product}</mark>' in results[description]['markup']
+        markup = results[description]['markup']
+        tagged_product = f'<mark>{product}</mark>'
+        assert tagged_product in markup
