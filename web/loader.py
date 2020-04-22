@@ -46,12 +46,6 @@ def prefilter(name):
     if open_parens > 0 and close_parens > open_parens:
         name = name[:open_parens - 1] + name[close_parens + 1:]
 
-    # Remove punctuation in-between words
-    name = ' '.join([
-        word.strip(string.punctuation)
-        for word in name.split(' ')
-    ])
-
     # Attempt ingreedy-py parsing; drop quantity-related text on success
     try:
         parse = Ingreedy().parse(name)
