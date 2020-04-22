@@ -1,3 +1,4 @@
+from web.models.product import Product
 from web.search import (
     add_to_search_index,
     build_search_index,
@@ -31,7 +32,7 @@ class ProductGraph(object):
             if count % 1000 == 0:
                 print(f'- {count} documents indexed')
 
-            add_to_search_index(index, product.id, product.content)
+            add_to_search_index(index, product.id, product.to_doc())
             if product.id not in self.products_by_id:
                 self.products_by_id[product.id] = product
             else:
@@ -45,7 +46,7 @@ class ProductGraph(object):
                 if line.startswith('#'):
                     continue
                 line = line.strip().lower()
-                for term in tokenize(line):
+                for term in tokenize(line, stemmer=Product.stemmer):
                     yield term[0]
 
     def calculate_stopwords(self):
@@ -61,7 +62,11 @@ class ProductGraph(object):
         clearwords = list(self.get_clearwords())
         stopwords = stopwords or self.calculate_stopwords()
         for stopword in stopwords:
-            for term in tokenize(stopword, clearwords):
+            for term in tokenize(
+                doc=stopword,
+                stopwords=clearwords,
+                stemmer=Product.stemmer
+            ):
                 if execute_exact_query(self.index, term):
                     continue
                 yield stopword
@@ -82,7 +87,11 @@ class ProductGraph(object):
 
     def filter_products(self):
         for product in self.products_by_id.values():
-            for term in tokenize(product.name, ngrams=1):
+            for term in tokenize(
+                doc=product.name,
+                ngrams=1,
+                stemmer=Product.stemmer
+            ):
                 doc_id = execute_exact_query(self.stopword_index, term)
                 if doc_id is not None:
                     product.stopwords.append(self.stopwords[doc_id])
@@ -93,7 +102,7 @@ class ProductGraph(object):
         return self.stopwords
 
     def find_children(self, product):
-        hits = execute_query(self.index, product.content)
+        hits = execute_query(self.index, product.to_doc())
         for hit in hits:
             doc_id = hit['doc_id']
             if doc_id != product.id:
@@ -161,7 +170,10 @@ class ProductGraph(object):
                 parent = self.products_by_id[parent_id]
                 if primary_parent is None:
                     primary_parent = parent
-                if len(parent.tokens) > len(primary_parent.tokens):
+
+                parent_tokens = list(parent.tokenize())
+                primary_tokens = list(primary_parent.tokenize())
+                if len(parent_tokens) > len(primary_tokens):
                     primary_parent = parent
 
             # Assign the parent

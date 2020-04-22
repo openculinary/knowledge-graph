@@ -2,7 +2,6 @@ from mock import patch
 
 from string import punctuation
 
-from web.loader import canonicalize
 from web.models.product import Product
 
 
@@ -25,7 +24,7 @@ def test_ingredient_query(stopwords, hierarchy, client):
         'block of firm tofu': 'firm tofu',
         'block tofu': 'tofu',
         'pressed soft tofu': 'soft tofu',
-        'soymilk': 'soymilk',
+        'soymilk': 'soy milk',
     }
 
     results = client.post(
@@ -35,8 +34,9 @@ def test_ingredient_query(stopwords, hierarchy, client):
 
     remove_punctuation = str.maketrans('', '', punctuation)
     for description, product in expected_products.items():
-        product = canonicalize(product)
-        basic_description = description.translate(remove_punctuation)
+        basic_description = ' '.join(Product.analyzer.process(description))
+        basic_description = basic_description.translate(remove_punctuation)
+
         markup = results[description]['markup']
         tagged_product = f'<mark>{product}</mark>'
 

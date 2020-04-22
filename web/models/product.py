@@ -1,15 +1,43 @@
 import inflect
 import json
 
-from web.search import tokenize
+from snowballstemmer import stemmer
+
+from web.search import (
+    tokenize,
+    SynonymAnalyzer,
+)
 
 
 class Product(object):
 
+    class ProductStemmer:
+
+        stemmer_en = stemmer('english')
+
+        def stem(self, x):
+            # TODO: Remove double-stemming
+            # mayonnaise -> mayonnais -> mayonnai
+            return self.stemmer_en.stemWord(self.stemmer_en.stemWord(x))
+
+    class ProductAnalyzer(SynonymAnalyzer):
+
+        def __init__(self):
+            canonicalizations = {}
+            with open('web/data/canonicalizations.txt') as f:
+                for line in f.readlines():
+                    if line.startswith('#'):
+                        continue
+                    source, target = line.strip().split(',')
+                    canonicalizations[source] = target
+            super().__init__(canonicalizations)
+
+    stemmer = ProductStemmer()
+    analyzer = ProductAnalyzer()
     inflector = inflect.engine()
 
-    def __init__(self, name, frequency, parent_id=None):
-        self.name = self.canonicalize(name)
+    def __init__(self, name, frequency=0, parent_id=None):
+        self.name = name
         self.frequency = frequency
         self.parent_id = parent_id
 
@@ -31,7 +59,7 @@ class Product(object):
 
     def to_dict(self, include_hierarchy=False):
         data = {
-            'product': self.canonicalize(self.name, self.stopwords),
+            'product': self.name,
             'recipe_count': self.frequency
         }
         if include_hierarchy:
@@ -43,28 +71,26 @@ class Product(object):
             })
         return data
 
+    def tokenize(self, stopwords=True, stemmer=True, analyzer=True):
+        for term in tokenize(
+            doc=self.name,
+            stopwords=self.stopwords if stopwords else [],
+            stemmer=self.stemmer if stemmer else None,
+            analyzer=self.analyzer if analyzer else None
+        ):
+            for subterm in term:
+                yield subterm
+            if len(term) > 1:
+                return
+
     @property
     def id(self):
-        return '_'.join(sorted(self.tokens))
+        tokens = self.tokenize()
+        return '_'.join(sorted(tokens))
 
-    @staticmethod
-    def canonicalize(name, stopwords=None):
-        words = name.split(' ')
-        words = [word for word in words if list(tokenize(word, stopwords))]
-        return ' '.join(words)
-
-    @property
-    def tokens(self):
-        terms = tuple()
-        for term in tokenize(self.name, self.stopwords):
-            if len(term) > 1:
-                return term
-            terms += term
-        return terms
-
-    @property
-    def content(self):
-        return ' '.join(self.tokens)
+    def to_doc(self):
+        tokens = self.tokenize()
+        return ' '.join(tokens)
 
     def calculate_depth(self, graph, path=None):
         if self.depth is not None:
@@ -97,13 +123,23 @@ class Product(object):
 
             # Generate unstemmed ngrams of the same length as the product match
             n = len(term)
-            for tokens in tokenize(description, ngrams=n, stemmer=None):
+            for tokens in tokenize(
+                doc=description,
+                ngrams=n,
+                stemmer=None,
+                analyzer=self.analyzer
+            ):
                 if len(tokens) < n:
                     break
 
                 # Stem the original text to allow match equality comparsion
                 text = ' '.join(tokens)
-                for stemmed_tokens in tokenize(text, ngrams=n):
+                for stemmed_tokens in tokenize(
+                    doc=text,
+                    ngrams=n,
+                    stemmer=self.stemmer,
+                    analyzer=self.analyzer
+                ):
                     break
 
                 # Append the original text, marked, when we find a match

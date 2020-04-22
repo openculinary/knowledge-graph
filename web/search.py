@@ -1,25 +1,43 @@
 from collections import defaultdict
 
 from hashedindex import HashedIndex
-from hashedindex.textparser import word_tokenize
-from snowballstemmer import stemmer
+from hashedindex.textparser import (
+    word_tokenize,
+    NullStemmer,
+)
 
 
-class SnowballStemmer():
+class NullAnalyzer():
 
-    stemmer_en = stemmer('english')
+    def process(self, input):
+        for token in input.split(' '):
+            for result in self.analyze_token(token):
+                yield result
 
-    def stem(self, x):
-        # TODO: Remove double-stemming
-        # mayonnaise -> mayonnais -> mayonnai
-        return self.stemmer_en.stemWord(self.stemmer_en.stemWord(x))
+    def analyze_token(self, token):
+        yield token
 
 
-def tokenize(doc, stopwords=None, ngrams=None, stemmer=SnowballStemmer):
+class SynonymAnalyzer(NullAnalyzer):
+
+    def __init__(self, synonyms):
+        self.synonyms = synonyms
+
+    def analyze_token(self, token):
+        token = self.synonyms.get(token) or token
+        for token in token.split(' '):
+            yield token
+
+
+def tokenize(doc, stopwords=None, ngrams=None, stemmer=None, analyzer=None):
     stopwords = stopwords or []
-    stemmer = stemmer() if stemmer else None
+    stemmer = stemmer or NullStemmer()
+    analyzer = analyzer or NullAnalyzer()
 
-    word_count = len(doc.split(' '))
+    words = list(analyzer.process(doc))
+    word_count = len(words)
+    doc = ' '.join(words)
+
     ngrams = ngrams or word_count
     ngrams = min(ngrams, word_count, 4)
     ngrams = max(ngrams, 1)
@@ -29,9 +47,14 @@ def tokenize(doc, stopwords=None, ngrams=None, stemmer=SnowballStemmer):
             yield term
 
 
-def add_to_search_index(index, doc_id, doc, stopwords=None):
+def add_to_search_index(index, doc_id, doc, stopwords=None, stemmer=None,
+                        analyzer=None):
     stopwords = stopwords or []
-    for term in tokenize(doc, stopwords):
+    for term in tokenize(
+            doc=doc,
+            stopwords=stopwords,
+            stemmer=stemmer,
+            analyzer=analyzer):
         index.add_term_occurrence(term, doc_id)
 
 
@@ -49,18 +72,28 @@ def execute_exact_query(index, term):
             return doc_id
 
 
-def execute_queries(index, queries, stopwords=None, query_limit=1):
+def execute_queries(index, queries, stopwords=None, stemmer=None,
+                    analyzer=None, query_limit=1):
     for query in queries:
-        hits = execute_query(index, query, stopwords, query_limit)
+        hits = execute_query(
+            index=index,
+            query=query,
+            stopwords=stopwords,
+            stemmer=stemmer,
+            analyzer=analyzer,
+            query_limit=query_limit
+        )
         if hits:
             yield query, hits
 
 
-def execute_query(index, query, stopwords=None, query_limit=1):
+def execute_query(index, query, stopwords=None, stemmer=None, analyzer=None,
+                  query_limit=1):
     hits = defaultdict(lambda: 0)
     terms = defaultdict(lambda: [])
     query_count = 0
-    for term in tokenize(query, stopwords):
+    for term in tokenize(query, stopwords=stopwords, stemmer=stemmer,
+                         analyzer=analyzer):
         query_count += 1
         try:
             for doc_id in index.get_documents(term):
