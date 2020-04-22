@@ -15,9 +15,9 @@ class SnowballStemmer():
         return self.stemmer_en.stemWord(self.stemmer_en.stemWord(x))
 
 
-def tokenize(doc, stopwords=None, ngrams=None):
+def tokenize(doc, stopwords=None, ngrams=None, stemmer=SnowballStemmer):
     stopwords = stopwords or []
-    stemmer = SnowballStemmer()
+    stemmer = stemmer() if stemmer else None
 
     word_count = len(doc.split(' '))
     ngrams = ngrams or word_count
