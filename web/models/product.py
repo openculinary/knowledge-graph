@@ -1,7 +1,7 @@
 import inflect
 import json
 
-from web.search import tokenize
+from web.search import tokenize, SynonymAnalyzer
 
 
 class Product(object):
@@ -9,7 +9,7 @@ class Product(object):
     inflector = inflect.engine()
 
     def __init__(self, name, frequency=0, parent_id=None):
-        self.name = self.canonicalize(name)
+        self.name = name
         self.frequency = frequency
         self.parent_id = parent_id
 
@@ -31,7 +31,7 @@ class Product(object):
 
     def to_dict(self, include_hierarchy=False):
         data = {
-            'product': self.canonicalize(self.name, self.stopwords),
+            'product': self.content,
             'recipe_count': self.frequency
         }
         if include_hierarchy:
@@ -47,17 +47,12 @@ class Product(object):
     def id(self):
         return '_'.join(sorted(self.tokens))
 
-    @staticmethod
-    def canonicalize(name, stopwords=None):
-        from web.loader import canonicalizations
-        words = name.split(' ')
-        words = [word for word in words if list(tokenize(word, stopwords))]
-        words = [canonicalizations.get(word) or word for word in words]
-        return ' '.join(words)
-
     @property
     def tokens(self):
-        for term in tokenize(self.name, self.stopwords):
+        from web.loader import canonicalizations
+        analyzer = SynonymAnalyzer(canonicalizations)
+
+        for term in tokenize(self.name, self.stopwords, analyzer=analyzer):
             for subterm in term:
                 yield subterm
             if len(term) > 1:

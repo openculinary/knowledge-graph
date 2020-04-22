@@ -149,3 +149,18 @@ def test_product_categories(name, category):
     product = generate_product(name=name)
 
     assert product.category == category
+
+
+def canonicalization_cases():
+    return {
+        'cod filet': 'cod fillet',
+        'black beans': 'black beans',
+        'coriander': 'cilantro',
+    }.items()
+
+
+@pytest.mark.parametrize('name,expected', canonicalization_cases())
+def test_product_canonicalization(name, expected):
+    product = Product(name=name)
+
+    assert product.content == expected

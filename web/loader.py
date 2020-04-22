@@ -61,12 +61,6 @@ def canonicalize(name):
         for word in name.split(' ')
     ])
 
-    # Canonicalize each word
-    name = ' '.join([
-        canonicalizations.get(word) or word
-        for word in name.split(' ')
-    ])
-
     # Attempt ingreedy-py parsing; drop quantity-related text on success
     try:
         parse = Ingreedy().parse(name)
