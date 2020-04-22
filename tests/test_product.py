@@ -26,6 +26,9 @@ def test_merge_products():
     assert a1.frequency == 12
     assert a1.name == 'liquid smoke'
 
+    assert a1.id == 'liquid_smoke'
+    assert a2.id == a1.id
+
 
 def test_calculate_depth():
     a1 = generate_product(name='a1')
@@ -69,18 +72,18 @@ def test_duplicate_consolidation():
     assert a1.id == a2.id == a3.id
 
 
-def test_stopword_token_filtering():
+def test_stopword_filtering():
     a1 = generate_product(name='chopped dried apricot')
     a1.stopwords = ['dri']
 
-    assert a1.tokens == ('chop', 'apricot')
+    assert a1.to_doc() == 'chop apricot'
 
 
 def test_content_rendering():
     a1 = generate_product(name='chopped cooked chicken')
     a1.stopwords = ['chop', 'cook']
 
-    assert a1.content == 'chicken'
+    assert a1.to_doc() == 'chicken'
 
 
 def test_metadata():
@@ -146,3 +149,18 @@ def test_product_categories(name, category):
     product = generate_product(name=name)
 
     assert product.category == category
+
+
+def canonicalization_cases():
+    return {
+        'cod filet': 'cod fillet',
+        'black beans': 'black bean',
+        'coriander': 'cilantro',
+    }.items()
+
+
+@pytest.mark.parametrize('name,expected', canonicalization_cases())
+def test_product_canonicalization(name, expected):
+    product = Product(name=name)
+
+    assert product.to_doc() == expected

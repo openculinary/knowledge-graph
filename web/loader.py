@@ -2,7 +2,6 @@ import json
 import os
 import re
 import requests
-import string
 
 from ingreedypy import Ingreedy
 
@@ -14,15 +13,6 @@ CACHE_PATHS = {
     'products': 'web/data/generated/ingredients.json',
     'stopwords': 'web/data/generated/stopwords.txt',
 }
-
-
-canonicalizations = {}
-with open('web/data/canonicalizations.txt') as f:
-    for line in f.readlines():
-        if line.startswith('#'):
-            continue
-        source, target = line.strip().split(',')
-        canonicalizations[source] = target
 
 
 def discard(product):
@@ -47,25 +37,13 @@ def discard(product):
     return False
 
 
-def canonicalize(name):
+def prefilter(name):
 
     # Remove text enclosed by parentheses
     open_parens = name.find('(')
     close_parens = name.rfind(')')
     if open_parens > 0 and close_parens > open_parens:
         name = name[:open_parens - 1] + name[close_parens + 1:]
-
-    # Remove punctuation in-between words
-    name = ' '.join([
-        word.strip(string.punctuation)
-        for word in name.split(' ')
-    ])
-
-    # Canonicalize each word
-    name = ' '.join([
-        canonicalizations.get(word) or word
-        for word in name.split(' ')
-    ])
 
     # Attempt ingreedy-py parsing; drop quantity-related text on success
     try:
@@ -103,7 +81,7 @@ def retrieve_products(filename):
             continue
 
         yield Product(
-            name=canonicalize(product['product']),
+            name=prefilter(product['product']),
             frequency=product['recipe_count']
         )
     print(f'- {count} products loaded')

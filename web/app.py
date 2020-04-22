@@ -4,10 +4,10 @@ from flask import Flask, jsonify, request
 
 from web.loader import (
     CACHE_PATHS,
-    canonicalize,
     retrieve_hierarchy,
     retrieve_stopwords,
 )
+from web.models.product import Product
 from web.models.product_graph import ProductGraph
 from web.search import (
     add_to_search_index,
@@ -32,11 +32,14 @@ def preload_graph():
     app.stopwords = app.graph.filter_stopwords()
 
 
-def find_product_candidates(descriptions):
+def find_product_candidates(products):
+    queries = [product.name for product in products]
     results = execute_queries(
         index=app.graph.index,
-        queries=descriptions,
+        queries=queries,
         stopwords=app.stopwords,
+        stemmer=Product.stemmer,
+        analyzer=Product.analyzer,
         query_limit=-1
     )
     for description, hits in results:
@@ -47,34 +50,39 @@ def find_product_candidates(descriptions):
 
 @app.route('/ingredients/query', methods=['POST'])
 def query():
-    # Retrieve and canonicalize the query input descriptions
     descriptions = request.form.getlist('descriptions[]')
-    canonicalizations = [
-        canonicalize(description) for description in descriptions
-    ]
+    products = [Product(name=description) for description in descriptions]
 
-    # Build a local search index over the canonicalized descriptions
+    # Build a local search index over the product descriptions
     description_index = build_search_index()
-    for doc_id, doc in enumerate(canonicalizations):
-        add_to_search_index(description_index, doc_id, doc)
+    for doc_id, product in enumerate(products):
+        add_to_search_index(
+            index=description_index,
+            doc_id=doc_id,
+            doc=product.name,
+            stemmer=product.stemmer,
+            analyzer=product.analyzer
+        )
 
-    # Track the best match for each canonicalized description
-    products = defaultdict(lambda: None)
+    # Track the best match for each product
+    results = defaultdict(lambda: None)
     scores = defaultdict(lambda: 0.0)
-    for candidate in find_product_candidates(canonicalizations):
+    for candidate in find_product_candidates(products):
         hits = execute_query(
             index=description_index,
-            query=candidate.name
+            query=candidate.name,
+            stemmer=candidate.stemmer,
+            analyzer=candidate.analyzer
         )
         for hit in hits:
             doc_id, score = hit['doc_id'], hit['score']
             if score > scores[doc_id]:
-                products[doc_id] = candidate
+                results[doc_id] = candidate
                 scores[doc_id] = score
 
     # Build per-product result metadata
     metadata = defaultdict(lambda: None)
-    for doc_id, product in products.items():
+    for doc_id, product in results.items():
         description = descriptions[doc_id]
         metadata[doc_id] = product.get_metadata(description, app.graph)
 
