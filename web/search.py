@@ -15,11 +15,38 @@ class SnowballStemmer():
         return self.stemmer_en.stemWord(self.stemmer_en.stemWord(x))
 
 
-def tokenize(doc, stopwords=None, ngrams=None, stemmer=SnowballStemmer):
+class NullAnalyzer():
+
+    def process(self, input):
+        for token in input.split(' '):
+            for result in self.analyze_token(token):
+                yield result
+
+    def analyze_token(self, token):
+        yield token
+
+
+class SynonymAnalyzer(NullAnalyzer):
+
+    def __init__(self, synonyms):
+        self.synonyms = synonyms
+
+    def analyze_token(self, token):
+        token = self.synonyms.get(token) or token
+        for token in token.split(' '):
+            yield token
+
+
+def tokenize(doc, stopwords=None, ngrams=None, stemmer=SnowballStemmer,
+             analyzer=None):
     stopwords = stopwords or []
     stemmer = stemmer() if stemmer else None
+    analyzer = analyzer or NullAnalyzer()
 
-    word_count = len(doc.split(' '))
+    words = list(analyzer.process(doc))
+    word_count = len(words)
+    doc = ' '.join(words)
+
     ngrams = ngrams or word_count
     ngrams = min(ngrams, word_count, 4)
     ngrams = max(ngrams, 1)

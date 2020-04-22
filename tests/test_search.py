@@ -5,6 +5,7 @@ from web.search import (
     execute_exact_query,
     execute_queries,
     tokenize,
+    SynonymAnalyzer,
 )
 
 
@@ -24,6 +25,16 @@ def test_token_stemming():
     tokens = list(tokenize(content, stopwords))
 
     assert tokens[0] == ('onion',)
+
+
+def test_token_synonyms():
+    content = 'soymilk'
+    synonyms = {'soymilk': 'soy milk'}
+
+    analyzer = SynonymAnalyzer(synonyms=synonyms)
+    tokens = list(tokenize(content, analyzer=analyzer))
+
+    assert tokens == [('soy', 'milk'), ('soy',), ('milk',)]
 
 
 def test_stemming_consistency():
