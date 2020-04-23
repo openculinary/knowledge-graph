@@ -115,6 +115,66 @@ def execute_query(index, query, stopwords=None, stemmer=None, analyzer=None,
     return sorted(hits, key=lambda hit: hit['score'], reverse=True)
 
 
+def markup_query(query, terms, stemmer, analyzer):
+
+    # Apply markup to the input query
+    markup = ''
+    for term in terms:
+
+        # Generate unstemmed ngrams of the same length as the product match
+        remaining_tokens = []
+        n = len(term)
+        tag = 0
+        for tokens in tokenize(
+            doc=query,
+            ngrams=n,
+            stemmer=None,
+            analyzer=analyzer
+        ):
+            # If generated tokens are depleted, consume remaining tokens
+            if len(tokens) < n and len(remaining_tokens) > 0:
+                tokens = remaining_tokens
+
+            # Continue token-by-token advancement, closing any open tags
+            tag -= 1
+            if tag == 0:
+                markup += '</mark>'
+
+            # If tokens are depleted and a tag is open, close after the tag
+            if len(tokens) < n and tag > 0:
+                markup += f' {" ".join(tokens[:tag])}'
+                markup += '</mark>'
+                tokens = tokens[tag:]
+
+            # If tokens are depleted, write remaining tokens to the output
+            if len(tokens) < n:
+                markup += f' {" ".join(tokens)}'
+                break
+
+            markup += ' '
+
+            # Stem the original text to allow match equality comparsion
+            text = ' '.join(tokens)
+            for stemmed_tokens in tokenize(
+                doc=text,
+                ngrams=n,
+                stemmer=stemmer,
+                analyzer=analyzer
+            ):
+                break
+
+            # Open a tag marker when we find a matching term
+            if stemmed_tokens == term:
+                markup += f'<mark>'
+                tag = n
+
+            # Append the next consumed original token when we do not
+            markup += f'{tokens[0]}'
+            remaining_tokens = tokens[1:]
+
+    return markup.strip()
+
+
 def load_queries(filename):
     with open(filename) as f:
         return [line.strip().lower() for line in f.readlines()]

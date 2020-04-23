@@ -40,9 +40,9 @@ def test_ingredient_query(stopwords, hierarchy, client):
         basic_description = ' '.join(Product.analyzer.process(description))
         basic_description = basic_description.translate(remove_punctuation)
 
-        markup = results[description]['markup']
+        markup = results[description]['query']['markup']
         tagged_product = f'<mark>{product}</mark>'
 
-        assert results[description]['product'] == product
+        assert results[description]['product']['product'] == product
         assert tagged_product in markup
         assert markup.replace(tagged_product, product) == basic_description
