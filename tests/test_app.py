@@ -53,6 +53,7 @@ def test_ingredient_query(stopwords, hierarchy, client):
         markup = results[description]['query']['markup']
         tagged_product = f'<mark id="{product_id}">{product}</mark>'
 
+        assert results[description]['product']['id'] == product_id
         assert results[description]['product']['product'] == product
         assert tagged_product in markup
         assert markup.replace(tagged_product, product) == basic_description

@@ -117,6 +117,7 @@ class Product(object):
         is_plural = plural in description
 
         return {
+            'id': self.id,
             'product': plural if is_plural else singular,
             'is_plural': is_plural,
             'singular': singular,
