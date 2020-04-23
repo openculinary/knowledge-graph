@@ -87,6 +87,7 @@ def query():
     for doc_id, (product, terms) in results.items():
         description = descriptions[doc_id]
         markup[doc_id] = markup_query(
+            entity_id=product.id,
             query=description,
             terms=terms,
             stemmer=product.stemmer,

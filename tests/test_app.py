@@ -21,13 +21,22 @@ def test_ingredient_query(stopwords, hierarchy, client):
     ]
     expected_products = {
         'large onion, diced': 'onion',
-        'can of baked beans': 'baked beans',
-        'block of firm tofu': 'firm tofu',
+        'can of baked beans': 'bake_bean',
+        'block of firm tofu': 'firm_tofu',
         'block tofu': 'tofu',
-        'pressed soft tofu': 'soft tofu',
-        'soymilk': 'soy milk',
-        'quart of soymilk in a cup': 'soy milk',
-        'sliced red bell pepper as filling': 'red bell pepper',
+        'pressed soft tofu': 'soft_tofu',
+        'soymilk': 'milk_soy',
+        'quart of soymilk in a cup': 'milk_soy',
+        'sliced red bell pepper as filling': 'bell_pepper_red',
+    }
+    products = {
+        'onion': 'onion',
+        'bake_bean': 'baked beans',
+        'firm_tofu': 'firm tofu',
+        'tofu': 'tofu',
+        'soft_tofu': 'soft tofu',
+        'milk_soy': 'soy milk',
+        'bell_pepper_red': 'red bell pepper',
     }
 
     results = client.post(
@@ -36,12 +45,13 @@ def test_ingredient_query(stopwords, hierarchy, client):
     ).json['results']
 
     remove_punctuation = str.maketrans('', '', punctuation)
-    for description, product in expected_products.items():
+    for description, product_id in expected_products.items():
         basic_description = ' '.join(Product.analyzer.process(description))
         basic_description = basic_description.translate(remove_punctuation)
 
+        product = products[product_id]
         markup = results[description]['query']['markup']
-        tagged_product = f'<mark>{product}</mark>'
+        tagged_product = f'<mark id="{product_id}">{product}</mark>'
 
         assert results[description]['product']['product'] == product
         assert tagged_product in markup
