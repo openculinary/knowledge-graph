@@ -14,6 +14,7 @@ from web.search import (
     build_search_index,
     execute_queries,
     execute_query,
+    markup_query,
 )
 
 app = Flask(__name__)
@@ -80,15 +81,27 @@ def query():
                 results[doc_id] = candidate, terms
                 scores[doc_id] = score
 
-    # Build per-product result metadata
+    # Build per-query result metadata
+    markup = defaultdict(lambda: None)
     metadata = defaultdict(lambda: None)
     for doc_id, (product, terms) in results.items():
         description = descriptions[doc_id]
+        markup[doc_id] = markup_query(
+            query=description,
+            terms=terms,
+            stemmer=product.stemmer,
+            analyzer=product.analyzer
+        )
         metadata[doc_id] = product.get_metadata(description, app.graph, terms)
 
     return jsonify({
         'results': {
-            description: metadata[doc_id]
+            description: {
+                'product': metadata[doc_id],
+                'query': {
+                    'markup': markup[doc_id],
+                }
+            }
             for doc_id, description in enumerate(descriptions)
         }
     })
