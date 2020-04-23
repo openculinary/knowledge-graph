@@ -122,7 +122,7 @@ class Product(object):
         for term in terms:
 
             # Generate unstemmed ngrams of the same length as the product match
-            remaining_tokens = None
+            remaining_tokens = []
             n = len(term)
             tag = 0
             for tokens in tokenize(
@@ -131,16 +131,24 @@ class Product(object):
                 stemmer=None,
                 analyzer=self.analyzer
             ):
-                if len(tokens) < n:
-                    markup += ' ' if remaining_tokens else ''
-                    markup += ' '.join(remaining_tokens)
-                    tag = 1 if tag > 0 else 0
+                # If generated tokens are depleted, consume remaining tokens
+                if len(tokens) < n and len(remaining_tokens) > 0:
+                    tokens = remaining_tokens
 
+                # Continue token-by-token advancement, closing any open tags
                 tag -= 1
                 if tag == 0:
                     markup += '</mark>'
 
+                # If tokens are depleted and a tag is open, close after the tag
+                if len(tokens) < n and tag > 0:
+                    markup += f' {" ".join(tokens[:tag])}'
+                    markup += '</mark>'
+                    tokens = tokens[tag:]
+
+                # If tokens are depleted, write remaining tokens to the output
                 if len(tokens) < n:
+                    markup += f' {" ".join(tokens)}'
                     break
 
                 markup += ' '
