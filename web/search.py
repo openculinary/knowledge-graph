@@ -115,7 +115,7 @@ def execute_query(index, query, stopwords=None, stemmer=None, analyzer=None,
     return sorted(hits, key=lambda hit: hit['score'], reverse=True)
 
 
-def markup_query(entity_id, query, terms, stemmer, analyzer):
+def markup_query(entity_set, entity_id, query, terms, stemmer, analyzer):
 
     # Apply markup to the input query
     markup = ''
@@ -165,7 +165,7 @@ def markup_query(entity_id, query, terms, stemmer, analyzer):
 
             # Open a tag marker when we find a matching term
             if stemmed_tokens == term:
-                markup += f'<mark id="{entity_id}">'
+                markup += f'<mark href="{entity_set}/{entity_id}">'
                 tag = n
 
             # Append the next consumed original token when we do not
