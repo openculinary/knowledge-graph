@@ -110,12 +110,7 @@ class Product(object):
         self.depth = depth
         return depth
 
-    def get_metadata(self, description, graph, terms=None):
-        singular = Product.inflector.singular_noun(self.name)
-        singular = singular or self.name
-        plural = Product.inflector.plural_noun(singular)
-        is_plural = plural in description
-        terms = terms or []
+    def get_markup(self, description, terms):
 
         # Apply markup to the input description text
         markup = ''
@@ -172,8 +167,17 @@ class Product(object):
                 markup += f'{tokens[0]}'
                 remaining_tokens = tokens[1:]
 
+        return markup.strip()
+
+    def get_metadata(self, description, graph, terms=None):
+        singular = Product.inflector.singular_noun(self.name)
+        singular = singular or self.name
+        plural = Product.inflector.plural_noun(singular)
+        is_plural = plural in description
+        markup = self.get_markup(description, terms or [])
+
         return {
-            'markup': markup.strip() or None,
+            'markup': markup or None,
             'product': plural if is_plural else singular,
             'is_plural': is_plural,
             'singular': singular,
