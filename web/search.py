@@ -45,6 +45,8 @@ def tokenize(doc, stopwords=None, ngrams=None, stemmer=None, analyzer=None):
     for ngrams in range(ngrams, 0, -1):
         for term in word_tokenize(doc, stopwords, ngrams, stemmer=stemmer):
             yield term
+
+    # Produce an end-of-stream marker
     yield tuple()
 
 
