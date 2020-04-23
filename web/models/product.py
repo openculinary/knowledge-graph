@@ -110,27 +110,43 @@ class Product(object):
         self.depth = depth
         return depth
 
-    def get_metadata(self, description, graph, terms=None):
-        singular = Product.inflector.singular_noun(self.name)
-        singular = singular or self.name
-        plural = Product.inflector.plural_noun(singular)
-        is_plural = plural in description
-        terms = terms or []
+    def get_markup(self, description, terms):
 
         # Apply markup to the input description text
         markup = ''
         for term in terms:
 
             # Generate unstemmed ngrams of the same length as the product match
+            remaining_tokens = []
             n = len(term)
+            tag = 0
             for tokens in tokenize(
                 doc=description,
                 ngrams=n,
                 stemmer=None,
                 analyzer=self.analyzer
             ):
+                # If generated tokens are depleted, consume remaining tokens
+                if len(tokens) < n and len(remaining_tokens) > 0:
+                    tokens = remaining_tokens
+
+                # Continue token-by-token advancement, closing any open tags
+                tag -= 1
+                if tag == 0:
+                    markup += '</mark>'
+
+                # If tokens are depleted and a tag is open, close after the tag
+                if len(tokens) < n and tag > 0:
+                    markup += f' {" ".join(tokens[:tag])}'
+                    markup += '</mark>'
+                    tokens = tokens[tag:]
+
+                # If tokens are depleted, write remaining tokens to the output
                 if len(tokens) < n:
+                    markup += f' {" ".join(tokens)}'
                     break
+
+                markup += ' '
 
                 # Stem the original text to allow match equality comparsion
                 text = ' '.join(tokens)
@@ -142,14 +158,26 @@ class Product(object):
                 ):
                     break
 
-                # Append the original text, marked, when we find a match
-                # Append the first consumed original token when we do not
-                mark = f'<mark>{text}</mark>'
-                markup += mark if stemmed_tokens == term else tokens[0]
-                markup += ' '
+                # Open a tag marker when we find a matching term
+                if stemmed_tokens == term:
+                    markup += f'<mark>'
+                    tag = n
+
+                # Append the next consumed original token when we do not
+                markup += f'{tokens[0]}'
+                remaining_tokens = tokens[1:]
+
+        return markup.strip()
+
+    def get_metadata(self, description, graph, terms=None):
+        singular = Product.inflector.singular_noun(self.name)
+        singular = singular or self.name
+        plural = Product.inflector.plural_noun(singular)
+        is_plural = plural in description
+        markup = self.get_markup(description, terms or [])
 
         return {
-            'markup': markup.strip() or None,
+            'markup': markup or None,
             'product': plural if is_plural else singular,
             'is_plural': is_plural,
             'singular': singular,

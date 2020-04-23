@@ -47,7 +47,7 @@ class ProductGraph(object):
                     continue
                 line = line.strip().lower()
                 for term in tokenize(line, stemmer=Product.stemmer):
-                    yield term[0]
+                    yield term[0:1]
 
     def calculate_stopwords(self):
         for term in self.index.terms():
