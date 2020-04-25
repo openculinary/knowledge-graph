@@ -1,4 +1,5 @@
 from collections import defaultdict
+from string import punctuation
 
 from hashedindex import HashedIndex
 from hashedindex.textparser import (
@@ -9,8 +10,11 @@ from hashedindex.textparser import (
 
 class NullAnalyzer():
 
+    remove_punctuation = str.maketrans('', '', punctuation)
+
     def process(self, input):
         for token in input.split(' '):
+            token = token.translate(self.remove_punctuation)
             for result in self.analyze_token(token):
                 yield result
 
@@ -24,8 +28,8 @@ class SynonymAnalyzer(NullAnalyzer):
         self.synonyms = synonyms
 
     def analyze_token(self, token):
-        token = self.synonyms.get(token) or token
-        for token in token.split(' '):
+        synonym = self.synonyms.get(token) or token
+        for token in synonym.split(' '):
             yield token
 
 
