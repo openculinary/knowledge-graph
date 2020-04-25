@@ -5,6 +5,7 @@ from web.search import (
     execute_exact_query,
     execute_queries,
     tokenize,
+    NullAnalyzer,
     SynonymAnalyzer,
 )
 
@@ -33,6 +34,15 @@ def test_token_stemming():
     ))
 
     assert tokens[0] == ('onion',)
+
+
+def test_null_analyzer_tokenization():
+    doc = 'coriander, chopped'
+
+    analyzer = NullAnalyzer()
+    tokens = list(analyzer.process(doc))
+
+    assert tokens == ['coriander', 'chopped']
 
 
 def test_token_synonyms():
