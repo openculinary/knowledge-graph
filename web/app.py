@@ -1,6 +1,13 @@
 from collections import defaultdict
 
 from flask import Flask, jsonify, request
+from hashedixsearch import (
+    add_to_search_index,
+    build_search_index,
+    execute_queries,
+    execute_query,
+    highlight,
+)
 
 from web.loader import (
     CACHE_PATHS,
@@ -9,13 +16,6 @@ from web.loader import (
 )
 from web.models.product import Product
 from web.models.product_graph import ProductGraph
-from web.search import (
-    add_to_search_index,
-    build_search_index,
-    execute_queries,
-    execute_query,
-    markup_query,
-)
 
 app = Flask(__name__)
 
@@ -86,9 +86,7 @@ def query():
     metadata = defaultdict(lambda: None)
     for doc_id, (product, terms) in results.items():
         description = descriptions[doc_id]
-        markup[doc_id] = markup_query(
-            entity_set='products',
-            entity_id=product.id,
+        markup[doc_id] = highlight(
             query=description,
             terms=terms,
             stemmer=product.stemmer,

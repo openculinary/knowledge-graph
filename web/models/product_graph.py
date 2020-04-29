@@ -1,11 +1,12 @@
-from web.models.product import Product
-from web.search import (
+from hashedixsearch import (
     add_to_search_index,
     build_search_index,
-    execute_exact_query,
     execute_query,
+    execute_query_exact,
     tokenize,
 )
+
+from web.models.product import Product
 
 
 class ProductGraph(object):
@@ -67,7 +68,7 @@ class ProductGraph(object):
                 stopwords=clearwords,
                 stemmer=Product.stemmer
             ):
-                if execute_exact_query(self.index, term):
+                if execute_query_exact(self.index, term):
                     continue
                 yield stopword
 
@@ -92,7 +93,7 @@ class ProductGraph(object):
                 ngrams=1,
                 stemmer=Product.stemmer
             ):
-                doc_id = execute_exact_query(self.stopword_index, term)
+                doc_id = execute_query_exact(self.stopword_index, term)
                 if doc_id is not None:
                     product.stopwords.append(self.stopwords[doc_id])
             if tokenize(product.name, product.stopwords):
