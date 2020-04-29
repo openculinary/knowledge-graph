@@ -1,12 +1,12 @@
+from hashedixsearch import (
+    tokenize,
+    SynonymAnalyzer,
+)
+
 import inflect
 import json
 
 from snowballstemmer import stemmer
-
-from web.search import (
-    tokenize,
-    SynonymAnalyzer,
-)
 
 
 class Product(object):

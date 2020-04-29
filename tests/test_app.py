@@ -51,7 +51,7 @@ def test_ingredient_query(stopwords, hierarchy, client):
 
         product = products[product_id]
         markup = results[description]['query']['markup']
-        tagged_product = f'<mark href="products/{product_id}">{product}</mark>'
+        tagged_product = f'<mark>{product}</mark>'
 
         assert results[description]['product']['id'] == product_id
         assert results[description]['product']['product'] == product
