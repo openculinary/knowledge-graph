@@ -17,5 +17,4 @@ snowballstemmer = "==2.0.0"
 
 [dev-packages]
 flake8 = "*"
-mock = "*"
 pytest = "*"
