@@ -1,7 +1,5 @@
 from unittest.mock import patch
 
-from string import punctuation
-
 from web.models.product import Product
 
 
@@ -19,41 +17,56 @@ def test_ingredient_query(stopwords, hierarchy, client):
         Product(name='soy milk', frequency=5, parent_id=None),
         Product(name='red bell pepper', frequency=5, parent_id=None),
     ]
-    expected_products = {
-        'large onion, diced': 'onion',
-        'can of baked beans': 'bake_bean',
-        'block of firm tofu': 'firm_tofu',
-        'block tofu': 'tofu',
-        'pressed soft tofu': 'soft_tofu',
-        'soymilk': 'milk_soy',
-        'quart of soymilk in a cup': 'milk_soy',
-        'sliced red bell pepper as filling': 'bell_pepper_red',
-    }
-    products = {
-        'onion': 'onion',
-        'bake_bean': 'baked beans',
-        'firm_tofu': 'firm tofu',
-        'tofu': 'tofu',
-        'soft_tofu': 'soft tofu',
-        'milk_soy': 'soy milk',
-        'bell_pepper_red': 'red bell pepper',
+
+    expected_results = {
+        'large onion, diced': {
+            'markup': 'large <mark>onion</mark>, diced',
+            'product': 'onion',
+            'product_id': 'onion',
+        },
+        'can of baked beans': {
+            'markup': 'can of <mark>baked beans</mark>',
+            'product': 'baked beans',
+            'product_id': 'bake_bean',
+        },
+        'block of firm tofu': {
+            'markup': 'block of <mark>firm tofu</mark>',
+            'product': 'firm tofu',
+            'product_id': 'firm_tofu',
+        },
+        'block tofu': {
+            'markup': 'block <mark>tofu</mark>',
+            'product': 'tofu',
+            'product_id': 'tofu',
+        },
+        'pressed soft tofu': {
+            'markup': 'pressed <mark>soft tofu</mark>',
+            'product': 'soft tofu',
+            'product_id': 'soft_tofu',
+        },
+        'soymilk': {
+            'markup': '<mark>soy milk</mark>',
+            'product': 'soy milk',
+            'product_id': 'milk_soy',
+        },
+        '250ml of soymilk (roughly one cup)': {
+            'markup': '250ml of <mark>soy milk</mark> (roughly one cup)',
+            'product': 'soy milk',
+            'product_id': 'milk_soy',
+        },
+        'Sliced red bell pepper, as filling': {
+            'markup': 'Sliced <mark>red bell pepper</mark>, as filling',
+            'product': 'red bell pepper',
+            'product_id': 'bell_pepper_red',
+        },
     }
 
     results = client.post(
         '/ingredients/query',
-        data={'descriptions[]': list(expected_products.keys())}
+        data={'descriptions[]': list(expected_results.keys())}
     ).json['results']
 
-    remove_punctuation = str.maketrans('', '', punctuation)
-    for description, product_id in expected_products.items():
-        basic_description = ' '.join(Product.analyzer.process(description))
-        basic_description = basic_description.translate(remove_punctuation)
-
-        product = products[product_id]
-        markup = results[description]['query']['markup']
-        tagged_product = f'<mark>{product}</mark>'
-
-        assert results[description]['product']['id'] == product_id
-        assert results[description]['product']['product'] == product
-        assert tagged_product in markup
-        assert markup.replace(tagged_product, product) == basic_description
+    for query, expected in expected_results.items():
+        assert results[query]['product']['id'] == expected['product_id']
+        assert results[query]['product']['product'] == expected['product']
+        assert results[query]['query']['markup'] == expected['markup']
