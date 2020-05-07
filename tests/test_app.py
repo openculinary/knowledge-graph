@@ -49,13 +49,13 @@ def test_ingredient_query(stopwords, hierarchy, client):
             'product': 'soy milk',
             'product_id': 'milk_soy',
         },
-        'quart of soymilk in a cup': {
-            'markup': 'quart of <mark>soy milk</mark> in a cup',
+        '250ml of soymilk (roughly one cup)': {
+            'markup': '250ml of <mark>soy milk</mark> (roughly one cup)',
             'product': 'soy milk',
             'product_id': 'milk_soy',
         },
-        'sliced red bell pepper as filling': {
-            'markup': 'sliced <mark>red bell pepper</mark> as filling',
+        'Sliced red bell pepper, as filling': {
+            'markup': 'Sliced <mark>red bell pepper</mark>, as filling',
             'product': 'red bell pepper',
             'product_id': 'bell_pepper_red',
         },
