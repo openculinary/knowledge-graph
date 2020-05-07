@@ -23,4 +23,4 @@ git = "https://github.com/jayaddison/hashedindex.git"
 ref = "3a7e46a22c04960a0a50a2fca2d25cee7b4f9267"
 
 [packages.hashedixsearch]
-file = "https://github.com/openculinary/hashedixsearch/raw/8bedd292a08c2a2af2dbc467bd68ece60be7d4cc/dist/hashedixsearch-0.1.2rc3-py3-none-any.whl"
+file = "https://github.com/openculinary/hashedixsearch/raw/6068f9173f0f9910994c47a5c98b565dd275d51e/dist/hashedixsearch-0.2.0rc0-py3-none-any.whl"
