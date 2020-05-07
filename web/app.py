@@ -40,7 +40,7 @@ def find_product_candidates(products):
         queries=queries,
         stopwords=app.stopwords,
         stemmer=Product.stemmer,
-        synonyms=Product.ProductAnalyzer().synonyms,
+        synonyms=Product.canonicalizations,
         query_limit=-1
     )
     for description, hits in results:
@@ -62,7 +62,7 @@ def query():
             doc_id=doc_id,
             doc=product.name,
             stemmer=product.stemmer,
-            synonyms=Product.ProductAnalyzer().synonyms,
+            synonyms=Product.canonicalizations,
         )
 
     # Track the best match for each product
@@ -73,7 +73,7 @@ def query():
             index=description_index,
             query=candidate.name,
             stemmer=candidate.stemmer,
-            synonyms=Product.ProductAnalyzer().synonyms,
+            synonyms=Product.canonicalizations,
         )
         for hit in hits:
             doc_id, score, terms = hit['doc_id'], hit['score'], hit['terms']
@@ -90,7 +90,7 @@ def query():
             query=description,
             terms=terms,
             stemmer=product.stemmer,
-            synonyms=Product.ProductAnalyzer().synonyms,
+            synonyms=Product.canonicalizations,
         )
         metadata[doc_id] = product.get_metadata(description, app.graph, terms)
 

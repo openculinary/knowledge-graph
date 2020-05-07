@@ -1,6 +1,5 @@
 from hashedixsearch import (
     tokenize,
-    SynonymAnalyzer,
 )
 
 import inflect
@@ -20,19 +19,8 @@ class Product(object):
             # mayonnaise -> mayonnais -> mayonnai
             return self.stemmer_en.stemWord(self.stemmer_en.stemWord(x))
 
-    class ProductAnalyzer(SynonymAnalyzer):
-
-        def __init__(self):
-            canonicalizations = {}
-            with open('web/data/canonicalizations.txt') as f:
-                for line in f.readlines():
-                    if line.startswith('#'):
-                        continue
-                    source, target = line.strip().split(',')
-                    canonicalizations[source] = target
-            super().__init__(canonicalizations)
-
     stemmer = ProductStemmer()
+    canonicalizations = {}
     inflector = inflect.engine()
 
     def __init__(self, name, frequency=0, parent_id=None):
@@ -45,6 +33,16 @@ class Product(object):
         self.parents = []
         self.stopwords = []
         self.domain = None
+
+        # TODO: Find a better place to perform this initialization
+        if self.canonicalizations:
+            return
+        with open('web/data/canonicalizations.txt') as f:
+            for line in f.readlines():
+                if line.startswith('#'):
+                    continue
+                source, target = line.strip().split(',')
+                self.canonicalizations[source] = target
 
     def __add__(self, other):
         name = self.name if len(self.name) < len(other.name) else other.name
@@ -71,14 +69,11 @@ class Product(object):
         return data
 
     def tokenize(self, stopwords=True, stemmer=True, analyzer=True):
-        doc = self.name
-        if analyzer:
-            doc = str().join(self.ProductAnalyzer().process(doc))
-
         for term in tokenize(
-            doc=doc,
+            doc=self.name,
             stopwords=self.stopwords if stopwords else [],
             stemmer=self.stemmer if stemmer else None,
+            synonyms=self.canonicalizations,
         ):
             for subterm in term:
                 yield subterm
