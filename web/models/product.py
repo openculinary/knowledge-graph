@@ -33,7 +33,6 @@ class Product(object):
             super().__init__(canonicalizations)
 
     stemmer = ProductStemmer()
-    analyzer = ProductAnalyzer()
     inflector = inflect.engine()
 
     def __init__(self, name, frequency=0, parent_id=None):
@@ -72,11 +71,14 @@ class Product(object):
         return data
 
     def tokenize(self, stopwords=True, stemmer=True, analyzer=True):
+        doc = self.name
+        if analyzer:
+            doc = str().join(self.ProductAnalyzer().process(doc))
+
         for term in tokenize(
-            doc=self.name,
+            doc=doc,
             stopwords=self.stopwords if stopwords else [],
             stemmer=self.stemmer if stemmer else None,
-            analyzer=self.analyzer if analyzer else None
         ):
             for subterm in term:
                 yield subterm
