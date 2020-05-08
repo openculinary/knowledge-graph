@@ -10,7 +10,7 @@ python_version = "3.7"
 flask = "==1.1.1"
 gunicorn = "==20.0.4"
 hashedindex = { git = "https://github.com/jayaddison/hashedindex.git", ref = "3a7e46a22c04960a0a50a2fca2d25cee7b4f9267" }
-hashedixsearch = { file = "https://github.com/openculinary/hashedixsearch/raw/6068f9173f0f9910994c47a5c98b565dd275d51e/dist/hashedixsearch-0.2.0rc0-py3-none-any.whl" }
+hashedixsearch = { file = "https://github.com/openculinary/hashedixsearch/raw/cfa147abdb1fdf46f78f219ac91eb0ebfaca4c84/dist/hashedixsearch-0.2.0rc1-py3-none-any.whl" }
 inflect = "==4.1.0"
 ingreedypy = "==1.3.1"
 requests = "==2.22.0"
