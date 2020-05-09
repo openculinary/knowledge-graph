@@ -111,7 +111,7 @@ class Product(object):
         singular = Product.inflector.singular_noun(self.name)
         singular = singular or self.name
         plural = Product.inflector.plural_noun(singular)
-        is_plural = plural in description
+        is_plural = plural in description.lower()
 
         return {
             'id': self.id,
