@@ -24,8 +24,8 @@ def test_ingredient_query(stopwords, hierarchy, client):
             'product': 'onion',
             'product_id': 'onion',
         },
-        'can of baked beans': {
-            'markup': 'can of <mark>baked beans</mark>',
+        'can of Baked Beans': {
+            'markup': 'can of <mark>Baked Beans</mark>',
             'product': 'baked beans',
             'product_id': 'bake_bean',
         },
