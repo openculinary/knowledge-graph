@@ -91,6 +91,7 @@ def query():
             terms=terms,
             stemmer=product.stemmer,
             synonyms=Product.canonicalizations,
+            case_sensitive=False,
         )
         metadata[doc_id] = product.get_metadata(description, app.graph, terms)
 
