@@ -36,26 +36,26 @@ Make sure to follow the RecipeRadar [infrastructure](https://www.github.com/open
 
 To install development tools and run linting and tests locally, execute the following commands:
 
-```
-pipenv install --dev
-pipenv run make
+```sh
+$ pipenv install --dev
+$ make lint tests
 ```
 
 ## Local Deployment
 
 To deploy the service to the local infrastructure environment, execute the following commands:
 
-```
-sudo sh -x ./build.sh
-sh -x ./deploy.sh
+```sh
+$ make
+$ make deploy
 ```
 
 ## Operations
 
 To update the cached product list, calculate new stopwords, and regenerate the product hierarchy, use the following commands respectively:
 
-```
-pipenv run python -m scripts.products --update
-pipenv run python -m scripts.stopwords --update
-pipenv run python -m scripts.hierarchy --update
+```sh
+$ pipenv run python -m scripts.products --update
+$ pipenv run python -m scripts.stopwords --update
+$ pipenv run python -m scripts.hierarchy --update
 ```
