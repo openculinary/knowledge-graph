@@ -138,7 +138,7 @@ def test_chicken_exclusion_contents():
 
 
 def test_contents_singularization():
-    product = generate_product(name=f'mushrooms')
+    product = generate_product(name='mushrooms')
 
     assert 'mushroom' in product.contents
     assert 'mushrooms' not in product.contents

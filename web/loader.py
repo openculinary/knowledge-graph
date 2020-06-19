@@ -59,7 +59,7 @@ def retrieve_products(filename):
         recipe_file = open(filename, 'r')
         reader = recipe_file.readlines
     else:
-        print(f'Streaming product data from api')
+        print('Streaming product data from api')
         reader = requests.get(
             url='http://localhost/api/products',
             stream=True,
