@@ -12,7 +12,15 @@ CACHE_PATHS = {
     'hierarchy': 'web/data/generated/hierarchy.json',
     'products': 'web/data/generated/ingredients.json',
     'stopwords': 'web/data/generated/stopwords.txt',
+    'appliance_queries': 'web/data/equipment/appliances.txt',
+    'utensil_queries': 'web/data/equipment/utensils.txt',
+    'vessel_queries': 'web/data/equipment/vessels.txt',
 }
+
+
+def load_queries(filename):
+    with open(filename) as f:
+        return [line.strip().lower() for line in f.readlines()]
 
 
 def discard(product):
