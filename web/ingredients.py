@@ -29,7 +29,7 @@ def find_product_candidates(products):
 
 
 @app.route('/ingredients/query', methods=['POST'])
-def query():
+def ingredients():
     descriptions = request.form.getlist('descriptions[]')
     products = [Product(name=description) for description in descriptions]
 
