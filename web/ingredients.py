@@ -9,7 +9,26 @@ from hashedixsearch import (
 )
 
 from web.app import app
+from web.loader import (
+    CACHE_PATHS,
+    retrieve_hierarchy,
+    retrieve_stopwords,
+)
 from web.models.product import Product
+from web.models.product_graph import ProductGraph
+
+
+@app.before_first_request
+def preload_ingredient_data():
+    filename = CACHE_PATHS['hierarchy']
+    hierarchy = retrieve_hierarchy(filename)
+
+    filename = CACHE_PATHS['stopwords']
+    stopwords = retrieve_stopwords(filename)
+
+    app.graph = ProductGraph(hierarchy, stopwords)
+    app.products = app.graph.filter_products()
+    app.stopwords = app.graph.filter_stopwords()
 
 
 def find_product_candidates(products):
