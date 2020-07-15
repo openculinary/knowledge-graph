@@ -164,3 +164,9 @@ def test_product_canonicalization(name, expected):
     product = Product(name=name)
 
     assert product.to_doc() == expected
+
+
+def test_product_id_transliteration():
+    product = Product(name='jalapeño pepper')
+
+    assert product.id == 'jalapeno_pepper'
