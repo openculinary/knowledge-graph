@@ -17,8 +17,10 @@ def test_ingredient_query(stopwords, hierarchy, client):
         Product(name='bean', frequency=20, parent_id=None),
         Product(name='tofu', frequency=20, parent_id=None),
         Product(name='firm tofu', frequency=10, parent_id='tofu'),
+        Product(name='jalapeño', frequency=5),
         Product(name='soft tofu', frequency=5, parent_id='tofu'),
         Product(name='soy milk', frequency=5, parent_id=None),
+        Product(name='red bell pepper', frequency=5, parent_id=None),
         Product(name='red bell pepper', frequency=5, parent_id=None),
     ]
 
@@ -62,6 +64,11 @@ def test_ingredient_query(stopwords, hierarchy, client):
             'markup': 'Sliced <mark>red bell pepper</mark>, as filling',
             'product': 'red bell pepper',
             'product_id': 'bell_pepper_red',
+        },
+        'jalapeño pepper': {
+            'markup': '<mark>jalapeño</mark> pepper',
+            'product': 'jalapeño',
+            'product_id': 'jalapeno',
         },
     }
 
