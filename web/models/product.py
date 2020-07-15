@@ -6,6 +6,7 @@ import inflect
 import json
 
 from snowballstemmer import stemmer
+from unidecode import unidecode
 
 
 class Product(object):
@@ -15,6 +16,7 @@ class Product(object):
         stemmer_en = stemmer('english')
 
         def stem(self, x):
+            x = unidecode(x)
             # TODO: Remove double-stemming
             # mayonnaise -> mayonnais -> mayonnai
             return self.stemmer_en.stemWord(self.stemmer_en.stemWord(x))
