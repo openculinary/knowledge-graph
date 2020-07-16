@@ -69,7 +69,7 @@ def retrieve_products(filename):
     else:
         print('Streaming product data from api')
         reader = requests.get(
-            url='http://localhost/api/products',
+            url='http://localhost/products',
             stream=True,
             proxies={}
         ).iter_lines
