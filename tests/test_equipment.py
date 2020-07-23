@@ -9,7 +9,7 @@ def test_description_parsing(client):
         },
         'leave the Slow cooker on a low heat': {
             'markup': (
-                'leave the <mark class="vessel">Slow cooker</mark> '
+                'leave the <mark class="appliance">Slow cooker</mark> '
                 'on a low heat'
             ),
             'appliances': [{'appliance': 'slow cooker'}],
