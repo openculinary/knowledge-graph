@@ -70,19 +70,24 @@ def equipment():
 
     markup_by_doc = {}
     for doc_id, description in enumerate(descriptions):
-        equipment = (
-            appliances_by_doc[doc_id]
-            | utensils_by_doc[doc_id]
-            | vessels_by_doc[doc_id]
-        )
+        equipment_classes = {
+            'appliance': appliances_by_doc[doc_id],
+            'utensil': utensils_by_doc[doc_id],
+            'vessel': vessels_by_doc[doc_id],
+        }
         terms = []
-        for equipment in equipment:
-            terms.append(next(tokenize(equipment, stemmer=stemmer)))
+        term_attributes = {}
+        for equipment_class in equipment_classes:
+            for equipment in equipment_classes[equipment_class]:
+                term = next(tokenize(equipment, stemmer=stemmer))
+                terms.append(term)
+                term_attributes[term] = {'class': equipment_class}
         markup_by_doc[doc_id] = highlight(
             query=description,
             terms=terms,
             stemmer=stemmer,
-            case_sensitive=False
+            case_sensitive=False,
+            term_attributes=term_attributes
         )
 
     results = []
