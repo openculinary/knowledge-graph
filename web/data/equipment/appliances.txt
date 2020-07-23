@@ -52,7 +52,6 @@ Kettle
 Kitchener range
 Kujiejun
 Kyoto box
-Lemon squeezer
 Magic Bullet
 Makiyakinabe
 Masonry oven
@@ -67,7 +66,6 @@ Pacojet
 Pancake machine
 Panini grill
 Panini press
-Peeler
 Popcorn maker
 Poppy seed grinder
 Pressure cooker
@@ -98,7 +96,6 @@ Stove
 Susceptor
 Tabun oven
 Tandoor
-Tangia
 Toaster
 Turkey fryer
 Vacuum filler
