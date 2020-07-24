@@ -35,22 +35,21 @@ def preload_equipment_data():
     app.vessel_queries = load_queries(CACHE_PATHS['vessel_queries'])
 
 
-def equipment_by_document(index, queries):
+def matches_by_document(index, queries, stemmer):
     results_by_document = defaultdict(lambda: set())
-    stemmer = EquipmentStemmer()
-    equipment_hits = execute_queries(
+    query_hits = execute_queries(
         index=index,
         queries=queries,
         stemmer=stemmer,
         stopwords=stopwords
     )
-    for equipment, hits in equipment_hits:
+    for result, hits in query_hits:
         for hit in hits:
-            results_by_document[hit['doc_id']].add(equipment)
+            results_by_document[hit['doc_id']].add(result)
     return results_by_document
 
 
-@app.route('/equipment/query', methods=['POST'])
+@app.route('/directions/query', methods=['POST'])
 def equipment():
     descriptions = request.form.getlist('descriptions[]')
 
@@ -64,26 +63,39 @@ def equipment():
                                  stemmer=stemmer):
                 index.add_term_occurrence(term, doc_id)
 
-    appliances_by_doc = equipment_by_document(index, app.appliance_queries)
-    utensils_by_doc = equipment_by_document(index, app.utensil_queries)
-    vessels_by_doc = equipment_by_document(index, app.vessel_queries)
+    query_matrix = {
+        'equipment': {
+            'appliance': app.appliance_queries,
+            'utensil': app.utensil_queries,
+            'vessel': app.vessel_queries,
+        },
+    }
 
+    # Run the query matrix against the document set and collect entities by doc
+    entities_by_doc = defaultdict(list)
+    for entity_type in query_matrix:
+        for entity_class in query_matrix[entity_type]:
+            queries = query_matrix[entity_type][entity_class]
+            queries_by_doc = matches_by_document(index, queries, stemmer)
+            for doc_id, queries in queries_by_doc.items():
+                for query in queries:
+                    term = next(tokenize(query, stemmer=stemmer))
+                    entities_by_doc[doc_id].append({
+                        'term': term,
+                        'attr': {'class': f'{entity_type} {entity_class}'},
+                    })
+
+    # Collect all entities for each document and then generate doc markup
     markup_by_doc = {}
-    for doc_id, description in enumerate(descriptions):
-        equipment_classes = {
-            'appliance': appliances_by_doc[doc_id],
-            'utensil': utensils_by_doc[doc_id],
-            'vessel': vessels_by_doc[doc_id],
-        }
+    for doc_id, entities in entities_by_doc.items():
         terms = []
         term_attributes = {}
-        for equipment_class in equipment_classes:
-            for equipment in equipment_classes[equipment_class]:
-                term = next(tokenize(equipment, stemmer=stemmer))
-                terms.append(term)
-                term_attributes[term] = {'class': equipment_class}
+        for entity in entities:
+            term, attr = entity['term'], entity['attr']
+            terms.append(term)
+            term_attributes[term] = attr
         markup_by_doc[doc_id] = highlight(
-            query=description,
+            query=descriptions[doc_id],
             terms=terms,
             stemmer=stemmer,
             case_sensitive=False,
@@ -96,17 +108,5 @@ def equipment():
             'index': doc_id,
             'description': description,
             'markup': markup_by_doc.get(doc_id),
-            'appliances': [
-                {'appliance': appliance}
-                for appliance in appliances_by_doc[doc_id]
-            ],
-            'utensils': [
-                {'utensil': utensil}
-                for utensil in utensils_by_doc[doc_id]
-            ],
-            'vessels': [
-                {'vessel': vessel}
-                for vessel in vessels_by_doc[doc_id]
-            ],
         })
     return jsonify(results)
