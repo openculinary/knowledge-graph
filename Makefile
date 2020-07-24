@@ -19,7 +19,15 @@ image:
 	buildah copy $(container) 'web' 'web'
 	buildah copy $(container) 'Pipfile'
 	buildah run $(container) -- pip install pipenv --
+	# Begin: NOTE: These are build-time dependencies required by spaCy
+	buildah run $(container) -- apk add gcc --
+	buildah run $(container) -- apk add musl-dev --
+	# End: NOTE
 	buildah run $(container) -- pipenv install --
+	# Begin: NOTE: These are build-time dependencies required by spaCy
+	buildah run $(container) -- apk del gcc --
+	buildah run $(container) -- apk del musl-dev --
+	# End: NOTE
 	buildah config --port 80 --entrypoint 'pipenv run gunicorn web.app:app --bind :80' $(container)
 	buildah commit --squash --rm $(container) ${IMAGE_NAME}:${IMAGE_TAG}
 
