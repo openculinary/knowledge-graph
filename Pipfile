@@ -7,6 +7,7 @@ name = "pypi"
 python_version = "3.8"
 
 [packages]
+en_core_web_sm = {file = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.3.1/en_core_web_sm-2.3.1.tar.gz"}
 flask = "==1.1.2"
 gunicorn = "==20.0.4"
 hashedixsearch = "==0.2.7"
