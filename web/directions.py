@@ -88,7 +88,6 @@ def equipment():
                     })
 
     # Collect unique verbs found in each input description
-    verbs_by_doc = defaultdict(set)
     for doc_id, description in enumerate(descriptions):
         tokens = app.nlp(description)
         verbs = [str(token) for token in tokens if token.pos_ == "VERB"]
