@@ -19,7 +19,7 @@ def test_description_parsing(client):
     }
 
     response = client.post(
-        '/equipment/query',
+        '/directions/query',
         data={'descriptions[]': list(description_markup.keys())}
     )
     for result in response.json:

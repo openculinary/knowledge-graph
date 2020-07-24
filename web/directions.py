@@ -49,7 +49,7 @@ def matches_by_document(index, queries, stemmer):
     return results_by_document
 
 
-@app.route('/equipment/query', methods=['POST'])
+@app.route('/directions/query', methods=['POST'])
 def equipment():
     descriptions = request.form.getlist('descriptions[]')
 
