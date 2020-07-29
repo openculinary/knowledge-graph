@@ -18,6 +18,7 @@ image:
 	$(eval container=$(shell buildah from docker.io/library/python:3.8-alpine))
 	buildah copy $(container) 'web' 'web'
 	buildah copy $(container) 'Pipfile'
+	buildah run $(container) -- apk add py3-spacy --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing --
 	buildah run $(container) -- adduser -h /srv/ -s /sbin/nologin -D -H gunicorn --
 	buildah run $(container) -- chown gunicorn /srv/ --
 	buildah run --user gunicorn $(container) -- pip install --user pipenv --
