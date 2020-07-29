@@ -22,10 +22,6 @@ image:
 	buildah run $(container) -- adduser -h /srv/ -s /sbin/nologin -D -H gunicorn --
 	buildah run $(container) -- chown gunicorn /srv/ --
 	buildah run --user gunicorn $(container) -- pip install --user pipenv --
-	# Begin: NOTE: These are build-time dependencies required by spaCy
-	buildah run $(container) -- apk add gcc --
-	buildah run $(container) -- apk add musl-dev --
-	# End: NOTE
 	buildah run --user gunicorn $(container) -- /srv/.local/bin/pipenv install --skip-lock --
 	# Begin: NOTE: Install spaCy language model
 	buildah run --user gunicorn $(container) -- env PYTHONPATH=/usr/lib/python3.8/site-packages/ /srv/.local/bin/pipenv run python -m spacy download en_core_web_sm --
@@ -35,10 +31,6 @@ image:
 	buildah run $(container) -- chmod -R a+rx /srv/.local/bin/ --
 	buildah run $(container) -- find /srv/ -type d -exec chmod a+rx {} \;
 	# End: HACK
-	# Begin: NOTE: These are build-time dependencies required by spaCy
-	buildah run $(container) -- apk del gcc --
-	buildah run $(container) -- apk del musl-dev --
-	# End: NOTE
 	buildah config --env PYTHONPATH=/usr/lib/python3.8/site-packages/ --port 8000 --user gunicorn --entrypoint '/srv/.local/bin/pipenv run gunicorn web.app:app --bind :8000' $(container)
 	buildah commit --squash --rm $(container) ${IMAGE_NAME}:${IMAGE_TAG}
 
