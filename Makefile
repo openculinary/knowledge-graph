@@ -27,6 +27,9 @@ image:
 	buildah run $(container) -- apk add musl-dev --
 	# End: NOTE
 	buildah run --user gunicorn $(container) -- /srv/.local/bin/pipenv install --skip-lock --
+	# Begin: NOTE: Install spaCy language model
+	buildah run --user gunicorn $(container) -- env PYTHONPATH=/usr/lib/python3.8/site-packages/ /srv/.local/bin/pipenv run python -m spacy download en_core_web_sm --
+	# End: NOTE
 	# Begin: HACK: For rootless compatibility across podman and k8s environments, unset file ownership and grant read+exec to binaries
 	buildah run $(container) -- chown -R nobody:nobody /srv/ --
 	buildah run $(container) -- chmod -R a+rx /srv/.local/bin/ --
@@ -36,7 +39,7 @@ image:
 	buildah run $(container) -- apk del gcc --
 	buildah run $(container) -- apk del musl-dev --
 	# End: NOTE
-	buildah config --port 8000 --user gunicorn --entrypoint '/srv/.local/bin/pipenv run gunicorn web.app:app --bind :8000' $(container)
+	buildah config --env PYTHONPATH=/usr/lib/python3.8/site-packages/ --port 8000 --user gunicorn --entrypoint '/srv/.local/bin/pipenv run gunicorn web.app:app --bind :8000' $(container)
 	buildah commit --squash --rm $(container) ${IMAGE_NAME}:${IMAGE_TAG}
 
 lint:
