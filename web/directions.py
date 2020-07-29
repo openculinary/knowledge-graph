@@ -90,7 +90,7 @@ def equipment():
     # Collect unique verbs found in each input description
     for doc_id, description in enumerate(descriptions):
         tokens = app.nlp(description)
-        verbs = [str(token) for token in tokens if token.pos_ == "VERB"]
+        verbs = {str(token) for token in tokens if token.pos_ == "VERB"}
         for verb in verbs:
             term = next(tokenize(verb, stemmer=stemmer))
             entities_by_doc[doc_id].append({
