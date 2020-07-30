@@ -1,4 +1,5 @@
 from collections import defaultdict
+import en_core_web_sm
 from flask import jsonify, request
 from hashedixsearch import (
    build_search_index,
@@ -30,6 +31,7 @@ stopwords = get_stopwords('en')
 
 @app.before_first_request
 def preload_equipment_data():
+    app.nlp = en_core_web_sm.load()
     app.appliance_queries = load_queries(CACHE_PATHS['appliance_queries'])
     app.utensil_queries = load_queries(CACHE_PATHS['utensil_queries'])
     app.vessel_queries = load_queries(CACHE_PATHS['vessel_queries'])
@@ -84,6 +86,17 @@ def equipment():
                         'term': term,
                         'attr': {'class': f'{entity_type} {entity_class}'},
                     })
+
+    # Collect unique verbs found in each input description
+    for doc_id, description in enumerate(descriptions):
+        tokens = app.nlp(description)
+        verbs = {str(token) for token in tokens if token.pos_ == "VERB"}
+        for verb in verbs:
+            term = next(tokenize(verb, stemmer=stemmer))
+            entities_by_doc[doc_id].append({
+                'term': term,
+                'attr': {'class': 'action'}
+            })
 
     # Collect all entities for each document and then generate doc markup
     markup_by_doc = {}
