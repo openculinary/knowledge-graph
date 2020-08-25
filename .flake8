@@ -1,3 +1,4 @@
 [flake8]
+exclude=web/data
 per-file-ignores=
     web/app.py:E402,F401
