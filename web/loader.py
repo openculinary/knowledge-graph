@@ -12,6 +12,7 @@ from web.models.product import Product
 CACHE_PATHS = {
     'hierarchy': 'web/data/generated/hierarchy.json',
     'products': 'web/data/generated/ingredients.json',
+    'nutrition': 'web/data/generated/nutrition.json',
     'stopwords': 'web/data/generated/stopwords.txt',
     'appliance_queries': 'web/data/equipment/appliances.txt',
     'utensil_queries': 'web/data/equipment/utensils.txt',
