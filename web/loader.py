@@ -19,12 +19,6 @@ CACHE_PATHS = {
     'vessel_queries': 'web/data/equipment/vessels.txt',
 }
 
-NUTRITION_PATHS = {
-    'lookup': 'web/data/external/ingreedy-data/data/processed/foodmap.json',
-    'mccance': 'web/data/external/ingreedy-data/data/processed/mccance.json',
-    'usfdc': 'web/data/external/ingreedy-data/data/processed/usfdc.json',
-}
-
 
 def load_queries(filename):
     with open(filename) as f:
@@ -132,46 +126,17 @@ def retrieve_hierarchy(filename):
             )
 
 
-def retrieve_nutrition():
-    lookup = NUTRITION_PATHS['lookup']
-    if not os.path.exists(lookup):
-        raise RuntimeError(f'Could not read nutrition lookup from: {lookup}')
-    with open(lookup) as f:
-        lookup = json.loads(f.read())
+def retrieve_nutrition(filename):
+    if not os.path.exists(filename):
+        raise RuntimeError(f'Could not read nutrition from: {filename}')
 
-    mccance = NUTRITION_PATHS['mccance']
-    if not os.path.exists(mccance):
-        raise RuntimeError(f'Could not read mccance nutrition from: {mccance}')
-    with open(mccance) as f:
-        mccance = json.loads(f.read())
-        mccance = {item["name"]: item for item in mccance}
-
-    usfdc = NUTRITION_PATHS['usfdc']
-    if not os.path.exists(usfdc):
-        raise RuntimeError(f'Could not read usfdc nutrition from: {usfdc}')
-    with open(usfdc) as f:
-        usfdc = json.loads(f.read())
-        usfdc = {item["name"]: item for item in usfdc}
-
-    for metadata in lookup:
-        nutrition = None
-        product = metadata["normalized_name"]
-        datasets = {"food": mccance, "food_usfdc": usfdc}
-        for key, dataset in datasets.items():
-            name = metadata[key]
-            if name and name in dataset:
-                nutrition = dataset[name]
-                break
-        if not nutrition:
-            continue
-        yield Nutrition(
-            product=product,
-            fat=nutrition["fat"],
-            protein=nutrition["protein"],
-            carbohydrates=nutrition["carbs"],
-            energy=nutrition.get("energy") or nutrition.get("cals"),
-            fibre=nutrition["fibre"],
-        )
+    print(f'Reading nutrition from {filename}')
+    with open(filename) as f:
+        for line in f.readlines():
+            if line.startswith('#'):
+                continue
+            nutrition = json.loads(line)
+            yield Nutrition(**nutrition)
 
 
 def write_items(items, output):
