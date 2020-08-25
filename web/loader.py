@@ -150,7 +150,7 @@ def retrieve_nutrition():
         raise RuntimeError(f'Could not read usfdc nutrition from: {usfdc}')
     with open(usfdc) as f:
         usfdc = json.loads(f.read())
-        mccance = {item["name"]: item for item in usfdc}
+        usfdc = {item["name"]: item for item in usfdc}
 
     for metadata in lookup:
         nutrition = None
