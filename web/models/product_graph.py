@@ -11,16 +11,19 @@ from web.models.product import Product
 
 class ProductGraph(object):
 
-    def __init__(self, products, stopwords=None):
+    def __init__(self, products, stopwords=None, nutrition=None):
         self.products_by_id = {}
         self.index = self.build_index(products)
         self.stopwords = list(self.process_stopwords(stopwords))
         self.stopword_index = self.build_stopword_index()
+        self.nutrition_by_id = {}
+        self.nutrition_index = self.build_nutrition_index(nutrition)
         self.roots = []
 
     def generate_hierarchy(self):
         self.build_relationships()
         self.assign_parents()
+        self.assign_nutrition()
         self.calculate_depth()
         return self.roots
 
@@ -78,6 +81,23 @@ class ProductGraph(object):
             add_to_search_index(index, doc_id, stopword)
         return index
 
+    def build_nutrition_index(self, nutrition):
+        index = build_search_index()
+        for doc_id, nutrition in enumerate(nutrition or []):
+            product = Product(name=nutrition.product)
+            for term in tokenize(
+                doc=product.name,
+                ngrams=1,
+                stemmer=Product.stemmer
+            ):
+                doc_id = execute_query_exact(self.stopword_index, term)
+                if doc_id is not None:
+                    product.stopwords.append(self.stopwords[doc_id])
+                if tokenize(product.name, product.stopwords):
+                    self.nutrition_by_id[doc_id] = nutrition
+                    add_to_search_index(index, doc_id, product.to_doc())
+        return index
+
     def get_byproducts(self):
         with open('web/data/byproducts.txt') as f:
             for line in f.readlines():
@@ -117,6 +137,11 @@ class ProductGraph(object):
             yield parent
             for parent in self.find_parents(parent):
                 yield parent
+
+    def find_nutrition(self, product):
+        hits = execute_query(self.nutrition_index, product.to_doc())
+        for hit in hits:
+            yield hit['doc_id']
 
     def build_relationships(self):
 
@@ -161,6 +186,12 @@ class ProductGraph(object):
                     child.parents.append(parent.id)
                     parent.children.append(child_id)
 
+        for product in self.products_by_id.values():
+
+            # Find potential nutritional information matches for the product
+            for nutrition_doc_id in self.find_nutrition(product):
+                product.nutrition_doc_ids.append(nutrition_doc_id)
+
     def assign_parents(self):
         # Find a parent product for each product in the graph
         for product in self.products_by_id.values():
@@ -180,6 +211,26 @@ class ProductGraph(object):
             # Assign the parent
             if primary_parent:
                 product.parent_id = primary_parent.id
+
+    def assign_nutrition(self):
+        # Find nutritional information for each product in the graph
+        for product in self.products_by_id.values():
+
+            # Find the nutrition match with the most tokens
+            primary_nutrition = None
+            for nutrition_doc_id in product.nutrition_doc_ids:
+                nutrition = self.nutrition_by_id[nutrition_doc_id]
+                if primary_nutrition is None:
+                    primary_nutrition = nutrition
+
+                nutrition_tokens = list(nutrition.tokenize())
+                primary_nutrition_tokens = list(primary_nutrition.tokenize())
+                if len(nutrition_tokens) > len(primary_nutrition_tokens):
+                    primary_nutrition = nutrition
+
+            # Assign the best-match nutrition product
+            if primary_nutrition:
+                product.nutrition_key = primary_nutrition.product
 
     def calculate_depth(self):
         for product in self.products_by_id.values():

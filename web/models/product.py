@@ -25,7 +25,7 @@ class Product(object):
     canonicalizations = {}
     inflector = inflect.engine()
 
-    def __init__(self, name, frequency=0, parent_id=None):
+    def __init__(self, name, frequency=0, parent_id=None, nutrition_key=None):
         self.name = name
         self.frequency = frequency
         self.parent_id = parent_id
@@ -35,6 +35,9 @@ class Product(object):
         self.parents = []
         self.stopwords = []
         self.domain = None
+
+        self.nutrition_doc_ids = []
+        self.nutrition_key = nutrition_key
 
         # TODO: Find a better place to perform this initialization
         if self.canonicalizations:
