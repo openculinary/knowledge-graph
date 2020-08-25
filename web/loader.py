@@ -168,7 +168,7 @@ def retrieve_nutrition():
             fat=nutrition["fat"],
             protein=nutrition["protein"],
             carbohydrates=nutrition["carbs"],
-            energy=nutrition["energy"],
+            energy=nutrition.get("energy") or nutrition.get("cals"),
             fibre=nutrition["fibre"],
         )
 
