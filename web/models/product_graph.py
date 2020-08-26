@@ -139,11 +139,6 @@ class ProductGraph(object):
             for parent in self.find_parents(parent):
                 yield parent
 
-    def find_nutrition(self, product):
-        hits = execute_query(self.nutrition_index, product.to_doc())
-        for hit in hits:
-            yield hit['doc_id']
-
     def build_relationships(self):
 
         # Assign byproducts to their parent ingredients
@@ -212,9 +207,9 @@ class ProductGraph(object):
         for product in self.products_by_id.values():
 
             # Find the top-scoring nutrition match
-            doc_id = next(self.find_nutrition(product), None)
-            if doc_id:
-                nutrition = self.nutrition_by_id[doc_id]
+            hits = execute_query(self.nutrition_index, product.to_doc())
+            if hits:
+                nutrition = self.nutrition_by_id[hits[0]['doc_id']]
                 product.nutrition_key = nutrition.product
 
     def calculate_depth(self):
