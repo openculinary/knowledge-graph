@@ -36,7 +36,6 @@ class Product(object):
         self.stopwords = []
         self.domain = None
 
-        self.nutrition_doc_ids = []
         self.nutrition_key = nutrition_key
         self.nutrition = None
 
