@@ -60,24 +60,28 @@ def node_nutrition(graph, node):
         return node_nutrition(graph, graph.products_by_id[node.parent_id])
 
 
-def node_explorer(graph, node, path):
+def node_visitor(graph, node, path):
     for child_id in node.children:
         if child_id in path:
             continue
         child = graph.products_by_id[child_id]
         if child.parent_id == node.id:
             yield child
-            for child in node_explorer(graph, child, path + [child_id]):
+            for child in node_visitor(graph, child, path + [child_id]):
                 yield child
 
 
-def graph_explorer(graph):
+def graph_visitor(graph):
     for root in graph.roots:
-        root.nutrition = node_nutrition(graph, root)
         yield root
-        for node in node_explorer(graph, root, [root.id]):
-            node.nutrition = node_nutrition(graph, node)
+        for node in node_visitor(graph, root, [root.id]):
             yield node
+
+
+def graph_nodes(graph):
+    for node in graph_visitor(graph):
+        node.nutrition = node_nutrition(graph, node)
+        yield node
 
 
 if __name__ == '__main__':
@@ -85,5 +89,5 @@ if __name__ == '__main__':
     if args.update:
         Path(args.hierarchy).parent.mkdir(parents=True, exist_ok=True)
         output = open(args.hierarchy, 'w')
-    write_items(graph_explorer(graph), output)
+    write_items(graph_nodes(graph), output)
     output.close()
