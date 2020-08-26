@@ -17,7 +17,6 @@ class ProductGraph(object):
         self.stopwords = list(self.process_stopwords(stopwords))
         self.stopword_index = self.build_stopword_index()
         self.nutrition_by_id = {}
-        self.nutrition_by_key = {}
         self.nutrition_index = self.build_nutrition_index(nutrition)
         self.roots = []
 
@@ -84,7 +83,7 @@ class ProductGraph(object):
 
     def build_nutrition_index(self, nutrition):
         index = build_search_index()
-        for doc_id, nutrition in enumerate(nutrition or []):
+        for nutrition in nutrition or []:
             product = Product(name=nutrition.product)
             for term in tokenize(
                 doc=product.name,
@@ -95,9 +94,8 @@ class ProductGraph(object):
                 if stopword_id is not None:
                     product.stopwords.append(self.stopwords[stopword_id])
             if tokenize(product.name, product.stopwords):
-                self.nutrition_by_id[doc_id] = nutrition
-                self.nutrition_by_key[product.name] = nutrition
-                add_to_search_index(index, doc_id, product.to_doc())
+                self.nutrition_by_id[product.name] = nutrition
+                add_to_search_index(index, product.name, product.to_doc())
         return index
 
     def get_byproducts(self):

@@ -55,7 +55,7 @@ graph.filter_products()
 
 def node_nutrition(graph, node):
     if node.nutrition_key:
-        return graph.nutrition_by_key[node.nutrition_key]
+        return graph.nutrition_by_id[node.nutrition_key]
     elif node.parent_id:
         return node_nutrition(graph, graph.products_by_id[node.parent_id])
 
