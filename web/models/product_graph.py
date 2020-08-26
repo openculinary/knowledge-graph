@@ -17,6 +17,7 @@ class ProductGraph(object):
         self.stopwords = list(self.process_stopwords(stopwords))
         self.stopword_index = self.build_stopword_index()
         self.nutrition_by_id = {}
+        self.nutrition_by_key = {}
         self.nutrition_index = self.build_nutrition_index(nutrition)
         self.roots = []
 
@@ -90,12 +91,13 @@ class ProductGraph(object):
                 ngrams=1,
                 stemmer=Product.stemmer
             ):
-                doc_id = execute_query_exact(self.stopword_index, term)
-                if doc_id is not None:
-                    product.stopwords.append(self.stopwords[doc_id])
-                if tokenize(product.name, product.stopwords):
-                    self.nutrition_by_id[doc_id] = nutrition
-                    add_to_search_index(index, doc_id, product.to_doc())
+                stopword_id = execute_query_exact(self.stopword_index, term)
+                if stopword_id is not None:
+                    product.stopwords.append(self.stopwords[stopword_id])
+            if tokenize(product.name, product.stopwords):
+                self.nutrition_by_id[doc_id] = nutrition
+                self.nutrition_by_key[product.name] = nutrition
+                add_to_search_index(index, doc_id, product.to_doc())
         return index
 
     def get_byproducts(self):
@@ -186,12 +188,6 @@ class ProductGraph(object):
                     child.parents.append(parent.id)
                     parent.children.append(child_id)
 
-        for product in self.products_by_id.values():
-
-            # Find potential nutritional information matches for the product
-            for nutrition_doc_id in self.find_nutrition(product):
-                product.nutrition_doc_ids.append(nutrition_doc_id)
-
     def assign_parents(self):
         # Find a parent product for each product in the graph
         for product in self.products_by_id.values():
@@ -216,21 +212,11 @@ class ProductGraph(object):
         # Find nutritional information for each product in the graph
         for product in self.products_by_id.values():
 
-            # Find the nutrition match with the most tokens
-            primary_nutrition = None
-            for nutrition_doc_id in product.nutrition_doc_ids:
-                nutrition = self.nutrition_by_id[nutrition_doc_id]
-                if primary_nutrition is None:
-                    primary_nutrition = nutrition
-
-                nutrition_tokens = list(nutrition.tokenize())
-                primary_nutrition_tokens = list(primary_nutrition.tokenize())
-                if len(nutrition_tokens) > len(primary_nutrition_tokens):
-                    primary_nutrition = nutrition
-
-            # Assign the best-match nutrition product
-            if primary_nutrition:
-                product.nutrition_key = primary_nutrition.product
+            # Find the top-scoring nutrition match
+            doc_id = next(self.find_nutrition(product), None)
+            if doc_id:
+                nutrition = self.nutrition_by_id[doc_id]
+                product.nutrition_key = nutrition.product
 
     def calculate_depth(self):
         for product in self.products_by_id.values():

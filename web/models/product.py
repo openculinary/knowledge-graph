@@ -38,6 +38,7 @@ class Product(object):
 
         self.nutrition_doc_ids = []
         self.nutrition_key = nutrition_key
+        self.nutrition = None
 
         # TODO: Find a better place to perform this initialization
         if self.canonicalizations:
@@ -56,10 +57,13 @@ class Product(object):
         return self
 
     def __repr__(self):
-        data = self.to_dict(include_hierarchy=self.children or self.parents)
+        data = self.to_dict(
+            include_hierarchy=self.children or self.parents,
+            include_nutrition=self.nutrition
+        )
         return '  ' * (self.depth or 0) + json.dumps(data, ensure_ascii=False)
 
-    def to_dict(self, include_hierarchy=False):
+    def to_dict(self, include_hierarchy=False, include_nutrition=False):
         data = {
             'product': self.name,
             'recipe_count': self.frequency
@@ -70,6 +74,10 @@ class Product(object):
                 'domain': self.domain,
                 'parent_id': self.parent_id,
                 'depth': self.depth
+            })
+        if include_nutrition and self.nutrition:
+            data.update({
+                'nutrition': self.nutrition.to_dict()
             })
         return data
 

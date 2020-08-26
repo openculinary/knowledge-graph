@@ -1,5 +1,11 @@
 import json
 
+from hashedixsearch import (
+    tokenize,
+)
+
+from web.models.product import Product
+
 
 class Nutrition(object):
 
@@ -12,11 +18,21 @@ class Nutrition(object):
         self.fibre = fibre
 
     def __repr__(self):
-        return json.dumps({
+        return json.dumps(self.to_dict())
+
+    def to_dict(self):
+        return {
             'product': self.product,
             'protein': self.protein,
             'fat': self.fat,
             'carbohydrates': self.carbohydrates,
             'energy': self.energy,
             'fibre': self.fibre,
-        })
+        }
+
+    def tokenize(self, stopwords=True, stemmer=True, analyzer=True):
+        for term in tokenize(doc=self.product, stemmer=Product.stemmer):
+            for subterm in term:
+                yield subterm
+            if len(term) > 1:
+                return
