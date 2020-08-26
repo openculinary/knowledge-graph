@@ -90,9 +90,9 @@ class ProductGraph(object):
                 ngrams=1,
                 stemmer=Product.stemmer
             ):
-                stopword_id = execute_query_exact(self.stopword_index, term)
-                if stopword_id is not None:
-                    product.stopwords.append(self.stopwords[stopword_id])
+                doc_id = execute_query_exact(self.stopword_index, term)
+                if doc_id is not None:
+                    product.stopwords.append(self.stopwords[doc_id])
             if tokenize(product.name, product.stopwords):
                 self.nutrition_by_id[product.name] = nutrition
                 add_to_search_index(index, product.name, product.to_doc())
