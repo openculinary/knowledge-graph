@@ -94,8 +94,9 @@ class ProductGraph(object):
                 if doc_id is not None:
                     product.stopwords.append(self.stopwords[doc_id])
             if tokenize(product.name, product.stopwords):
-                self.nutrition_by_id[product.name] = nutrition
                 add_to_search_index(index, product.name, product.to_doc())
+                if product.name not in self.nutrition_by_id:
+                    self.nutrition_by_id[product.name] = nutrition
         return index
 
     def get_byproducts(self):
