@@ -23,7 +23,7 @@ class ProductGraph(object):
     def generate_hierarchy(self):
         self.build_relationships()
         self.assign_parents()
-        self.assign_nutrition()
+        self.match_nutrition()
         self.calculate_depth()
         return self.roots
 
@@ -202,7 +202,7 @@ class ProductGraph(object):
             if primary_parent:
                 product.parent_id = primary_parent.id
 
-    def assign_nutrition(self):
+    def match_nutrition(self):
         # Find nutritional information for each product in the graph
         for product in self.products_by_id.values():
 
