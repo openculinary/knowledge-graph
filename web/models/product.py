@@ -57,13 +57,10 @@ class Product(object):
         return self
 
     def __repr__(self):
-        data = self.to_dict(
-            include_hierarchy=self.children or self.parents,
-            include_nutrition=self.nutrition
-        )
+        data = self.to_dict(include_hierarchy=self.children or self.parents)
         return '  ' * (self.depth or 0) + json.dumps(data, ensure_ascii=False)
 
-    def to_dict(self, include_hierarchy=False, include_nutrition=False):
+    def to_dict(self, include_hierarchy=False):
         data = {
             'product': self.name,
             'recipe_count': self.frequency
@@ -75,7 +72,7 @@ class Product(object):
                 'parent_id': self.parent_id,
                 'depth': self.depth
             })
-        if include_nutrition and self.nutrition:
+        if self.nutrition:
             data.update({
                 'nutrition': self.nutrition.to_dict()
             })
