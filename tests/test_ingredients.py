@@ -81,3 +81,46 @@ def test_ingredient_query(stopwords, hierarchy, client):
         assert results[query]['product']['id'] == expected['product_id']
         assert results[query]['product']['product'] == expected['product']
         assert results[query]['query']['markup'] == expected['markup']
+
+
+@patch('web.ingredients.retrieve_hierarchy')
+@patch('web.ingredients.retrieve_stopwords')
+def test_nutrition_response(stopwords, hierarchy, client):
+    # HACK: Ensure that app initialization methods (re)run during this test
+    app._got_first_request = False
+
+    product = 'onion'
+    nutrition = {
+        'product': product,
+        'protein': 1.0,
+        'fat': 0.1,
+        'carbohydrates': 8.0,
+        'energy': 35.0,
+        'fibre': 2.0,
+    }
+
+    stopwords.return_value = []
+    hierarchy.return_value = [
+        Product(
+            name=product,
+            frequency=10,
+            parent_id=None,
+            nutrition=nutrition,
+        )
+    ]
+
+    expected_results = {
+        'medium onion': {
+            'markup': 'medium <mark>onion</mark>',
+            'nutrition': nutrition,
+        }
+    }
+
+    results = client.post(
+        '/ingredients/query',
+        data={'descriptions[]': list(expected_results.keys())}
+    ).json['results']
+
+    for query, expected in expected_results.items():
+        assert results[query]['query']['markup'] == expected['markup']
+        assert results[query]['product']['nutrition'] == expected['nutrition']
