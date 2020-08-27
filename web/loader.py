@@ -5,12 +5,14 @@ import requests
 
 from ingreedypy import Ingreedy
 
+from web.models.nutrition import Nutrition
 from web.models.product import Product
 
 
 CACHE_PATHS = {
     'hierarchy': 'web/data/generated/hierarchy.json',
     'products': 'web/data/generated/ingredients.json',
+    'nutrition': 'web/data/generated/nutrition.json',
     'stopwords': 'web/data/generated/stopwords.txt',
     'appliance_queries': 'web/data/equipment/appliances.txt',
     'utensil_queries': 'web/data/equipment/utensils.txt',
@@ -120,8 +122,22 @@ def retrieve_hierarchy(filename):
             yield Product(
                 name=product['product'],
                 frequency=product['recipe_count'],
-                parent_id=product.get('parent_id')
+                parent_id=product.get('parent_id'),
+                nutrition=product.get('nutrition')
             )
+
+
+def retrieve_nutrition_list(filename):
+    if not os.path.exists(filename):
+        raise RuntimeError(f'Could not read nutrition list from: {filename}')
+
+    print(f'Reading nutrition list from {filename}')
+    with open(filename) as f:
+        for line in f.readlines():
+            if line.startswith('#'):
+                continue
+            nutrition = json.loads(line)
+            yield Nutrition(**nutrition)
 
 
 def write_items(items, output):

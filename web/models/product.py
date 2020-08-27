@@ -8,6 +8,8 @@ import json
 from snowballstemmer import stemmer
 from unidecode import unidecode
 
+from web.models.nutrition import Nutrition
+
 
 class Product(object):
 
@@ -25,7 +27,7 @@ class Product(object):
     canonicalizations = {}
     inflector = inflect.engine()
 
-    def __init__(self, name, frequency=0, parent_id=None):
+    def __init__(self, name, frequency=0, parent_id=None, nutrition=None):
         self.name = name
         self.frequency = frequency
         self.parent_id = parent_id
@@ -35,6 +37,9 @@ class Product(object):
         self.parents = []
         self.stopwords = []
         self.domain = None
+
+        self.nutrition = Nutrition(**nutrition) if nutrition else None
+        self.nutrition_key = self.nutrition.product if self.nutrition else None
 
         # TODO: Find a better place to perform this initialization
         if self.canonicalizations:
@@ -67,6 +72,10 @@ class Product(object):
                 'domain': self.domain,
                 'parent_id': self.parent_id,
                 'depth': self.depth
+            })
+        if self.nutrition:
+            data.update({
+                'nutrition': self.nutrition.to_dict()
             })
         return data
 

@@ -11,16 +11,19 @@ from web.models.product import Product
 
 class ProductGraph(object):
 
-    def __init__(self, products, stopwords=None):
+    def __init__(self, products, stopwords=None, nutrition_list=None):
         self.products_by_id = {}
         self.product_index = self.build_index(products)
         self.stopwords = list(self.process_stopwords(stopwords))
         self.stopword_index = self.build_stopword_index()
+        self.nutrition_by_id = {}
+        self.nutrition_index = self.build_nutrition_index(nutrition_list)
         self.roots = []
 
     def generate_hierarchy(self):
         self.build_relationships()
         self.assign_parents()
+        self.match_nutrition()
         self.calculate_depth()
         return self.roots
 
@@ -76,6 +79,24 @@ class ProductGraph(object):
         index = build_search_index()
         for doc_id, stopword in enumerate(self.stopwords):
             add_to_search_index(index, doc_id, stopword)
+        return index
+
+    def build_nutrition_index(self, nutrition_list):
+        index = build_search_index()
+        for nutrition in nutrition_list or []:
+            product = Product(name=nutrition.product)
+            for term in tokenize(
+                doc=product.name,
+                ngrams=1,
+                stemmer=Product.stemmer
+            ):
+                doc_id = execute_query_exact(self.stopword_index, term)
+                if doc_id is not None:
+                    product.stopwords.append(self.stopwords[doc_id])
+            if tokenize(product.name, product.stopwords):
+                add_to_search_index(index, product.name, product.to_doc())
+                if product.name not in self.nutrition_by_id:
+                    self.nutrition_by_id[product.name] = nutrition
         return index
 
     def get_byproducts(self):
@@ -180,6 +201,16 @@ class ProductGraph(object):
             # Assign the parent
             if primary_parent:
                 product.parent_id = primary_parent.id
+
+    def match_nutrition(self):
+        # Find nutritional information for each product in the graph
+        for product in self.products_by_id.values():
+
+            # Find the top-scoring nutrition match
+            hits = execute_query(self.nutrition_index, product.to_doc())
+            if hits:
+                nutrition = self.nutrition_by_id[hits[0]['doc_id']]
+                product.nutrition_key = nutrition.product
 
     def calculate_depth(self):
         for product in self.products_by_id.values():
