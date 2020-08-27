@@ -13,7 +13,7 @@ class ProductGraph(object):
 
     def __init__(self, products, stopwords=None):
         self.products_by_id = {}
-        self.index = self.build_index(products)
+        self.product_index = self.build_index(products)
         self.stopwords = list(self.process_stopwords(stopwords))
         self.stopword_index = self.build_stopword_index()
         self.roots = []
@@ -51,10 +51,10 @@ class ProductGraph(object):
                     yield term[0:1]
 
     def calculate_stopwords(self):
-        for term in self.index.terms():
+        for term in self.product_index.terms():
             if len(term) > 1:
                 continue
-            tfidf = self.index.get_total_tfidf(term)
+            tfidf = self.product_index.get_total_tfidf(term)
             if tfidf < 45:
                 continue
             yield term[0]
@@ -68,7 +68,7 @@ class ProductGraph(object):
                 stopwords=clearwords,
                 stemmer=Product.stemmer
             ):
-                if execute_query_exact(self.index, term):
+                if execute_query_exact(self.product_index, term):
                     continue
                 yield stopword
 
@@ -103,7 +103,7 @@ class ProductGraph(object):
         return self.stopwords
 
     def find_children(self, product):
-        hits = execute_query(self.index, product.to_doc())
+        hits = execute_query(self.product_index, product.to_doc())
         for hit in hits:
             doc_id = hit['doc_id']
             if doc_id != product.id:
@@ -124,7 +124,7 @@ class ProductGraph(object):
         for parent, byproduct in self.get_byproducts():
 
             # Find the parent product
-            parent_hits = execute_query(self.index, parent)
+            parent_hits = execute_query(self.product_index, parent)
             if not parent_hits:
                 continue
 
@@ -133,7 +133,7 @@ class ProductGraph(object):
             parent.domain = 'byproducts'
 
             # Find all of the byproducts the parent relates to
-            hits = execute_query(self.index, byproduct)
+            hits = execute_query(self.product_index, byproduct)
             for hit in hits:
                 child_id = hit['doc_id']
 
