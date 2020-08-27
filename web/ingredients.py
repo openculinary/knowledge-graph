@@ -34,7 +34,7 @@ def preload_ingredient_data():
 def find_product_candidates(products):
     queries = [product.name for product in products]
     results = execute_queries(
-        index=app.graph.index,
+        index=app.graph.product_index,
         queries=queries,
         stopwords=app.stopwords,
         stemmer=Product.stemmer,
