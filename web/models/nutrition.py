@@ -4,8 +4,6 @@ from hashedixsearch import (
     tokenize,
 )
 
-from web.models.product import Product
-
 
 class Nutrition(object):
 
@@ -31,6 +29,7 @@ class Nutrition(object):
         }
 
     def tokenize(self, stopwords=True, stemmer=True, analyzer=True):
+        from web.models.product import Product
         for term in tokenize(doc=self.product, stemmer=Product.stemmer):
             for subterm in term:
                 yield subterm

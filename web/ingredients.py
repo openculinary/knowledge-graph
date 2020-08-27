@@ -12,7 +12,6 @@ from web.app import app
 from web.loader import (
     CACHE_PATHS,
     retrieve_hierarchy,
-    retrieve_nutrition,
     retrieve_stopwords,
 )
 from web.models.product import Product
@@ -27,10 +26,7 @@ def preload_ingredient_data():
     filename = CACHE_PATHS['stopwords']
     stopwords = retrieve_stopwords(filename)
 
-    filename = CACHE_PATHS['nutrition']
-    nutrition = retrieve_nutrition(filename)
-
-    app.graph = ProductGraph(hierarchy, stopwords, nutrition)
+    app.graph = ProductGraph(hierarchy, stopwords)
     app.products = app.graph.filter_products()
     app.stopwords = app.graph.filter_stopwords()
 

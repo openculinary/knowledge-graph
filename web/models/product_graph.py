@@ -11,13 +11,13 @@ from web.models.product import Product
 
 class ProductGraph(object):
 
-    def __init__(self, products, stopwords=None, nutrition=None):
+    def __init__(self, products, stopwords=None, nutrition_list=None):
         self.products_by_id = {}
         self.index = self.build_index(products)
         self.stopwords = list(self.process_stopwords(stopwords))
         self.stopword_index = self.build_stopword_index()
         self.nutrition_by_id = {}
-        self.nutrition_index = self.build_nutrition_index(nutrition)
+        self.nutrition_index = self.build_nutrition_index(nutrition_list)
         self.roots = []
 
     def generate_hierarchy(self):
@@ -81,9 +81,9 @@ class ProductGraph(object):
             add_to_search_index(index, doc_id, stopword)
         return index
 
-    def build_nutrition_index(self, nutrition):
+    def build_nutrition_index(self, nutrition_list):
         index = build_search_index()
-        for nutrition in nutrition or []:
+        for nutrition in nutrition_list or []:
             product = Product(name=nutrition.product)
             for term in tokenize(
                 doc=product.name,

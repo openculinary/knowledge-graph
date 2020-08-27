@@ -5,7 +5,7 @@ import sys
 from web.loader import (
     CACHE_PATHS,
     retrieve_products,
-    retrieve_nutrition,
+    retrieve_nutrition_list,
     retrieve_stopwords,
     write_items,
 )
@@ -41,7 +41,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 products = retrieve_products(args.products)
-nutrition = retrieve_nutrition(args.nutrition)
+nutrition = retrieve_nutrition_list(args.nutrition)
 stopwords = retrieve_stopwords(args.stopwords)
 
 graph = ProductGraph(products, stopwords)

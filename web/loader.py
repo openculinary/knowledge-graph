@@ -122,15 +122,16 @@ def retrieve_hierarchy(filename):
             yield Product(
                 name=product['product'],
                 frequency=product['recipe_count'],
-                parent_id=product.get('parent_id')
+                parent_id=product.get('parent_id'),
+                nutrition=product.get('nutrition')
             )
 
 
-def retrieve_nutrition(filename):
+def retrieve_nutrition_list(filename):
     if not os.path.exists(filename):
-        raise RuntimeError(f'Could not read nutrition from: {filename}')
+        raise RuntimeError(f'Could not read nutrition list from: {filename}')
 
-    print(f'Reading nutrition from {filename}')
+    print(f'Reading nutrition list from {filename}')
     with open(filename) as f:
         for line in f.readlines():
             if line.startswith('#'):
