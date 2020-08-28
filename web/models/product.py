@@ -133,6 +133,7 @@ class Product(object):
             'category': self.category,
             'contents': self.contents,
             'ancestors': [ancestor.name for ancestor in self.ancestry(graph)],
+            'nutrition': self.nutrition.to_dict() if self.nutrition else None,
         }
 
     def ancestry(self, graph):
