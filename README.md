@@ -52,10 +52,11 @@ $ make deploy
 
 ## Operations
 
-To update the cached product list, calculate new stopwords, and regenerate the product hierarchy, use the following commands respectively:
+To update the cached product list, calculate new stopwords, update the nutrition list, and regenerate the product hierarchy, use the following commands respectively:
 
 ```sh
 $ pipenv run python -m scripts.products --update
 $ pipenv run python -m scripts.stopwords --update
+$ pipenv run python -m scripts.nutrition --update
 $ pipenv run python -m scripts.hierarchy --update
 ```
