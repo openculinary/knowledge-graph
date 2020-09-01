@@ -122,5 +122,6 @@ def test_nutrition_response(stopwords, hierarchy, client):
     ).json['results']
 
     for query, expected in expected_results.items():
+        del expected['nutrition']['product']
         assert results[query]['query']['markup'] == expected['markup']
         assert results[query]['product']['nutrition'] == expected['nutrition']

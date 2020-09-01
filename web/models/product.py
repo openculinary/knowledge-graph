@@ -75,7 +75,7 @@ class Product(object):
             })
         if self.nutrition:
             data.update({
-                'nutrition': self.nutrition.to_dict(include_product=False)
+                'nutrition': self.nutrition.to_dict()
             })
         return data
 
@@ -123,6 +123,8 @@ class Product(object):
         singular = singular or self.name
         plural = Product.inflector.plural_noun(singular)
         is_plural = plural in description.lower()
+        nutrition = self.nutrition.to_dict(include_product=False) \
+            if self.nutrition else None
 
         return {
             'id': self.id,
@@ -133,7 +135,7 @@ class Product(object):
             'category': self.category,
             'contents': self.contents,
             'ancestors': [ancestor.name for ancestor in self.ancestry(graph)],
-            'nutrition': self.nutrition.to_dict() if self.nutrition else None,
+            'nutrition': nutrition,
         }
 
     def ancestry(self, graph):
