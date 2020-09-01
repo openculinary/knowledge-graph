@@ -75,7 +75,7 @@ class Product(object):
             })
         if self.nutrition:
             data.update({
-                'nutrition': self.nutrition.to_dict()
+                'nutrition': self.nutrition.to_dict(include_product=False)
             })
         return data
 

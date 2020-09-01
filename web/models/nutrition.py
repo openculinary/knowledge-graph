@@ -18,15 +18,16 @@ class Nutrition(object):
     def __repr__(self):
         return json.dumps(self.to_dict())
 
-    def to_dict(self):
-        return {
-            'product': self.product,
+    def to_dict(self, include_product=True):
+        nutrition = {
             'protein': self.protein,
             'fat': self.fat,
             'carbohydrates': self.carbohydrates,
             'energy': self.energy,
             'fibre': self.fibre,
         }
+        product = {'product': self.product}
+        return {**nutrition, **(product if include_product else {})}
 
     def tokenize(self, stopwords=True, stemmer=True, analyzer=True):
         from web.models.product import Product
