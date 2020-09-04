@@ -136,6 +136,12 @@ class Product(object):
             'contents': self.contents,
             'ancestors': [ancestor.name for ancestor in self.ancestry(graph)],
             'nutrition': nutrition,
+            'properties': {
+                'is_vegetarian': self.is_vegetarian,
+                'is_dairy_free': self.is_dairy_free,
+                'is_vegan': self.is_vegan,
+                'is_gluten_free': self.is_gluten_free,
+            },
         }
 
     def ancestry(self, graph):
