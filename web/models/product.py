@@ -245,7 +245,7 @@ class Product(object):
 
     @property
     def is_dairy_free(self):
-        return 'dairy' not in self.contents
+        return self.category != 'dairy'
 
     @property
     def is_vegan(self):

@@ -156,6 +156,7 @@ def dietary_property_cases():
         ('beef', False, True, False, True),
         ('chicken', False, True, False, True),
         ('tofu', True, True, True, True),
+        ('egg', True, False, False, True),
     ]
 
 
