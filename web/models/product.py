@@ -185,6 +185,11 @@ class Product(object):
 
     @property
     def contents(self):
+        if not hasattr(self, '_contents'):
+            self._contents = self.determine_contents()
+        return self._contents
+
+    def determine_contents(self):
         content_graph = {
             'baguette': 'bread',
             'bread': 'bread',
