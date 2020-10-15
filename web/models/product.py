@@ -137,10 +137,10 @@ class Product(object):
             'ancestors': [ancestor.name for ancestor in self.ancestry(graph)],
             'nutrition': nutrition,
             'properties': {
-                'is_vegetarian': self.is_vegetarian,
                 'is_dairy_free': self.is_dairy_free,
-                'is_vegan': self.is_vegan,
                 'is_gluten_free': self.is_gluten_free,
+                'is_vegan': self.is_vegan,
+                'is_vegetarian': self.is_vegetarian,
             },
         }
 
@@ -240,16 +240,8 @@ class Product(object):
         return list(contents)
 
     @property
-    def is_vegetarian(self):
-        return 'meat' not in self.contents
-
-    @property
     def is_dairy_free(self):
         return self.category != 'dairy'
-
-    @property
-    def is_vegan(self):
-        return self.is_vegetarian and self.is_dairy_free
 
     @property
     def is_gluten_free(self):
@@ -270,3 +262,11 @@ class Product(object):
             if 'beer' in item:
                 likely_glutenous = True
         return not likely_glutenous
+
+    @property
+    def is_vegan(self):
+        return self.is_vegetarian and self.is_dairy_free
+
+    @property
+    def is_vegetarian(self):
+        return 'meat' not in self.contents
