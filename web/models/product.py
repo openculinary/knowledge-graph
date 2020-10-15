@@ -136,6 +136,12 @@ class Product(object):
             'contents': self.contents,
             'ancestors': [ancestor.name for ancestor in self.ancestry(graph)],
             'nutrition': nutrition,
+            'properties': {
+                'is_dairy_free': self.is_dairy_free,
+                'is_gluten_free': self.is_gluten_free,
+                'is_vegan': self.is_vegan,
+                'is_vegetarian': self.is_vegetarian,
+            },
         }
 
     def ancestry(self, graph):
@@ -232,3 +238,35 @@ class Product(object):
                     singular = Product.inflector.singular_noun(field) or field
                     contents.add(singular)
         return list(contents)
+
+    @property
+    def is_dairy_free(self):
+        return self.category != 'dairy'
+
+    @property
+    def is_gluten_free(self):
+        likely_glutenous = False
+        for item in self.contents:
+            if 'flour' in item:
+                likely_glutenous = True
+            if 'bread' in item:
+                likely_glutenous = True
+            if 'pasta' in item:
+                likely_glutenous = True
+            if 'noodle' in item:
+                likely_glutenous = True
+            if 'soy sauce' in item:
+                likely_glutenous = True
+            if 'bouillon' in item:
+                likely_glutenous = True
+            if 'beer' in item:
+                likely_glutenous = True
+        return not likely_glutenous
+
+    @property
+    def is_vegan(self):
+        return self.is_vegetarian and self.is_dairy_free
+
+    @property
+    def is_vegetarian(self):
+        return 'meat' not in self.contents
