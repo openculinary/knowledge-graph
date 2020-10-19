@@ -36,7 +36,12 @@ class ProductGraph(object):
             if count % 1000 == 0:
                 print(f'- {count} documents indexed')
 
-            add_to_search_index(index, product.id, product.to_doc())
+            add_to_search_index(
+                index=index,
+                doc_id=product.id,
+                doc=product.to_doc(),
+                count=product.frequency,
+            )
             if product.id not in self.products_by_id:
                 self.products_by_id[product.id] = product
             else:
