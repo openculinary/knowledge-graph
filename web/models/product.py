@@ -119,6 +119,7 @@ class Product(object):
         self.depth = depth
         return depth
 
+    @lru_cache(maxsize=4096)
     def get_metadata(self, description, graph):
         singular = Product.inflector.singular_noun(self.name)
         singular = singular or self.name
