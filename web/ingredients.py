@@ -91,7 +91,7 @@ def ingredients():
             synonyms=Product.canonicalizations,
             case_sensitive=False,
         )
-        metadata[doc_id] = product.get_metadata(description, app.graph, terms)
+        metadata[doc_id] = product.get_metadata(description, app.graph)
 
     return jsonify({
         'results': {

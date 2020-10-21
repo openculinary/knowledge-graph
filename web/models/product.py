@@ -119,7 +119,7 @@ class Product(object):
         self.depth = depth
         return depth
 
-    def get_metadata(self, description, graph, terms=None):
+    def get_metadata(self, description, graph):
         singular = Product.inflector.singular_noun(self.name)
         singular = singular or self.name
         plural = Product.inflector.plural_noun(singular)
