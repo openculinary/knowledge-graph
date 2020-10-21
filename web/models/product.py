@@ -1,3 +1,4 @@
+from functools import lru_cache
 import json
 
 from hashedixsearch import (
@@ -16,6 +17,7 @@ class Product(object):
 
         stemmer_en = stemmer('english')
 
+        @lru_cache(maxsize=4096)
         def stem(self, x):
             x = unidecode(x)
             # TODO: Remove double-stemming
