@@ -1,10 +1,9 @@
+import json
+
 from hashedixsearch import (
     tokenize,
 )
-
 import inflect
-import json
-
 from snowballstemmer import stemmer
 from unidecode import unidecode
 
