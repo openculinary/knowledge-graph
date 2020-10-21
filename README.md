@@ -25,7 +25,6 @@ Known issues:
 
 - Document IDs are generated dynamically, which works but is 'fragile'
 - Spelling corrections are important but currently handled via manual entry in 'canonicalizations.txt'
-- It'd be useful to provide token [highlighting](https://www.elastic.co/guide/en/elasticsearch/reference/7.5/search-request-body.html#request-body-search-highlighting) in responses, particularly for cases where the plurality/stemming of the match differs from the input text
 - Stopword metadata is not yet persisted or used effectively; they could, for example, be used to identify the collection of ways in which individual ingredients can be prepared ('diced', 'minced', ...)
 
 ## Install dependencies
