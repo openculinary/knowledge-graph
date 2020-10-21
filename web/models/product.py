@@ -120,18 +120,15 @@ class Product(object):
         return depth
 
     @lru_cache(maxsize=4096)
-    def get_metadata(self, description, graph):
+    def _static_metadata(self, graph):
         singular = Product.inflector.singular_noun(self.name)
         singular = singular or self.name
         plural = Product.inflector.plural_noun(singular)
-        is_plural = plural in description.lower()
         nutrition = self.nutrition.to_dict(include_product=False) \
             if self.nutrition else None
 
         return {
             'id': self.id,
-            'product': plural if is_plural else singular,
-            'is_plural': is_plural,
             'singular': singular,
             'plural': plural,
             'category': self.category,
@@ -143,6 +140,13 @@ class Product(object):
             'is_vegan': self.is_vegan,
             'is_vegetarian': self.is_vegetarian,
         }
+
+    def get_metadata(self, description, graph):
+        metadata = self._static_metadata(graph)
+        is_plural = metadata['plural'] in description.lower()
+        metadata['is_plural'] = is_plural
+        metadata['product'] = metadata['plural' if is_plural else 'singular']
+        return metadata
 
     def ancestry(self, graph):
         if not self.parent_id:
