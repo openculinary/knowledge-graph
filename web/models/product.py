@@ -1,3 +1,4 @@
+from functools import lru_cache
 import json
 
 from hashedixsearch import (
@@ -16,6 +17,7 @@ class Product(object):
 
         stemmer_en = stemmer('english')
 
+        @lru_cache(maxsize=4096)
         def stem(self, x):
             x = unidecode(x)
             # TODO: Remove double-stemming
@@ -117,18 +119,16 @@ class Product(object):
         self.depth = depth
         return depth
 
-    def get_metadata(self, description, graph, terms=None):
+    @lru_cache(maxsize=4096)
+    def _static_metadata(self, graph):
         singular = Product.inflector.singular_noun(self.name)
         singular = singular or self.name
         plural = Product.inflector.plural_noun(singular)
-        is_plural = plural in description.lower()
         nutrition = self.nutrition.to_dict(include_product=False) \
             if self.nutrition else None
 
         return {
             'id': self.id,
-            'product': plural if is_plural else singular,
-            'is_plural': is_plural,
             'singular': singular,
             'plural': plural,
             'category': self.category,
@@ -140,6 +140,13 @@ class Product(object):
             'is_vegan': self.is_vegan,
             'is_vegetarian': self.is_vegetarian,
         }
+
+    def get_metadata(self, description, graph):
+        metadata = self._static_metadata(graph)
+        is_plural = metadata['plural'] in description.lower()
+        metadata['is_plural'] = is_plural
+        metadata['product'] = metadata['plural' if is_plural else 'singular']
+        return metadata
 
     def ancestry(self, graph):
         if not self.parent_id:

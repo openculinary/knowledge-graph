@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import lru_cache
 import en_core_web_sm
 from flask import jsonify, request
 from hashedixsearch import (
@@ -22,6 +23,7 @@ class EquipmentStemmer(NullStemmer):
 
     stemmer_en = stemmer('english')
 
+    @lru_cache(maxsize=4096)
     def stem(self, x):
         return self.stemmer_en.stemWord(x)
 
