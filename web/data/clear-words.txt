@@ -21,6 +21,7 @@ soy
 sweet
 
 # Valid tokens which identify ingredient variants
+bell
 boneless
 bouillon
 breast
