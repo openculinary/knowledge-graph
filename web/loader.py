@@ -71,7 +71,7 @@ def retrieve_products(filename):
     else:
         print('Streaming product data from api')
         reader = requests.get(
-            url='http://localhost/products',
+            url='http://backend-service/products',
             stream=True,
             proxies={}
         ).iter_lines
