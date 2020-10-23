@@ -198,11 +198,11 @@ class ProductGraph(object):
                 if primary_parent is None:
                     primary_parent = parent
 
-                parent_tokens = list(parent.tokenize())
-                primary_tokens = list(primary_parent.tokenize())
-                if len(parent_tokens) > len(primary_tokens):
+                parent_tokens = len(list(parent.tokenize()))
+                primary_tokens = len(list(primary_parent.tokenize()))
+                if parent_tokens > primary_tokens:
                     primary_parent = parent
-                elif len(parent_tokens) == len(primary_tokens):
+                elif parent_tokens == primary_tokens:
                     if parent.frequency > primary_parent.frequency:
                         primary_parent = parent
 
