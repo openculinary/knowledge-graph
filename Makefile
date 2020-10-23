@@ -24,7 +24,7 @@ image:
 	buildah run --user gunicorn $(container) -- pip install --user pipenv --
 	buildah run --user gunicorn $(container) -- /srv/.local/bin/pipenv install --skip-lock --
 	# Begin: NOTE: Install spaCy language model
-	buildah run --user gunicorn $(container) -- env PYTHONPATH=/usr/lib/python3.8/site-packages/ /srv/.local/bin/pipenv run python -m spacy download en_core_web_sm --
+	buildah run --user gunicorn $(container) -- env PYTHONPATH=/usr/lib/python3.8/site-packages/ /srv/.local/bin/pipenv run python -m spacy download en_core_web_sm --no-deps --
 	# End: NOTE
 	# Begin: HACK: For rootless compatibility across podman and k8s environments, unset file ownership and grant read+exec to binaries
 	buildah run $(container) -- chown -R nobody:nobody /srv/ --
