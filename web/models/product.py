@@ -291,4 +291,4 @@ class Product(object):
 
     @property
     def is_vegetarian(self):
-        return 'meat' not in self.contents
+        return 'meat' not in self.contents and 'seafood' not in self.contents
