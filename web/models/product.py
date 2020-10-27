@@ -211,6 +211,24 @@ class Product(object):
             'yoghurt': 'dairy',
             'yogurt': 'dairy',
 
+            'anchovy': 'seafood',
+            'clam': 'seafood',
+            'cod': 'seafood',
+            'crab': 'seafood',
+            'fish': 'seafood',
+            'haddock': 'seafood',
+            'halibut': 'seafood',
+            'lobster': 'seafood',
+            'mackerel': 'seafood',
+            'mussel': 'seafood',
+            'prawn': 'seafood',
+            'salmon': 'seafood',
+            'sardine': 'seafood',
+            'shellfish': 'seafood',
+            'shrimp': 'seafood',
+            'squid': 'seafood',
+            'tuna': 'seafood',
+
             'bacon': 'meat',
             'beef': 'meat',
             'chicken': 'meat',
@@ -273,4 +291,4 @@ class Product(object):
 
     @property
     def is_vegetarian(self):
-        return 'meat' not in self.contents
+        return 'meat' not in self.contents and 'seafood' not in self.contents
