@@ -191,9 +191,32 @@ class ProductGraph(object):
                     child.parents.append(parent.id)
                     parent.children.append(child_id)
 
+    def get_pinned_products(self):
+        pinned_products = {}
+        with open('web/data/pinned-products.txt') as f:
+            for line in f.readlines():
+                if line.startswith('#'):
+                    continue
+                line = line.strip().lower()
+                tokens = iter(line.split(','))
+                product = next(tokens)
+                product = Product(name=product)
+                parent = next(tokens, None)
+                parent = Product(name=parent) if parent else None
+                pinned_products[product.id] = parent
+        return pinned_products
+
     def assign_parents(self):
+        pinned_products = self.get_pinned_products()
+
         # Find a parent product for each product in the graph
         for product in self.products_by_id.values():
+
+            # Directly assign parent product for manually pinned products
+            if product.id in pinned_products:
+                if pinned_products[product.id]:
+                    product.parent_id = pinned_products[product.id].id
+                continue
 
             # Find the parent with the most tokens
             primary_parent = None
