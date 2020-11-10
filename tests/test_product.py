@@ -151,28 +151,30 @@ def test_product_categories(name, category):
     assert product.category == category
 
 
-def dietary_property_cases():
+def product_property_cases():
     return [
-        ('beef', True, True, False, False),
-        ('chicken', True, True, False, False),
-        ('tofu', True, True, True, True),
-        ('egg', False, True, False, True),
-        ('tuna', True, True, False, False),
+        ('beef', True, True, False, False, False),
+        ('chicken', True, True, False, False, False),
+        ('tofu', True, True, True, True, False),
+        ('egg', False, True, False, True, True),
+        ('tuna', True, True, False, False, False),
+        ('salt', True, True, True, True, True),
     ]
 
 
 @pytest.mark.parametrize(
-    "name,dairy_free,gluten_free,vegan,vegetarian",
-    dietary_property_cases()
+    "name,dairy_free,gluten_free,vegan,vegetarian,kitchen_staple",
+    product_property_cases()
 )
-def test_product_dietary_properties(name, dairy_free, gluten_free, vegan,
-                                    vegetarian):
+def test_product_properties(name, dairy_free, gluten_free, vegan,
+                            vegetarian, kitchen_staple):
     product = Product(name=name)
 
     assert product.is_dairy_free == dairy_free
     assert product.is_gluten_free == gluten_free
     assert product.is_vegan == vegan
     assert product.is_vegetarian == vegetarian
+    assert product.is_kitchen_staple == kitchen_staple
 
 
 def canonicalization_cases():
