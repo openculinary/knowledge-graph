@@ -135,6 +135,7 @@ class Product(object):
             'contents': self.contents,
             'ancestors': [ancestor.name for ancestor in self.ancestry(graph)],
             'nutrition': nutrition,
+            'is_kitchen_staple': self.is_kitchen_staple,
             'is_dairy_free': self.is_dairy_free,
             'is_gluten_free': self.is_gluten_free,
             'is_vegan': self.is_vegan,
@@ -260,6 +261,25 @@ class Product(object):
                     singular = Product.inflector.singular_noun(field) or field
                     contents.add(singular)
         return list(contents)
+
+    @property
+    def is_kitchen_staple(self):
+        singular = Product.inflector.singular_noun(self.name) or self.name
+        # TODO: this list is fairly arbitrary; it was collected by querying for
+        # the most-commonly-occurring singular product names in the database
+        staples = {
+            'salt',
+            'butter',
+            'egg',
+            'olive oil',
+            'flour',
+            'onion',
+            'sugar',
+            'water',
+            'milk',
+            'brown sugar',
+        }
+        return singular in staples
 
     @property
     def is_dairy_free(self):
