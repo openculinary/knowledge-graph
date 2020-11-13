@@ -12,8 +12,9 @@ from web.models.product import Product
 class ProductGraph(object):
 
     def __init__(self, products, stopwords=None, nutrition_list=None):
+        stopwords = list(stopwords) if stopwords else None
         self.products_by_id = {}
-        self.product_index = self.build_index(products)
+        self.product_index = self.build_index(products, stopwords)
         self.stopwords = list(self.process_stopwords(stopwords))
         self.stopword_index = self.build_stopword_index()
         self.nutrition_by_id = {}
@@ -27,7 +28,7 @@ class ProductGraph(object):
         self.calculate_depth()
         return self.roots
 
-    def build_index(self, products):
+    def build_index(self, products, stopwords):
         index = build_search_index()
 
         count = 0
@@ -36,6 +37,7 @@ class ProductGraph(object):
             if count % 1000 == 0:
                 print(f'- {count} documents indexed')
 
+            product.stopwords = stopwords
             add_to_search_index(
                 index=index,
                 doc_id=product.id,
