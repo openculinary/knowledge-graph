@@ -31,13 +31,19 @@ class ProductGraph(object):
     def build_index(self, products, stopwords):
         index = build_search_index()
 
+        clearwords = set(self.get_clearwords())
+        product_stopwords = []
+        for stopword in stopwords or []:
+            if stopword not in clearwords:
+                product_stopwords.append(stopword)
+
         count = 0
         for product in products:
             count += 1
             if count % 1000 == 0:
                 print(f'- {count} documents indexed')
 
-            product.stopwords = stopwords
+            product.stopwords = product_stopwords
             add_to_search_index(
                 index=index,
                 doc_id=product.id,
