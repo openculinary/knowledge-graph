@@ -106,6 +106,7 @@ def product_categories():
         'canola oil': 'oil_and_vinegar_and_condiments',
         'white wine vinegar': 'oil_and_vinegar_and_condiments',
         'ketchup': 'oil_and_vinegar_and_condiments',
+        'chicken': 'meat_and_deli',
     }
 
 
