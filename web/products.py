@@ -1,6 +1,6 @@
 from flask import abort, jsonify
 
-from web import app
+from web.app import app
 
 
 @app.route('/products/<product_id>')
