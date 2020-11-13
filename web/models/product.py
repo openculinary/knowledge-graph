@@ -59,7 +59,7 @@ class Product(object):
         return self
 
     def __repr__(self):
-        data = self.to_dict(include_hierarchy=self.children or self.parents)
+        data = self.to_dict(include_hierarchy=self.depth is not None)
         return '  ' * (self.depth or 0) + json.dumps(data, ensure_ascii=False)
 
     def to_dict(self, include_hierarchy=False):
