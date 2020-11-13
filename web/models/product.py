@@ -189,6 +189,8 @@ class Product(object):
         for content in self.contents:
             if content in categories:
                 return content
+            if content in content_categories:
+                return content_categories[content]
         for content in content_categories:
             if content in self.name.split(' '):
                 if content_categories[content] in categories:
