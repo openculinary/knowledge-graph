@@ -39,6 +39,7 @@ class Product(object):
         self.stopwords = []
         self.domain = None
 
+        nutrition.pop('product', None) if nutrition else None
         self.nutrition = Nutrition(**nutrition) if nutrition else None
 
         # TODO: Find a better place to perform this initialization
