@@ -10,66 +10,25 @@ class MockGraph():
         self.products_by_id = {product.id: product for product in products}
 
 
-def generate_product(name, parent=None, frequency=1):
-    product = Product(name=name, frequency=frequency)
+def generate_product(name, id=None, parent=None, frequency=1):
+    product = Product(id=id, name=name, frequency=frequency)
     if parent:
         product.parent_id = parent.id
     return product
 
 
 def test_merge_products():
-    a1 = generate_product(name='hickory liquid smoke', frequency=2)
-    a2 = generate_product(name='liquid smoke', frequency=10)
+    shared_id = 'liquid_smoke'
+    a1 = generate_product(id=shared_id, name='hickory liquid smoke')
+    a2 = generate_product(id=shared_id, name='liquid smoke', frequency=10)
 
     a1 += a2
 
-    assert a1.frequency == 12
+    assert a1.frequency == 11
     assert a1.name == 'liquid smoke'
 
     assert a1.id == 'liquid_smoke'
     assert a2.id == a1.id
-
-
-def test_calculate_depth():
-    a1 = generate_product(name='a1')
-    a2 = generate_product(name='a2', parent=a1)
-    a3 = generate_product(name='a3', parent=a1)
-    a4 = generate_product(name='a4', parent=a2)
-
-    graph = MockGraph([a1, a2, a3, a4])
-    [a.calculate_depth(graph) for a in graph.products]
-
-    assert a1.depth == 0
-    assert a2.depth == 1
-    assert a3.depth == 1
-    assert a4.depth == 2
-
-
-def test_calculate_depth_avoids_loop():
-    a1 = generate_product(name='a1')
-    a2 = generate_product(name='a2', parent=a1)
-    a3 = generate_product(name='a3', parent=a1)
-    a4 = generate_product(name='a4', parent=a2)
-
-    # Introduce a loop to the graph
-    a1.parent_id = a4.id
-
-    graph = MockGraph([a1, a2, a3, a4])
-    [a.calculate_depth(graph) for a in graph.products]
-
-    assert a1.depth == 2
-    assert a2.depth == 0
-    assert a3.depth == 3
-    assert a4.depth == 1
-
-
-def test_duplicate_consolidation():
-    a1 = generate_product(name='sprig thyme')
-    a2 = generate_product(name='thyme sprig')
-    a3 = generate_product(name='fresh thyme sprig')
-    a3.stopwords = ['fresh']
-
-    assert a1.id == a2.id == a3.id
 
 
 def test_stopword_filtering():
@@ -87,15 +46,15 @@ def test_content_rendering():
 
 
 def test_metadata():
-    a1 = generate_product(name='olives')
-    a2 = generate_product(name='black olives', parent=a1)
-    a3 = generate_product(name='greek black olives', parent=a2)
+    a1 = generate_product(id='olive', name='olives')
+    a2 = generate_product(id='black_olive', name='black olives', parent=a1)
+    a3 = generate_product(id='green_olive', name='green olives', parent=a2)
 
     graph = MockGraph([a1, a2, a3])
-    metadata = a3.get_metadata('greek black olive', graph)
+    metadata = a3.get_metadata('green olive', graph)
 
-    assert metadata['singular'] == 'greek black olive'
-    assert metadata['plural'] == 'greek black olives'
+    assert metadata['singular'] == 'green olive'
+    assert metadata['plural'] == 'green olives'
     assert metadata['is_plural'] is False
     assert 'olives' in metadata['ancestors']
 
@@ -191,9 +150,3 @@ def test_product_canonicalization(name, expected):
     product = Product(name=name)
 
     assert product.to_doc() == expected
-
-
-def test_product_id_transliteration():
-    product = Product(name='jalapeño pepper')
-
-    assert product.id == 'jalapeno_pepper'
