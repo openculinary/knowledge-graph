@@ -121,6 +121,7 @@ def retrieve_hierarchy(filename):
                 name=product['product'],
                 frequency=product['recipe_count'],
                 parent_id=product.get('parent_id'),
+                nutrition=product.get('nutrition')
             )
 
 
