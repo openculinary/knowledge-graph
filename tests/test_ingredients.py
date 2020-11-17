@@ -12,16 +12,15 @@ def test_ingredient_query(stopwords, hierarchy, client):
 
     stopwords.return_value = []
     hierarchy.return_value = [
-        Product(name='onion', frequency=10, parent_id=None),
-        Product(name='baked bean', frequency=5, parent_id='bean'),
-        Product(name='bean', frequency=20, parent_id=None),
-        Product(name='tofu', frequency=20, parent_id=None),
-        Product(name='firm tofu', frequency=10, parent_id='tofu'),
-        Product(name='jalapeño', frequency=5),
-        Product(name='soft tofu', frequency=5, parent_id='tofu'),
-        Product(name='soy milk', frequency=5, parent_id=None),
-        Product(name='red bell pepper', frequency=5, parent_id=None),
-        Product(name='red bell pepper', frequency=5, parent_id=None),
+        Product(id='onion', name='onion', frequency=10, parent_id=None),
+        Product(id='baked_bean', name='baked bean', parent_id='bean'),
+        Product(id='bean', name='bean', frequency=20, parent_id=None),
+        Product(id='tofu', name='tofu', frequency=20, parent_id=None),
+        Product(id='firm_tofu', name='firm tofu', parent_id='tofu'),
+        Product(id='jalapeno', name='jalapeño', frequency=5),
+        Product(id='soft_tofu', name='soft tofu', parent_id='tofu'),
+        Product(id='soy_milk', name='soy milk', frequency=5, parent_id=None),
+        Product(id='red_bell_pepper', name='red bell pepper', frequency=5),
     ]
 
     expected_results = {
@@ -33,7 +32,7 @@ def test_ingredient_query(stopwords, hierarchy, client):
         'can of Baked Beans': {
             'markup': 'can of <mark>Baked Beans</mark>',
             'product': 'baked beans',
-            'product_id': 'bake_bean',
+            'product_id': 'baked_bean',
         },
         'block of firm tofu': {
             'markup': 'block of <mark>firm tofu</mark>',
@@ -53,17 +52,17 @@ def test_ingredient_query(stopwords, hierarchy, client):
         'soymilk': {
             'markup': '<mark>soy milk</mark>',
             'product': 'soy milk',
-            'product_id': 'milk_soy',
+            'product_id': 'soy_milk',
         },
         '250ml of soymilk (roughly one cup)': {
             'markup': '250ml of <mark>soy milk</mark> (roughly one cup)',
             'product': 'soy milk',
-            'product_id': 'milk_soy',
+            'product_id': 'soy_milk',
         },
         'Sliced red bell pepper, as filling': {
             'markup': 'Sliced <mark>red bell pepper</mark>, as filling',
             'product': 'red bell pepper',
-            'product_id': 'bell_pepper_red',
+            'product_id': 'red_bell_pepper',
         },
         'jalapeño pepper': {
             'markup': '<mark>jalapeño</mark> pepper',

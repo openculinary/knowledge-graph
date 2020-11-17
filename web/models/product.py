@@ -28,10 +28,12 @@ class Product(object):
     canonicalizations = {}
     inflector = inflect.engine()
 
-    def __init__(self, name, frequency=0, parent_id=None, nutrition=None):
+    def __init__(self, name, id=None, parent_id=None, frequency=0,
+                 nutrition=None):
         self.name = name
-        self.frequency = frequency
+        self.id = id
         self.parent_id = parent_id
+        self.frequency = max(frequency, 1)
 
         self.depth = None
         self.children = []
@@ -92,32 +94,9 @@ class Product(object):
             if len(term) > 1:
                 return
 
-    @property
-    def id(self):
-        tokens = self.tokenize()
-        return '_'.join(sorted(tokens))
-
     def to_doc(self):
         tokens = self.tokenize()
         return ' '.join(tokens)
-
-    def calculate_depth(self, graph, path=None):
-        if self.depth is not None:
-            return self.depth
-
-        path = path or []
-        if self.id in path:
-            self.depth = 0
-            return -1
-        path.append(self.id)
-
-        depth = 0
-        if self.parent_id:
-            parent = graph.products_by_id[self.parent_id]
-            depth = parent.calculate_depth(graph, path) + 1
-
-        self.depth = depth
-        return depth
 
     @lru_cache(maxsize=4096)
     def _static_metadata(self, graph):

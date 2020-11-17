@@ -41,6 +41,7 @@ def retrieve_hierarchy(filename):
                 continue
             product = json.loads(line)
             yield Product(
+                id=product['id'],
                 name=product['product'],
                 frequency=product['recipe_count'],
                 parent_id=product.get('parent_id'),
