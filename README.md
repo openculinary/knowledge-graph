@@ -48,14 +48,3 @@ To deploy the service to the local infrastructure environment, execute the follo
 $ make
 $ make deploy
 ```
-
-## Operations
-
-To update the cached product list, calculate new stopwords, update the nutrition list, and regenerate the product hierarchy, use the following commands respectively:
-
-```sh
-$ pipenv run python -m scripts.products --update
-$ pipenv run python -m scripts.stopwords --update
-$ pipenv run python -m scripts.nutrition --update
-$ pipenv run python -m scripts.hierarchy --update
-```
