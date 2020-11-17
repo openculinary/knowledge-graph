@@ -5,7 +5,6 @@ import sys
 from web.loader import (
     CACHE_PATHS,
     retrieve_products,
-    retrieve_nutrition_list,
     retrieve_stopwords,
     write_items,
 )
@@ -24,11 +23,6 @@ parser.add_argument(
     help='Cached products file to read/write'
 )
 parser.add_argument(
-    '--nutrition',
-    default=CACHE_PATHS['nutrition'],
-    help='Cached nutrition file to read/write'
-)
-parser.add_argument(
     '--stopwords',
     default=CACHE_PATHS['stopwords'],
     help='Cached stopwords file to read/write'
@@ -41,23 +35,15 @@ parser.add_argument(
 args = parser.parse_args()
 
 products = retrieve_products(args.products)
-nutrition = retrieve_nutrition_list(args.nutrition)
 stopwords = retrieve_stopwords(args.stopwords)
 
 graph = ProductGraph(products, stopwords)
 products = graph.filter_products()
 stopwords = graph.filter_stopwords()
 
-graph = ProductGraph(products, stopwords, nutrition)
+graph = ProductGraph(products, stopwords)
 graph.generate_hierarchy()
 graph.filter_products()
-
-
-def node_nutrition(graph, node):
-    if node.nutrition_key:
-        return graph.nutrition_by_id[node.nutrition_key]
-    elif node.parent_id:
-        return node_nutrition(graph, graph.products_by_id[node.parent_id])
 
 
 def node_visitor(graph, node, path):
@@ -80,7 +66,6 @@ def graph_visitor(graph):
 
 def graph_nodes(graph):
     for node in graph_visitor(graph):
-        node.nutrition = node_nutrition(graph, node)
         yield node
 
 

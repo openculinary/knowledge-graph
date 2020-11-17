@@ -8,8 +8,6 @@ import inflect
 from snowballstemmer import stemmer
 from unidecode import unidecode
 
-from web.models.nutrition import Nutrition
-
 
 class Product(object):
 
@@ -28,7 +26,7 @@ class Product(object):
     canonicalizations = {}
     inflector = inflect.engine()
 
-    def __init__(self, name, frequency=0, parent_id=None, nutrition=None):
+    def __init__(self, name, frequency=0, parent_id=None):
         self.name = name
         self.frequency = frequency
         self.parent_id = parent_id
@@ -38,9 +36,6 @@ class Product(object):
         self.parents = []
         self.stopwords = []
         self.domain = None
-
-        self.nutrition = Nutrition(**nutrition) if nutrition else None
-        self.nutrition_key = self.nutrition.product if self.nutrition else None
 
         # TODO: Find a better place to perform this initialization
         if self.canonicalizations:
@@ -73,10 +68,6 @@ class Product(object):
                 'domain': self.domain,
                 'parent_id': self.parent_id,
                 'depth': self.depth
-            })
-        if self.nutrition:
-            data.update({
-                'nutrition': self.nutrition.to_dict()
             })
         return data
 
@@ -124,8 +115,6 @@ class Product(object):
         singular = Product.inflector.singular_noun(self.name)
         singular = singular or self.name
         plural = Product.inflector.plural_noun(singular)
-        nutrition = self.nutrition.to_dict(include_product=False) \
-            if self.nutrition else None
 
         return {
             'id': self.id,
@@ -134,7 +123,6 @@ class Product(object):
             'category': self.category,
             'contents': self.contents,
             'ancestors': [ancestor.name for ancestor in self.ancestry(graph)],
-            'nutrition': nutrition,
             'is_kitchen_staple': self.is_kitchen_staple,
             'is_dairy_free': self.is_dairy_free,
             'is_gluten_free': self.is_gluten_free,

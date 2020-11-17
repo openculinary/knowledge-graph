@@ -1,3 +1,0 @@
-[submodule "web/data/external/ingreedy-data"]
-	path = web/data/external/ingreedy-data
-	url = https://github.com/tomwhite/ingreedy-data.git
