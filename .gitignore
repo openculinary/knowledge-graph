@@ -1,4 +1,4 @@
-*.lock
 *.pyc
 *.swp
 web/data/generated
+venv
