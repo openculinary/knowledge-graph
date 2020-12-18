@@ -22,7 +22,7 @@ image:
 	buildah run $(container) -- adduser -h /srv/ -s /sbin/nologin -D -H gunicorn --
 	buildah run $(container) -- chown gunicorn /srv/ --
 	# Begin: NOTE: Install spaCy language model
-	buildah run --user gunicorn $(container) -- env python -m spacy download en_core_web_sm --no-deps --
+	buildah run --user gunicorn $(container) -- env PYTHONPATH=/usr/lib/python3.8/site-packages/ python -m spacy download en_core_web_sm --no-deps --
 	# End: NOTE
 	buildah run --user gunicorn $(container) -- pip install --no-warn-script-location --progress-bar off --requirement requirements.txt --user --
 	# Begin: HACK: For rootless compatibility across podman and k8s environments, unset file ownership and grant read+exec to binaries
