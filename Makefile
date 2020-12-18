@@ -21,10 +21,10 @@ image:
 	buildah run $(container) -- apk add py3-spacy --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing --
 	buildah run $(container) -- adduser -h /srv/ -s /sbin/nologin -D -H gunicorn --
 	buildah run $(container) -- chown gunicorn /srv/ --
+	buildah run --user gunicorn $(container) -- pip install --no-warn-script-location --progress-bar off --requirement requirements.txt --user --
 	# Begin: NOTE: Install spaCy language model
 	buildah run --user gunicorn $(container) -- env PYTHONPATH=/usr/lib/python3.8/site-packages/ python -m spacy download en_core_web_sm --no-deps --
 	# End: NOTE
-	buildah run --user gunicorn $(container) -- pip install --no-warn-script-location --progress-bar off --requirement requirements.txt --user --
 	# Begin: HACK: For rootless compatibility across podman and k8s environments, unset file ownership and grant read+exec to binaries
 	buildah run $(container) -- chown -R nobody:nobody /srv/ --
 	buildah run $(container) -- chmod -R a+rx /srv/.local/bin/ --
