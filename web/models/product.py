@@ -1,9 +1,7 @@
 from functools import lru_cache
 import json
 
-from hashedixsearch import (
-    tokenize,
-)
+from hashedixsearch import HashedIXSearch
 import inflect
 from snowballstemmer import stemmer
 from unidecode import unidecode
@@ -79,7 +77,7 @@ class Product(object):
         return data
 
     def tokenize(self, stopwords=True, stemmer=True, analyzer=True):
-        for term in tokenize(
+        for term in HashedIXSearch().tokenize(
             doc=self.name,
             stopwords=self.stopwords if stopwords else [],
             stemmer=self.stemmer if stemmer else None,

@@ -2,13 +2,7 @@ from collections import defaultdict
 from functools import lru_cache
 import en_core_web_sm
 from flask import jsonify, request
-from hashedixsearch import (
-   build_search_index,
-   execute_queries,
-   highlight,
-   tokenize,
-   NullStemmer,
-)
+from hashedixsearch import HashedIXSearch
 from snowballstemmer import stemmer
 from stop_words import get_stop_words as get_stopwords
 
@@ -19,7 +13,7 @@ from web.loader import (
 )
 
 
-class EquipmentStemmer(NullStemmer):
+class EquipmentStemmer:
 
     stemmer_en = stemmer('english')
 
@@ -41,12 +35,7 @@ def preload_equipment_data():
 
 def matches_by_document(index, queries, stemmer):
     results_by_document = defaultdict(lambda: set())
-    query_hits = execute_queries(
-        index=index,
-        queries=queries,
-        stemmer=stemmer,
-        stopwords=stopwords
-    )
+    query_hits = index.query_batch(queries, stopwords=stopwords)
     for result, hits in query_hits:
         for hit in hits:
             results_by_document[hit['doc_id']].add(result)
@@ -58,14 +47,9 @@ def equipment():
     descriptions = request.form.getlist('descriptions[]')
 
     stemmer = EquipmentStemmer()
-    index = build_search_index()
+    index = HashedIXSearch(stemmer=stemmer)
     for doc_id, doc in enumerate(descriptions):
-        for ngrams in [1, 2]:
-            for term in tokenize(doc,
-                                 stopwords=stopwords,
-                                 ngrams=ngrams,
-                                 stemmer=stemmer):
-                index.add_term_occurrence(term, doc_id)
+        index.add(doc_id, doc, ngrams=2, stopwords=stopwords)
 
     query_matrix = {
         'equipment': {
@@ -83,7 +67,7 @@ def equipment():
             queries_by_doc = matches_by_document(index, queries, stemmer)
             for doc_id, queries in queries_by_doc.items():
                 for query in queries:
-                    term = next(tokenize(query, stemmer=stemmer))
+                    term = next(index.tokenize(query))
                     entities_by_doc[doc_id].append({
                         'term': term,
                         'attr': {'class': f'{entity_type} {entity_class}'},
@@ -94,7 +78,7 @@ def equipment():
         tokens = app.nlp(description)
         verbs = {str(token) for token in tokens if token.pos_ == "VERB"}
         for verb in verbs:
-            term = next(tokenize(verb, stemmer=stemmer))
+            term = next(index.tokenize(verb))
             entities_by_doc[doc_id].append({
                 'term': term,
                 'attr': {'class': 'action'}
@@ -109,10 +93,9 @@ def equipment():
             term, attr = entity['term'], entity['attr']
             terms.append(term)
             term_attributes[term] = attr
-        markup_by_doc[doc_id] = highlight(
-            query=descriptions[doc_id],
+        markup_by_doc[doc_id] = index.highlight(
+            doc=descriptions[doc_id],
             terms=terms,
-            stemmer=stemmer,
             case_sensitive=False,
             term_attributes=term_attributes
         )

@@ -1,9 +1,4 @@
-from hashedixsearch import (
-    add_to_search_index,
-    build_search_index,
-    execute_query_exact,
-    tokenize,
-)
+from hashedixsearch import HashedIXSearch
 
 from web.models.product import Product
 
@@ -13,13 +8,15 @@ class ProductGraph(object):
     def __init__(self, products, stopwords=None):
         stopwords = list(stopwords or [])
         self.products_by_id = {}
-        self.product_index = self.build_index(products, stopwords)
+        self.product_index = HashedIXSearch(
+            stemmer=Product.stemmer,
+            synonyms=Product.canonicalizations
+        )
+        self.build_product_index(products, stopwords)
         self.stopwords = list(self.process_stopwords(stopwords))
         self.stopword_index = self.build_stopword_index()
 
-    def build_index(self, products, stopwords):
-        index = build_search_index()
-
+    def build_product_index(self, products, stopwords):
         clearwords = set(self.get_clearwords())
         product_stopwords = []
         for stopword in stopwords or []:
@@ -33,8 +30,7 @@ class ProductGraph(object):
                 print(f'- {count} documents indexed')
 
             product.stopwords = product_stopwords
-            add_to_search_index(
-                index=index,
+            self.product_index.add(
                 doc_id=product.id,
                 doc=product.to_doc(),
                 count=product.frequency,
@@ -44,7 +40,6 @@ class ProductGraph(object):
             else:
                 self.products_by_id[product.id] += product
         print(f'- {count} documents indexed')
-        return index
 
     def get_clearwords(self):
         with open('web/data/clear-words.txt') as f:
@@ -52,7 +47,7 @@ class ProductGraph(object):
                 if line.startswith('#'):
                     continue
                 line = line.strip().lower()
-                for term in tokenize(line, stemmer=Product.stemmer):
+                for term in self.product_index.tokenize(line):
                     if not term:
                         continue
                     yield term[0]
@@ -60,34 +55,29 @@ class ProductGraph(object):
     def process_stopwords(self, stopwords):
         clearwords = list(self.get_clearwords())
         for stopword in stopwords:
-            for term in tokenize(
+            for term in self.product_index.tokenize(
                 doc=stopword,
                 stopwords=clearwords,
-                stemmer=Product.stemmer
             ):
                 if not term:
                     continue
-                if execute_query_exact(self.product_index, term):
+                if self.product_index.query_exact(term):
                     continue
                 yield stopword
 
     def build_stopword_index(self):
-        index = build_search_index()
+        index = HashedIXSearch()
         for doc_id, stopword in enumerate(self.stopwords):
-            add_to_search_index(index, doc_id, stopword)
+            index.add(doc_id, stopword)
         return index
 
     def filter_products(self):
         for product in self.products_by_id.values():
-            for term in tokenize(
-                doc=product.name,
-                ngrams=1,
-                stemmer=Product.stemmer
-            ):
-                doc_id = execute_query_exact(self.stopword_index, term)
+            for term in self.product_index.tokenize(product.name, ngrams=1):
+                doc_id = self.stopword_index.query_exact(term)
                 if doc_id is not None:
                     product.stopwords.append(self.stopwords[doc_id])
-            if tokenize(product.name, product.stopwords):
+            if self.product_index.tokenize(product.name, product.stopwords):
                 yield product
 
     def filter_stopwords(self):

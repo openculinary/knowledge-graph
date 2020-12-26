@@ -1,12 +1,6 @@
 from collections import defaultdict
 from flask import jsonify, request
-from hashedixsearch import (
-    add_to_search_index,
-    build_search_index,
-    execute_queries,
-    execute_query,
-    highlight,
-)
+from hashedixsearch import HashedIXSearch
 
 from web.app import app
 from web.loader import (
@@ -33,12 +27,9 @@ def preload_ingredient_data():
 
 def find_product_candidates(products):
     queries = [product.name for product in products]
-    results = execute_queries(
-        index=app.graph.product_index,
-        queries=queries,
+    results = app.graph.product_index.query_batch(
+        queries,
         stopwords=app.stopwords,
-        stemmer=Product.stemmer,
-        synonyms=Product.canonicalizations,
         query_limit=-1
     )
     for description, hits in results:
@@ -53,26 +44,18 @@ def ingredients():
     products = [Product(name=description) for description in descriptions]
 
     # Build a local search index over the product descriptions
-    description_index = build_search_index()
+    description_index = HashedIXSearch(
+        stemmer=Product.stemmer,
+        synonyms=Product.canonicalizations
+    )
     for doc_id, product in enumerate(products):
-        add_to_search_index(
-            index=description_index,
-            doc_id=doc_id,
-            doc=product.name,
-            stemmer=product.stemmer,
-            synonyms=Product.canonicalizations,
-        )
+        description_index.add(doc_id, product.name)
 
     # Track the best match for each product
     results = defaultdict(lambda: None)
     scores = defaultdict(lambda: 0.0)
     for candidate in find_product_candidates(products):
-        hits = execute_query(
-            index=description_index,
-            query=candidate.name,
-            stemmer=candidate.stemmer,
-            synonyms=Product.canonicalizations,
-        )
+        hits = description_index.query(candidate.name)
         for hit in hits:
             doc_id, score, terms = hit['doc_id'], hit['score'], hit['terms']
             if score > scores[doc_id]:
@@ -84,12 +67,10 @@ def ingredients():
     metadata = defaultdict(lambda: None)
     for doc_id, (product, terms) in results.items():
         description = descriptions[doc_id]
-        markup[doc_id] = highlight(
-            query=description,
+        markup[doc_id] = description_index.highlight(
+            doc=description,
             terms=terms,
-            stemmer=product.stemmer,
-            synonyms=Product.canonicalizations,
-            case_sensitive=False,
+            case_sensitive=False
         )
         metadata[doc_id] = product.get_metadata(description, app.graph)
 

@@ -1,6 +1,6 @@
 flask==1.1.2
 gunicorn==20.0.4
-hashedixsearch==0.2.10
+hashedixsearch==1.0.4
 inflect==5.0.2
 requests==2.25.1
 stop-words==2018.7.23
