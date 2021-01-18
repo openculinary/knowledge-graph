@@ -64,9 +64,9 @@ hashedindex==0.10.0 \
     --hash=sha256:c03de1886f3f883d72579049cc8f00dc09c94aedc3ce176145e9558a6f48e607 \
     --hash=sha256:cd44b900524976168f256323e0f9d2e7178cb48e9d6789ee0a79cc651988696e \
     # via -r requirements.txt, hashedixsearch
-hashedixsearch==1.0.6 \
-    --hash=sha256:845448cf9fd51dd87443084c407002d0a78d241678643bdea9143e210f705ff0 \
-    --hash=sha256:ecbe3ef4d2ffd3155ab2aac4c97c92ac5c4fd6c1e1c4e8fe27e61985f2f84fd0 \
+hashedixsearch==1.0.7 \
+    --hash=sha256:65ed81eb77730e3ce75ff88167ea3bc108989de8ce32c6d72987b13fb301e83a \
+    --hash=sha256:6b7d6ab89ee0538decd05b2fb3dd581c029f81d71d55aa3b8b0d8fc516dc15d3 \
     # via -r requirements.txt
 idna==2.10 \
     --hash=sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6 \
