@@ -4,5 +4,5 @@ hashedixsearch==1.0.7
 inflect==5.0.2
 requests==2.25.1
 stop-words==2018.7.23
-snowballstemmer==2.0.0
+snowballstemmer==2.1.0
 unidecode==1.1.2
