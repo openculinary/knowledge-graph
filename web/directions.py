@@ -4,6 +4,7 @@ import en_core_web_sm
 from flask import jsonify, request
 from hashedixsearch import HashedIXSearch
 from snowballstemmer import stemmer
+from spacy.symbols import VERB
 from stop_words import get_stop_words as get_stopwords
 
 from web.app import app
@@ -76,7 +77,7 @@ def equipment():
     # Collect unique verbs found in each input description
     for doc_id, description in enumerate(descriptions):
         tokens = app.nlp(description)
-        verbs = {token.text for token in tokens if token.pos_ == "VERB"}
+        verbs = {token.text for token in tokens if token.pos == VERB}
         for verb in verbs:
             term = next(index.tokenize(verb))
             entities_by_doc[doc_id].append({
