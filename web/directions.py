@@ -72,7 +72,8 @@ def equipment():
                     entities_by_doc[doc_id].append({
                         'name': query,
                         'term': term,
-                        'attr': {'class': f'{entity_type} {entity_class}'},
+                        'type': entity_type,
+                        'category': entity_class,
                     })
 
     # Collect unique verbs found in each input description
@@ -83,7 +84,8 @@ def equipment():
             term = next(index.tokenize(verb))
             entities_by_doc[doc_id].append({
                 'term': term,
-                'attr': {'class': 'action'}
+                'type': 'verb',
+                'category': 'action',
             })
 
     # Collect all entities for each document and then generate doc markup
@@ -92,9 +94,15 @@ def equipment():
         terms = []
         term_attributes = {}
         for entity in entities:
-            term, attr = entity['term'], entity['attr']
+            term, entity_type, entity_category = (
+                entity['term'],
+                entity['type'],
+                entity['category'],
+            )
             terms.append(term)
-            term_attributes[term] = attr
+            term_attributes[term] = {
+                'class': f'{entity_type} {entity_category}',
+            }
         markup_by_doc[doc_id] = index.highlight(
             doc=descriptions[doc_id],
             terms=terms,
@@ -109,7 +117,11 @@ def equipment():
             'description': description,
             'markup': markup_by_doc.get(doc_id),
             'entities': [
-                {'name': entity['name']}
+                {
+                    'name': entity['name'],
+                    'type': entity['type'],
+                    'category': entity['category'],
+                }
                 for entity in entities_by_doc.get(doc_id, [])
                 if entity.get('name') is not None
             ],
