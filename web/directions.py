@@ -63,8 +63,8 @@ def equipment():
     # Run the query matrix against the document set and collect entities by doc
     entities_by_doc = defaultdict(list)
     for entity_type in query_matrix:
-        for entity_class in query_matrix[entity_type]:
-            queries = query_matrix[entity_type][entity_class]
+        for entity_category in query_matrix[entity_type]:
+            queries = query_matrix[entity_type][entity_category]
             queries_by_doc = matches_by_document(index, queries, stemmer)
             for doc_id, queries in queries_by_doc.items():
                 for query in queries:
@@ -73,7 +73,7 @@ def equipment():
                         'name': query,
                         'term': term,
                         'type': entity_type,
-                        'category': entity_class,
+                        'category': entity_category,
                     })
 
     # Collect unique verbs found in each input description
