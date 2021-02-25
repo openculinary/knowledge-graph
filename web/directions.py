@@ -70,6 +70,7 @@ def equipment():
                 for query in queries:
                     term = next(index.tokenize(query))
                     entities_by_doc[doc_id].append({
+                        'name': query,
                         'term': term,
                         'attr': {'class': f'{entity_type} {entity_class}'},
                     })
@@ -107,5 +108,10 @@ def equipment():
             'index': doc_id,
             'description': description,
             'markup': markup_by_doc.get(doc_id),
+            'entities': [
+                entity['name']
+                for entity in entities_by_doc.get(doc_id, [])
+                if entity.get('name') is not None
+            ],
         })
     return jsonify(results)

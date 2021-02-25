@@ -19,6 +19,13 @@ def test_description_parsing(client):
         ),
     }
 
+    description_entities = {
+        'Pre-heat the oven to 250 degrees F.': ['oven'],
+        'leave the Slow cooker on a low heat': ['slow cooker'],
+        'place casserole dish in oven': ['oven', 'casserole dish'],
+        'empty skewer into the karahi': ['skewer', 'karahi'],
+    }
+
     response = client.post(
         '/directions/query',
         data={'descriptions[]': list(description_markup.keys())}
@@ -26,3 +33,5 @@ def test_description_parsing(client):
     for result in response.json:
         assert result['description'] in description_markup
         assert result['markup'] == description_markup[result['description']]
+        assert result['description'] in description_entities
+        assert result['entities'] == description_entities[result['description']]
