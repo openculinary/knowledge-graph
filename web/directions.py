@@ -109,7 +109,7 @@ def equipment():
             'description': description,
             'markup': markup_by_doc.get(doc_id),
             'entities': [
-                entity['name']
+                {'name': entity['name']}
                 for entity in entities_by_doc.get(doc_id, [])
                 if entity.get('name') is not None
             ],

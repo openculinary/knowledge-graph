@@ -34,5 +34,7 @@ def test_description_parsing(client):
         description = result['description']
         assert description in description_markup
         assert result['markup'] == description_markup[description]
+
+        entity_names = [entity['name'] for entity in result['entities']]
         assert description in description_entities
-        assert result['entities'] == description_entities[description]
+        assert entity_names == description_entities[description]
