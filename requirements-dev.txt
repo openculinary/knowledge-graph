@@ -82,9 +82,9 @@ hashedindex==0.10.0 \
     # via
     #   -r requirements.txt
     #   hashedixsearch
-hashedixsearch==1.1.0 \
-    --hash=sha256:5ec13a45cddc4d01e91087b8ec85199cdef0ea353d0a895668f72ce3e5799e5c \
-    --hash=sha256:95b82d318f05f0cea678971131aeafed5d753bec08dbce3b3dbf05301fb25fbe
+hashedixsearch==1.1.1 \
+    --hash=sha256:c074641eb339a8827840deb739225f01995d0b864c99f3a859a0397f83d2637c \
+    --hash=sha256:e47bbb74f8893dcda06038a73b513d878a1dce840d610aae3f2e657a820ac0e6
     # via -r requirements.txt
 idna==2.10 \
     --hash=sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6 \
