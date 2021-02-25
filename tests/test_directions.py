@@ -5,7 +5,7 @@ def test_description_parsing(client):
             'to 250 degrees F.'
         ),
         'leave the Slow cooker on a low heat': (
-            '<mark class="action">leave</mark> the '
+            '<mark class="verb action">leave</mark> the '
             '<mark class="equipment appliance">Slow cooker</mark> '
             'on a low heat'
         ),
@@ -19,10 +19,22 @@ def test_description_parsing(client):
         ),
     }
 
+    description_entities = {
+        'Pre-heat the oven to 250 degrees F.': ['oven'],
+        'leave the Slow cooker on a low heat': ['slow cooker'],
+        'place casserole dish in oven': ['oven', 'casserole dish'],
+        'empty skewer into the karahi': ['skewer', 'karahi'],
+    }
+
     response = client.post(
         '/directions/query',
         data={'descriptions[]': list(description_markup.keys())}
     )
     for result in response.json:
-        assert result['description'] in description_markup
-        assert result['markup'] == description_markup[result['description']]
+        description = result['description']
+        assert description in description_markup
+        assert result['markup'] == description_markup[description]
+
+        entity_names = [entity['name'] for entity in result['entities']]
+        assert description in description_entities
+        assert entity_names == description_entities[description]
