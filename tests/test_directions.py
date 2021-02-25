@@ -31,7 +31,8 @@ def test_description_parsing(client):
         data={'descriptions[]': list(description_markup.keys())}
     )
     for result in response.json:
-        assert result['description'] in description_markup
-        assert result['markup'] == description_markup[result['description']]
-        assert result['description'] in description_entities
-        assert result['entities'] == description_entities[result['description']]
+        description = result['description']
+        assert description in description_markup
+        assert result['markup'] == description_markup[description]
+        assert description in description_entities
+        assert result['entities'] == description_entities[description]
