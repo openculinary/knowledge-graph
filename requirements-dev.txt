@@ -92,9 +92,9 @@ idna==2.10 \
     # via
     #   -r requirements.txt
     #   requests
-inflect==5.0.2 \
-    --hash=sha256:d284c905414fe37c050734c8600fe170adfb98ba40f72fc66fed393f5b8d5ea0 \
-    --hash=sha256:f125f678288f4830f0ee4a4f51e088ff869ac44451a5717627a4ed38d734144c
+inflect==5.2.0 \
+    --hash=sha256:30e9d9d372e693739beaae1345dc53c48871ca70c5c7060edd3e7e77802bf945 \
+    --hash=sha256:a3bf91fcfb07a0773c9dea60ef117cd928d1422918f91f665d3fea9fe4ace88d
     # via -r requirements.txt
 iniconfig==1.1.1 \
     --hash=sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3 \
