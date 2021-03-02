@@ -8,24 +8,9 @@ This information includes facts such as 'lettuce is-a vegetable' as well as nutr
 
 Ingredient descriptions generally include some combination of a quantity (i.e. `1 kg`) and a product (i.e. `potatoes`).  Since they are written as unstructured text in most recipes, parsing products can be a challenge.
 
-The `scripts.products` module performs the following series of operations to load, refine and export a list of products which the `knowledge-graph` can use to identify best-matching products in free-text ingredient descriptions:
+The [`backend`](https://github.com/openculinary/backend/) service provides the source-of-truth for product metadata, and it makes this available at the [`/products/hierarchy`](https://github.com/openculinary/backend/blob/cd029da0bd9caab7f490f5299018934db10ed0ec/reciperadar/api/products.py#L51-L70) endpoint.
 
-- Raw ingredient descriptions are loaded from file, and known-bad data is discarded
-- Individual tokens within each description are canonicalized to reduce duplication
-- Quantity-related tokens are discarded
-- Descriptions are indexed and a list of stopwords is produced based on a [tf-idf](https://en.wikipedia.org/w/index.php?title=tf-idf) threshold.
-- Stopwords are filtered to remove cases where exact-match products exist (i.e. 'olive')
-- Per-document stopwords are identified
-- Descriptions are re-indexed with the filtered stopword list applied
-- For each product, 'child' documents are identified which contain the product's terms
-- For each product, a 'parent' document is identified based on the best match found
-- Simplified descriptions are exported, including details of their location in the product tree
-
-Known issues:
-
-- Document IDs are generated dynamically, which works but is 'fragile'
-- Spelling corrections are important but currently handled via manual entry in 'canonicalizations.txt'
-- Stopword metadata is not yet persisted or used effectively; they could, for example, be used to identify the collection of ways in which individual ingredients can be prepared ('diced', 'minced', ...)
+The knowledge graph loads this data at runtime, and we build an in-process search-engine index that allows us to find candidate ingredient matches, which are then narrowed down to a single best-match per ingredient line.
 
 ## Install dependencies
 
