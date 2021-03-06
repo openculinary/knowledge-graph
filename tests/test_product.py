@@ -74,7 +74,7 @@ def test_product_canonicalization(name, expected):
 
 
 def test_nutrition_construction():
-    product = Product(name='example', nutrition={
+    Product(name='example', nutrition={
         'protein': 1.0,
         'protein_units': None,
         'fat': 1.0,
