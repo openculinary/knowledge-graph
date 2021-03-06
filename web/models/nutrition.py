@@ -1,6 +1,7 @@
 class Nutrition(object):
 
-    def __init__(self,
+    def __init__(
+        self,
         protein,
         protein_units,
         fat,
