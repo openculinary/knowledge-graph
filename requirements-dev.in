@@ -1,4 +1,3 @@
 --requirement requirements.txt
 flake8
 pytest
-spacy==2.3.2  # Pin to https://pkgs.alpinelinux.org/package/edge/testing/x86_64/py3-spacy to match Makefile
