@@ -5,5 +5,5 @@ inflect==5.3.0
 requests==2.26.0
 stop-words==2018.7.23
 snowballstemmer==2.1.0
-spacy==3.1.0
+spacy==3.1.1
 unidecode==1.2.0
