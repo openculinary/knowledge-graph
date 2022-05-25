@@ -20,7 +20,7 @@ image:
 	buildah copy $(container) 'requirements.txt'
 	buildah run $(container) -- useradd --home-dir /srv/ --no-create-home gunicorn --shell /sbin/nologin --
 	buildah run $(container) -- chown gunicorn /srv/ --
-	buildah run --user gunicorn $(container) -- pip install --no-warn-script-location --progress-bar off --requirement requirements.txt --user --
+	buildah run --user gunicorn $(container) -- pip install --no-deps --no-warn-script-location --progress-bar off --requirement requirements.txt --user --
 	# Begin: NOTE: Install spaCy language model
 	buildah run --user gunicorn $(container) -- python -m spacy download en_core_web_sm --no-deps --
 	# End: NOTE
