@@ -2,7 +2,7 @@ flask==2.1.2
 gunicorn==20.1.0
 hashedixsearch==1.1.2
 inflect==5.6.0
-requests==2.27.1
+requests[use_chardet_on_py3]==2.27.1
 stop-words==2018.7.23
 snowballstemmer==2.2.0
 spacy==3.3.0
