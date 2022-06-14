@@ -70,7 +70,8 @@ def ingredients():
         markup[doc_id] = description_index.highlight(
             doc=description,
             terms=terms,
-            case_sensitive=False
+            case_sensitive=False,
+            limit=1
         )
         metadata[doc_id] = product.get_metadata(description, app.graph)
 
