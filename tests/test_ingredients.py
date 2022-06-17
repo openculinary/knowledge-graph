@@ -69,8 +69,8 @@ def test_ingredient_query(stopwords, hierarchy, client):
             'product': 'jalapeño',
             'product_id': 'jalapeno',
         },
-        'tofu (either soft tofu or silken tofu is best)': {
-            'markup': '<mark>tofu</mark> (either soft tofu or silken tofu is best)',
+        'tofu (soft tofu or silken tofu is best)': {
+            'markup': '<mark>tofu</mark> (soft tofu or silken tofu is best)',
             'product': 'tofu',
             'product_id': 'tofu',
         },
