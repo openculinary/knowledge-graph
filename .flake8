@@ -1,4 +1,4 @@
 [flake8]
-exclude=web/data
+max-line-length=88
 per-file-ignores=
-    web/app.py:E402,F401
+    reciperadar/ __init__.py:E402,F401
