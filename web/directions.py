@@ -16,22 +16,22 @@ from web.loader import (
 
 class EquipmentStemmer:
 
-    stemmer_en = stemmer('english')
+    stemmer_en = stemmer("english")
 
     @lru_cache(maxsize=4096)
     def stem(self, x):
         return self.stemmer_en.stemWord(x)
 
 
-stopwords = get_stopwords('en')
+stopwords = get_stopwords("en")
 
 
 @app.before_first_request
 def preload_equipment_data():
     app.nlp = en_core_web_sm.load()
-    app.appliance_queries = load_queries(CACHE_PATHS['appliance_queries'])
-    app.utensil_queries = load_queries(CACHE_PATHS['utensil_queries'])
-    app.vessel_queries = load_queries(CACHE_PATHS['vessel_queries'])
+    app.appliance_queries = load_queries(CACHE_PATHS["appliance_queries"])
+    app.utensil_queries = load_queries(CACHE_PATHS["utensil_queries"])
+    app.vessel_queries = load_queries(CACHE_PATHS["vessel_queries"])
 
 
 def matches_by_document(index, queries, stemmer):
@@ -39,13 +39,13 @@ def matches_by_document(index, queries, stemmer):
     query_hits = index.query_batch(queries, stopwords=stopwords)
     for result, hits in query_hits:
         for hit in hits:
-            results_by_document[hit['doc_id']].add(result)
+            results_by_document[hit["doc_id"]].add(result)
     return results_by_document
 
 
-@app.route('/directions/query', methods=['POST'])
+@app.route("/directions/query", methods=["POST"])
 def equipment():
-    descriptions = request.form.getlist('descriptions[]')
+    descriptions = request.form.getlist("descriptions[]")
 
     stemmer = EquipmentStemmer()
     index = HashedIXSearch(stemmer=stemmer)
@@ -53,10 +53,10 @@ def equipment():
         index.add(doc_id, doc, ngrams=2, stopwords=stopwords)
 
     query_matrix = {
-        'equipment': {
-            'appliance': app.appliance_queries,
-            'utensil': app.utensil_queries,
-            'vessel': app.vessel_queries,
+        "equipment": {
+            "appliance": app.appliance_queries,
+            "utensil": app.utensil_queries,
+            "vessel": app.vessel_queries,
         },
     }
 
@@ -69,12 +69,14 @@ def equipment():
             for doc_id, queries in queries_by_doc.items():
                 for query in queries:
                     term = next(index.tokenize(query))
-                    entities_by_doc[doc_id].append({
-                        'name': query,
-                        'term': term,
-                        'type': entity_type,
-                        'category': entity_category,
-                    })
+                    entities_by_doc[doc_id].append(
+                        {
+                            "name": query,
+                            "term": term,
+                            "type": entity_type,
+                            "category": entity_category,
+                        }
+                    )
 
     # Collect unique verbs found in each input description
     for doc_id, description in enumerate(descriptions):
@@ -82,11 +84,13 @@ def equipment():
         verbs = {token.text for token in tokens if token.pos == VERB}
         for verb in verbs:
             term = next(index.tokenize(verb))
-            entities_by_doc[doc_id].append({
-                'term': term,
-                'type': 'verb',
-                'category': 'action',
-            })
+            entities_by_doc[doc_id].append(
+                {
+                    "term": term,
+                    "type": "verb",
+                    "category": "action",
+                }
+            )
 
     # Collect all entities for each document and then generate doc markup
     markup_by_doc = {}
@@ -95,35 +99,37 @@ def equipment():
         term_attributes = {}
         for entity in entities:
             term, entity_type, entity_category = (
-                entity['term'],
-                entity['type'],
-                entity['category'],
+                entity["term"],
+                entity["type"],
+                entity["category"],
             )
             terms.append(term)
             term_attributes[term] = {
-                'class': f'{entity_type} {entity_category}',
+                "class": f"{entity_type} {entity_category}",
             }
         markup_by_doc[doc_id] = index.highlight(
             doc=descriptions[doc_id],
             terms=terms,
             case_sensitive=False,
-            term_attributes=term_attributes
+            term_attributes=term_attributes,
         )
 
     results = []
     for doc_id, description in enumerate(descriptions):
-        results.append({
-            'index': doc_id,
-            'description': description,
-            'markup': markup_by_doc.get(doc_id),
-            'entities': [
-                {
-                    'name': entity['name'],
-                    'type': entity['type'],
-                    'category': entity['category'],
-                }
-                for entity in entities_by_doc.get(doc_id, [])
-                if entity.get('name') is not None
-            ],
-        })
+        results.append(
+            {
+                "index": doc_id,
+                "description": description,
+                "markup": markup_by_doc.get(doc_id),
+                "entities": [
+                    {
+                        "name": entity["name"],
+                        "type": entity["type"],
+                        "category": entity["category"],
+                    }
+                    for entity in entities_by_doc.get(doc_id, [])
+                    if entity.get("name") is not None
+                ],
+            }
+        )
     return jsonify(results)

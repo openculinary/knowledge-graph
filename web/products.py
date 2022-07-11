@@ -3,7 +3,7 @@ from flask import abort, jsonify
 from web.app import app
 
 
-@app.route('/products/<product_id>')
+@app.route("/products/<product_id>")
 def product(product_id):
     product = app.graph.products_by_id.get(product_id)
     if not product:

@@ -4,13 +4,11 @@ from web.models.product import Product
 
 
 class ProductGraph(object):
-
     def __init__(self, products, stopwords=None):
         stopwords = list(stopwords or [])
         self.products_by_id = {}
         self.product_index = HashedIXSearch(
-            stemmer=Product.stemmer,
-            synonyms=Product.canonicalizations
+            stemmer=Product.stemmer, synonyms=Product.canonicalizations
         )
         self.build_product_index(products, stopwords)
         self.stopwords = list(self.process_stopwords(stopwords))
@@ -27,7 +25,7 @@ class ProductGraph(object):
         for product in products:
             count += 1
             if count % 1000 == 0:
-                print(f'- {count} documents indexed')
+                print(f"- {count} documents indexed")
 
             product.stopwords = product_stopwords
             self.product_index.add(
@@ -39,12 +37,12 @@ class ProductGraph(object):
                 self.products_by_id[product.id] = product
             else:
                 self.products_by_id[product.id] += product
-        print(f'- {count} documents indexed')
+        print(f"- {count} documents indexed")
 
     def get_clearwords(self):
-        with open('web/data/clear-words.txt') as f:
+        with open("web/data/clear-words.txt") as f:
             for line in f.readlines():
-                if line.startswith('#'):
+                if line.startswith("#"):
                     continue
                 line = line.strip().lower()
                 for term in self.product_index.tokenize(line):
