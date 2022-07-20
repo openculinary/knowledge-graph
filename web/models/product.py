@@ -31,7 +31,6 @@ class Product(object):
         self.parent_id = parent_id
         self.frequency = max(frequency, 1)
 
-        self.depth = None
         self.stopwords = []
 
         nutrition.pop("product", None) if nutrition else None
@@ -54,15 +53,15 @@ class Product(object):
         return self
 
     def __repr__(self):
-        data = self.to_dict(include_hierarchy=self.depth is not None)
-        return "  " * (self.depth or 0) + json.dumps(data, ensure_ascii=False)
+        return json.dumps(self.to_dict(), ensure_ascii=False)
 
-    def to_dict(self, include_hierarchy=False):
-        data = {"product": self.name, "recipe_count": self.frequency}
-        if include_hierarchy:
-            data.update(
-                {"id": self.id, "parent_id": self.parent_id, "depth": self.depth}
-            )
+    def to_dict(self):
+        data = {
+            "id": self.id,
+            "parent_id": self.parent_id,
+            "product": self.name,
+            "recipe_count": self.frequency,
+        }
         if self.nutrition:
             data.update({"nutrition": self.nutrition.to_dict()})
         return data
