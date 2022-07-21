@@ -10,8 +10,7 @@ def test_description_parsing(client):
             "on a low heat"
         ),
         "place casserole dish in oven": (
-            '<mark class="verb action">place</mark> '
-            '<mark class="equipment vessel">casserole dish</mark> '
+            'place <mark class="equipment vessel">casserole dish</mark> '
             'in <mark class="equipment appliance">oven</mark>'
         ),
         "empty skewer into the karahi": (
