@@ -7,11 +7,8 @@ class MockGraph:
         self.products_by_id = {product.id: product for product in products}
 
 
-def generate_product(name, id=None, parent=None, frequency=1):
-    product = Product(id=id, name=name, frequency=frequency)
-    if parent:
-        product.parent_id = parent.id
-    return product
+def generate_product(name, id=None, frequency=1):
+    return Product(id=id, name=name, frequency=frequency)
 
 
 def test_merge_products():
@@ -44,8 +41,8 @@ def test_content_rendering():
 
 def test_metadata():
     a1 = generate_product(id="olive", name="olives")
-    a2 = generate_product(id="black_olive", name="black olives", parent=a1)
-    a3 = generate_product(id="green_olive", name="green olives", parent=a2)
+    a2 = generate_product(id="black_olive", name="black olives")
+    a3 = generate_product(id="green_olive", name="green olives")
 
     graph = MockGraph([a1, a2, a3])
     metadata = a3.get_metadata("green olive", graph)

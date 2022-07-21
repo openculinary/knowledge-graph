@@ -24,10 +24,9 @@ class Product(object):
     stemmer = ProductStemmer()
     inflector = inflect.engine()
 
-    def __init__(self, name, id=None, parent_id=None, frequency=0, nutrition=None):
+    def __init__(self, name, id=None, frequency=0, nutrition=None):
         self.name = name
         self.id = id
-        self.parent_id = parent_id
         self.frequency = max(frequency, 1)
 
         self.stopwords = []
@@ -47,7 +46,6 @@ class Product(object):
     def to_dict(self):
         data = {
             "id": self.id,
-            "parent_id": self.parent_id,
             "product": self.name,
             "recipe_count": self.frequency,
         }

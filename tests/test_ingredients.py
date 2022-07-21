@@ -12,14 +12,14 @@ def test_ingredient_query(stopwords, hierarchy, client):
 
     stopwords.return_value = []
     hierarchy.return_value = [
-        Product(id="onion", name="onion", frequency=10, parent_id=None),
-        Product(id="baked_bean", name="baked bean", parent_id="bean"),
-        Product(id="bean", name="bean", frequency=20, parent_id=None),
-        Product(id="tofu", name="tofu", frequency=20, parent_id=None),
-        Product(id="firm_tofu", name="firm tofu", parent_id="tofu"),
+        Product(id="onion", name="onion", frequency=10),
+        Product(id="baked_bean", name="baked bean"),
+        Product(id="bean", name="bean", frequency=20),
+        Product(id="tofu", name="tofu", frequency=20),
+        Product(id="firm_tofu", name="firm tofu"),
         Product(id="jalapeno", name="jalapeño", frequency=5),
-        Product(id="soft_tofu", name="soft tofu", parent_id="tofu"),
-        Product(id="soy_milk", name="soy milk", frequency=5, parent_id=None),
+        Product(id="soft_tofu", name="soft tofu"),
+        Product(id="soy_milk", name="soy milk", frequency=5),
         Product(id="red_bell_pepper", name="red bell pepper", frequency=5),
     ]
 
