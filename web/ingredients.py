@@ -42,9 +42,7 @@ def ingredients():
     products = [Product(name=description) for description in descriptions]
 
     # Build a local search index over the product descriptions
-    description_index = HashedIXSearch(
-        stemmer=Product.stemmer, synonyms=Product.canonicalizations
-    )
+    description_index = HashedIXSearch(stemmer=Product.stemmer)
     for doc_id, product in enumerate(products):
         description_index.add(doc_id, product.name)
 

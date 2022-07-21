@@ -49,12 +49,12 @@ def test_ingredient_query(stopwords, hierarchy, client):
             "product": "soft tofu",
             "product_id": "soft_tofu",
         },
-        "soymilk": {
+        "soy milk": {
             "markup": "<mark>soy milk</mark>",
             "product": "soy milk",
             "product_id": "soy_milk",
         },
-        "250ml of soymilk (roughly one cup)": {
+        "250ml of soy milk (roughly one cup)": {
             "markup": "250ml of <mark>soy milk</mark> (roughly one cup)",
             "product": "soy milk",
             "product_id": "soy_milk",
