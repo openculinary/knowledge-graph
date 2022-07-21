@@ -1,5 +1,3 @@
-import pytest
-
 from web.models.product import Product
 
 
@@ -55,21 +53,6 @@ def test_metadata():
     assert metadata["singular"] == "green olive"
     assert metadata["plural"] == "green olives"
     assert metadata["is_plural"] is False
-
-
-def canonicalization_cases():
-    return {
-        "cod filet": "cod fillet",
-        "black beans": "black bean",
-        "coriander": "cilantro",
-    }.items()
-
-
-@pytest.mark.parametrize("name,expected", canonicalization_cases())
-def test_product_canonicalization(name, expected):
-    product = Product(name=name)
-
-    assert product.to_doc() == expected
 
 
 def test_nutrition_construction():

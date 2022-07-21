@@ -7,9 +7,7 @@ class ProductGraph(object):
     def __init__(self, products, stopwords=None):
         stopwords = list(stopwords or [])
         self.products_by_id = {}
-        self.product_index = HashedIXSearch(
-            stemmer=Product.stemmer, synonyms=Product.canonicalizations
-        )
+        self.product_index = HashedIXSearch(stemmer=Product.stemmer)
         self.build_product_index(products, stopwords)
         self.stopwords = list(self.process_stopwords(stopwords))
         self.stopword_index = self.build_stopword_index()
