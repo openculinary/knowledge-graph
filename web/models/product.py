@@ -17,7 +17,12 @@ class Product(object):
         @lru_cache(maxsize=4096)
         def stem(self, x):
             x = unidecode(x)
-            # TODO: Remove double-stemming
+            # note: snowball stemmer doesn't provide (or aim to provide) idempotency
+            # when applied in multiple rounds to any given term.  while we could
+            # repeatedly apply stemming until a term converges, that seems
+            # computationally unpredictable and wasteful.  for now, apply stemming
+            # twice, to handle all the cases that we're aware of (so far) -- mayonnaise
+            #
             # mayonnaise -> mayonnais -> mayonnai
             return self.stemmer_en.stemWord(self.stemmer_en.stemWord(x))
 
