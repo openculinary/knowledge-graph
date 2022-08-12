@@ -21,7 +21,7 @@ def preload_ingredient_data():
 
     # Return cached product graph if it is available and has not yet expired
     if hasattr(app, "graph"):
-        if datetime.utcnow() < app.graph_loaded_at + timedelta(minutes=1):
+        if datetime.utcnow() < app.graph_loaded_at + timedelta(hours=1):
             return
 
     # Otherwise, attempt to update the product graph
