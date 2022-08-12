@@ -37,8 +37,6 @@ def retrieve_hierarchy():
 
     text = requests.get(url).content.decode("utf-8")
     for line in text.splitlines():
-        if line.startswith("#"):
-            continue
         product = json.loads(line)
         yield Product(
             id=product["id"],
