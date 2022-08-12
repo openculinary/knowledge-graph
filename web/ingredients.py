@@ -15,14 +15,17 @@ from web.models.product_graph import ProductGraph
 
 @app.before_request
 def preload_ingredient_data():
+    # HACK: Only perform ingredient preloading for the ingredient query URL path
+    if request.path != "/ingredients/query":
+        return
+
     # Return cached product graph if it is available and has not yet expired
     if hasattr(app, "graph"):
         if datetime.utcnow() < app.graph_loaded_at + timedelta(minutes=1):
             return
 
     # Otherwise, attempt to update the product graph
-    filename = CACHE_PATHS["hierarchy"]
-    hierarchy = retrieve_hierarchy(filename)
+    hierarchy = retrieve_hierarchy()
 
     filename = CACHE_PATHS["stopwords"]
     stopwords = retrieve_stopwords(filename)

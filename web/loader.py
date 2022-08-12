@@ -1,11 +1,12 @@
 import json
 import os
 
+import requests
+
 from web.models.product import Product
 
 
 CACHE_PATHS = {
-    "hierarchy": "web/data/generated/hierarchy.json",
     "stopwords": "web/data/generated/stopwords.txt",
     "appliance_queries": "web/data/equipment/appliances.txt",
     "utensil_queries": "web/data/equipment/utensils.txt",
@@ -30,19 +31,18 @@ def retrieve_stopwords(filename):
             yield line.strip()
 
 
-def retrieve_hierarchy(filename):
-    if not os.path.exists(filename):
-        raise RuntimeError(f"Could not read hierarchy from: {filename}")
+def retrieve_hierarchy():
+    url = "http://backend-service/products/hierarchy"
+    print(f"Reading hierarchy from {url}")
 
-    print(f"Reading hierarchy from {filename}")
-    with open(filename) as f:
-        for line in f.readlines():
-            if line.startswith("#"):
-                continue
-            product = json.loads(line)
-            yield Product(
-                id=product["id"],
-                name=product["product"],
-                frequency=product["recipe_count"],
-                nutrition=product.get("nutrition"),
-            )
+    text = requests.get(url).content.decode("utf-8")
+    for line in text.splitlines():
+        if line.startswith("#"):
+            continue
+        product = json.loads(line)
+        yield Product(
+            id=product["id"],
+            name=product["product"],
+            frequency=product["recipe_count"],
+            nutrition=product.get("nutrition"),
+        )
