@@ -75,6 +75,3 @@ class ProductGraph(object):
                     product.stopwords.append(self.stopwords[doc_id])
             if self.product_index.tokenize(product.name, product.stopwords):
                 yield product
-
-    def filter_stopwords(self):
-        return self.stopwords
