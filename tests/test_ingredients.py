@@ -8,7 +8,8 @@ from web.models.product import Product
 @patch("web.ingredients.retrieve_stopwords")
 def test_ingredient_query(stopwords, hierarchy, client):
     # HACK: Ensure that app initialization methods (re)run during this test
-    app._got_first_request = False
+    del app.graph
+    del app.graph_loaded_at
 
     stopwords.return_value = []
     hierarchy.return_value = [
