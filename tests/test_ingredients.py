@@ -1,15 +1,11 @@
 from unittest.mock import patch
 
-from web.app import app
 from web.models.product import Product
 
 
 @patch("web.ingredients.retrieve_hierarchy")
 @patch("web.ingredients.retrieve_stopwords")
 def test_ingredient_query(stopwords, hierarchy, client):
-    # HACK: Ensure that app initialization methods (re)run during this test
-    app._got_first_request = False
-
     stopwords.return_value = []
     hierarchy.return_value = [
         Product(id="onion", name="onion", frequency=10),

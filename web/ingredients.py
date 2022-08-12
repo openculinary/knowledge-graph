@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import datetime, timedelta
 from flask import jsonify, request
 from hashedixsearch import HashedIXSearch
 
@@ -12,23 +13,31 @@ from web.models.product import Product
 from web.models.product_graph import ProductGraph
 
 
-@app.before_first_request
+@app.before_request
 def preload_ingredient_data():
-    filename = CACHE_PATHS["hierarchy"]
-    hierarchy = retrieve_hierarchy(filename)
+    # HACK: Only perform ingredient preloading for the ingredient query URL path
+    if request.path != "/ingredients/query":
+        return
+
+    # Return cached product graph if it is available and has not yet expired
+    if hasattr(app, "graph"):
+        if datetime.utcnow() < app.graph_loaded_at + timedelta(hours=1):
+            return
+
+    # Otherwise, attempt to update the product graph
+    hierarchy = retrieve_hierarchy()
 
     filename = CACHE_PATHS["stopwords"]
     stopwords = retrieve_stopwords(filename)
 
     app.graph = ProductGraph(hierarchy, stopwords)
-    app.products = app.graph.filter_products()
-    app.stopwords = app.graph.filter_stopwords()
+    app.graph_loaded_at = datetime.utcnow()
 
 
 def find_product_candidates(products):
     queries = [product.name for product in products]
     results = app.graph.product_index.query_batch(
-        queries, stopwords=app.stopwords, query_limit=-1
+        queries, stopwords=app.graph.stopwords, query_limit=-1
     )
     for description, hits in results:
         for hit in hits:
