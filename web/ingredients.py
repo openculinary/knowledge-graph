@@ -21,14 +21,12 @@ def preload_ingredient_data():
     stopwords = retrieve_stopwords(filename)
 
     app.graph = ProductGraph(hierarchy, stopwords)
-    app.products = app.graph.filter_products()
-    app.stopwords = app.graph.filter_stopwords()
 
 
 def find_product_candidates(products):
     queries = [product.name for product in products]
     results = app.graph.product_index.query_batch(
-        queries, stopwords=app.stopwords, query_limit=-1
+        queries, stopwords=app.graph.filter_stopwords(), query_limit=-1
     )
     for description, hits in results:
         for hit in hits:
