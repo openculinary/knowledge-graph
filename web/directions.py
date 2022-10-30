@@ -1,9 +1,9 @@
 from collections import defaultdict
 from functools import lru_cache
-import en_core_web_sm
 from flask import jsonify, request
 from hashedixsearch import HashedIXSearch
 from snowballstemmer import stemmer
+import spacy
 from spacy.symbols import VERB
 from stop_words import get_stop_words as get_stopwords
 
@@ -28,7 +28,7 @@ stopwords = get_stopwords("en")
 
 @app.before_first_request
 def preload_equipment_data():
-    app.nlp = en_core_web_sm.load()
+    app.nlp = spacy.load("en_core_web_sm")
     app.appliance_queries = load_queries(CACHE_PATHS["appliance_queries"])
     app.utensil_queries = load_queries(CACHE_PATHS["utensil_queries"])
     app.vessel_queries = load_queries(CACHE_PATHS["vessel_queries"])
