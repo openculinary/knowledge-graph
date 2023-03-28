@@ -11,7 +11,6 @@ from web.models.nutrition import Nutrition
 
 class Product(object):
     class ProductStemmer:
-
         stemmer_en = stemmer("english")
 
         @lru_cache(maxsize=4096)

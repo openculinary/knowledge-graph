@@ -15,7 +15,6 @@ from web.loader import (
 
 
 class EquipmentStemmer:
-
     stemmer_en = stemmer("english")
 
     @lru_cache(maxsize=4096)
