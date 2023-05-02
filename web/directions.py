@@ -23,14 +23,10 @@ class EquipmentStemmer:
 
 
 stopwords = get_stopwords("en")
-
-
-@app.before_first_request
-def preload_equipment_data():
-    app.nlp = spacy.load("en_core_web_sm")
-    app.appliance_queries = load_queries(CACHE_PATHS["appliance_queries"])
-    app.utensil_queries = load_queries(CACHE_PATHS["utensil_queries"])
-    app.vessel_queries = load_queries(CACHE_PATHS["vessel_queries"])
+nlp = spacy.load("en_core_web_sm")
+appliance_queries = load_queries(CACHE_PATHS["appliance_queries"])
+utensil_queries = load_queries(CACHE_PATHS["utensil_queries"])
+vessel_queries = load_queries(CACHE_PATHS["vessel_queries"])
 
 
 def matches_by_document(index, queries, stemmer):
@@ -53,9 +49,9 @@ def equipment():
 
     query_matrix = {
         "equipment": {
-            "appliance": app.appliance_queries,
-            "utensil": app.utensil_queries,
-            "vessel": app.vessel_queries,
+            "appliance": appliance_queries,
+            "utensil": utensil_queries,
+            "vessel": vessel_queries,
         },
     }
 
@@ -79,7 +75,7 @@ def equipment():
 
     # Collect unique verbs found in each input description
     for doc_id, description in enumerate(descriptions):
-        tokens = app.nlp(description)
+        tokens = nlp(description)
         verbs = {token.text for token in tokens if token.pos == VERB}
         for verb in verbs:
             term = next(index.tokenize(verb))
