@@ -34,10 +34,9 @@ def preload_ingredient_data():
     app.graph_loaded_at = datetime.utcnow()
 
 
-def find_product_candidates(products):
-    queries = [product.name for product in products]
+def find_product_candidates(descriptions):
     results = app.graph.product_index.query_batch(
-        queries, stopwords=app.graph.stopwords, query_limit=-1
+        descriptions, stopwords=app.graph.stopwords, query_limit=-1
     )
     for description, hits in results:
         for hit in hits:
@@ -48,17 +47,16 @@ def find_product_candidates(products):
 @app.route("/ingredients/query", methods=["POST"])
 def ingredients():
     descriptions = request.form.getlist("descriptions[]")
-    products = [Product(name=description) for description in descriptions]
 
     # Build a local search index over the product descriptions
     description_index = HashedIXSearch(stemmer=Product.stemmer)
-    for doc_id, product in enumerate(products):
-        description_index.add(doc_id, product.name)
+    for doc_id, description in enumerate(descriptions):
+        description_index.add(doc_id, description)
 
     # Track the best match for each product
     results = defaultdict(lambda: None)
     scores = defaultdict(lambda: 0.0)
-    for candidate in find_product_candidates(products):
+    for candidate in find_product_candidates(descriptions):
         hits = description_index.query(candidate.name)
         for hit in hits:
             doc_id, score, terms = hit["doc_id"], hit["score"], hit["terms"]
