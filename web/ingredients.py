@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta
 from flask import jsonify, request
 from hashedixsearch import HashedIXSearch
@@ -48,9 +48,22 @@ def find_product_candidates(descriptions):
 def ingredients():
     descriptions = request.form.getlist("descriptions[]")
 
+    # Filter-out content between parentheses
+    unadorned_descriptions = []
+    for description in descriptions:
+        parens, unadorned_description = Counter(), ""
+        for char in description:
+            if char in {"(", "[", "{"}:
+                parens[char] += 1
+            if char in {")", "]", "}"}:
+                parens[char] -= 1
+            if not parens.total():
+                unadorned_description += char
+        unadorned_descriptions.append(unadorned_description)
+
     # Build a local search index over the product descriptions
     description_index = HashedIXSearch(stemmer=Product.stemmer)
-    for doc_id, description in enumerate(descriptions):
+    for doc_id, description in enumerate(unadorned_descriptions):
         description_index.add(doc_id, description)
 
     # Track the best match for each product
