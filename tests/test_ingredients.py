@@ -17,6 +17,8 @@ def test_ingredient_query(stopwords, hierarchy, client):
         Product(id="soft_tofu", name="soft tofu"),
         Product(id="soy_milk", name="soy milk", frequency=5),
         Product(id="red_bell_pepper", name="red bell pepper", frequency=5),
+        Product(id="salsa", name="salsa", frequency=600),
+        Product(id="salsa_verde", name="salsa verde", frequency=50),
     ]
 
     expected_results = {
@@ -69,6 +71,11 @@ def test_ingredient_query(stopwords, hierarchy, client):
             "markup": "<mark>tofu</mark> (soft tofu or silken tofu is best)",
             "product": "tofu",
             "product_id": "tofu",
+        },
+        "salsa verde (green salsa)": {
+            "markup": "<mark>salsa verde</mark> (green salsa)",
+            "product": "salsa verde",
+            "product_id": "salsa_verde",
         },
     }
 
