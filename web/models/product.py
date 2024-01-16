@@ -63,8 +63,7 @@ class Product:
             stopwords=self.stopwords if stopwords else [],
             stemmer=self.stemmer if stemmer else None,
         ):
-            for subterm in term:
-                yield subterm
+            yield from term
             if len(term) > 1:
                 return
 
