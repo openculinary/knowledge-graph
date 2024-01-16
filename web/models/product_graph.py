@@ -3,7 +3,7 @@ from hashedixsearch import HashedIXSearch
 from web.models.product import Product
 
 
-class ProductGraph(object):
+class ProductGraph:
     def __init__(self, products, stopwords=None):
         stopwords = list(stopwords or [])
         self.products_by_id = {}

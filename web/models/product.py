@@ -9,7 +9,7 @@ from unidecode import unidecode
 from web.models.nutrition import Nutrition
 
 
-class Product(object):
+class Product:
     class ProductStemmer:
         stemmer_en = stemmer("english")
 

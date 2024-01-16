@@ -1,4 +1,4 @@
-class Nutrition(object):
+class Nutrition:
     def __init__(
         self,
         protein,
