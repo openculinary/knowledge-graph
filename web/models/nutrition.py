@@ -1,16 +1,16 @@
 class Nutrition:
     def __init__(
         self,
-        protein,
-        protein_units,
-        fat,
-        fat_units,
-        carbohydrates,
-        carbohydrates_units,
-        energy,
-        energy_units,
-        fibre,
-        fibre_units,
+        protein=None,
+        protein_units=None,
+        fat=None,
+        fat_units=None,
+        carbohydrates=None,
+        carbohydrates_units=None,
+        energy=None,
+        energy_units=None,
+        fibre=None,
+        fibre_units=None,
     ):
         self.protein = protein
         self.protein_units = protein_units
