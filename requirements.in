@@ -1,5 +1,5 @@
 flask==3.0.3
-gunicorn==21.2.0
+gunicorn==22.0.0
 hashedixsearch==1.2.4
 inflect==7.2.0
 requests[use_chardet_on_py3]==2.31.0
