@@ -1,5 +1,5 @@
 from collections import Counter, defaultdict
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from flask import jsonify, request
 from hashedixsearch import HashedIXSearch
 
@@ -21,7 +21,7 @@ def preload_ingredient_data():
 
     # Return cached product graph if it is available and has not yet expired
     if hasattr(app, "graph"):
-        if datetime.utcnow() < app.graph_loaded_at + timedelta(hours=1):
+        if datetime.now(tz=UTC) < app.graph_loaded_at + timedelta(hours=1):
             return
 
     # Otherwise, attempt to update the product graph
@@ -31,7 +31,7 @@ def preload_ingredient_data():
     stopwords = retrieve_stopwords(filename)
 
     app.graph = ProductGraph(hierarchy, stopwords)
-    app.graph_loaded_at = datetime.utcnow()
+    app.graph_loaded_at = datetime.now(tz=UTC)
 
 
 def find_product_candidates(descriptions):
