@@ -1,4 +1,4 @@
-flask==3.0.3
+flask==3.1.0
 gunicorn==23.0.0
 hashedixsearch==1.2.4
 inflect==7.3.1
