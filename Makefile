@@ -22,7 +22,7 @@ image:
 	buildah run $(container) -- chown gunicorn /srv/ --
 	buildah run --user gunicorn $(container) -- pip install --no-deps --no-warn-script-location --progress-bar off --requirement requirements.txt --user --
 	# Begin: NOTE: Install spaCy language model
-	buildah run --user gunicorn $(container) -- python -m spacy download en_core_web_sm --no-deps --
+	# buildah run --user gunicorn $(container) -- python -m spacy download en_core_web_sm --no-deps --
 	# End: NOTE
 	# Begin: HACK: For rootless compatibility across podman and k8s environments, unset file ownership and grant read+exec to binaries
 	buildah run $(container) -- chown -R nobody:nogroup /srv/ --
@@ -36,7 +36,7 @@ image:
 # Virtualenv Makefile pattern derived from https://github.com/bottlepy/bottle/
 venv: venv/.installed requirements.txt requirements-dev.txt
 	venv/bin/pip install --requirement requirements-dev.txt --quiet
-	venv/bin/python -m spacy download en_core_web_sm --no-deps
+	# venv/bin/python -m spacy download en_core_web_sm --no-deps
 	touch venv
 venv/.installed:
 	python3 -m venv venv
