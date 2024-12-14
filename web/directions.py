@@ -3,8 +3,8 @@ from functools import lru_cache
 from flask import jsonify, request
 from hashedixsearch import HashedIXSearch
 from snowballstemmer import stemmer
-import spacy
-from spacy.symbols import VERB
+# import spacy
+# from spacy.symbols import VERB
 from stop_words import get_stop_words as get_stopwords
 
 from web.app import app
@@ -23,7 +23,7 @@ class EquipmentStemmer:
 
 
 stopwords = get_stopwords("en")
-nlp = spacy.load("en_core_web_sm")
+# nlp = spacy.load("en_core_web_sm")
 appliance_queries = load_queries(CACHE_PATHS["appliance_queries"])
 utensil_queries = load_queries(CACHE_PATHS["utensil_queries"])
 vessel_queries = load_queries(CACHE_PATHS["vessel_queries"])
@@ -75,7 +75,7 @@ def equipment():
 
     # Collect unique verbs found in each input description
     for doc_id, description in enumerate(descriptions):
-        tokens = nlp(description)
+        tokens = []  # TODO: nlp(description)
         verbs = {token.text for token in tokens if token.pos == VERB}
         for verb in verbs:
             term = next(index.tokenize(verb))
