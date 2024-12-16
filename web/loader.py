@@ -1,7 +1,6 @@
 import json
 import os
-
-import requests
+from urllib.request import urlopen
 
 from web.models.product import Product
 
@@ -35,7 +34,9 @@ def retrieve_hierarchy():
     url = "http://backend-service/products/hierarchy"
     print(f"Reading hierarchy from {url}")
 
-    text = requests.get(url).content.decode("utf-8")
+    with urlopen(url) as f:
+        text = f.read().decode("utf-8")
+
     for line in text.splitlines():
         product = json.loads(line)
         yield Product(
