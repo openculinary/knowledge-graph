@@ -1,7 +1,7 @@
 flask==3.1.0
 gunicorn==23.0.0
 hashedixsearch==1.2.4
-inflect==7.4.0
+inflect==7.5.0
 stop-words==2018.7.23
 snowballstemmer==2.2.0
 # spacy==3.8.2
