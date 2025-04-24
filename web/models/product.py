@@ -6,8 +6,6 @@ import inflect
 from snowballstemmer import stemmer
 from unidecode import unidecode
 
-from web.models.nutrition import Nutrition
-
 
 class Product:
     class ProductStemmer:
@@ -28,15 +26,11 @@ class Product:
     stemmer = ProductStemmer()
     inflector = inflect.engine()
 
-    def __init__(self, name, id=None, frequency=0, nutrition=None):
+    def __init__(self, name, id=None, frequency=0):
         self.name = name
         self.id = id
         self.frequency = max(frequency, 1)
-
         self.stopwords = []
-
-        nutrition.pop("product", None) if nutrition else None
-        self.nutrition = Nutrition(**nutrition) if nutrition else None
 
     def __add__(self, other):
         name = self.name if len(self.name) < len(other.name) else other.name
@@ -48,14 +42,11 @@ class Product:
         return json.dumps(self.to_dict(), ensure_ascii=False)
 
     def to_dict(self):
-        data = {
+        return {
             "id": self.id,
             "product": self.name,
             "recipe_count": self.frequency,
         }
-        if self.nutrition:
-            data.update({"nutrition": self.nutrition.to_dict()})
-        return data
 
     def tokenize(self, stopwords=True, stemmer=True, analyzer=True):
         for term in HashedIXSearch().tokenize(
@@ -76,13 +67,11 @@ class Product:
         singular = Product.inflector.singular_noun(self.name)
         singular = singular or self.name
         plural = Product.inflector.plural_noun(singular)
-        nutrition = self.nutrition.to_dict() if self.nutrition else None
 
         return {
             "id": self.id,
             "singular": singular,
             "plural": plural,
-            "nutrition": nutrition,
         }
 
     def get_metadata(self, description, graph):

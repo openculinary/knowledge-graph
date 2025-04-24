@@ -43,5 +43,4 @@ def retrieve_hierarchy():
             id=product["id"],
             name=product["product"],
             frequency=product["recipe_count"],
-            nutrition=product.get("nutrition"),
         )
