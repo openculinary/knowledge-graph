@@ -2,7 +2,7 @@
 
 The RecipeRadar knowledge graph stores and provides access to recipe and ingredient relationship information.
 
-This information includes facts such as 'lettuce is-a vegetable' as well as nutritional details about ingredients and potential ingredient substitutions.
+This information includes facts such as 'lettuce is-a vegetable' as well as potential ingredient substitutions.
 
 ### Product Parsing
 

@@ -50,21 +50,3 @@ def test_metadata():
     assert metadata["singular"] == "green olive"
     assert metadata["plural"] == "green olives"
     assert metadata["is_plural"] is False
-
-
-def test_nutrition_construction():
-    Product(
-        name="example",
-        nutrition={
-            "protein": 1.0,
-            "protein_units": None,
-            "fat": 1.0,
-            "fat_units": None,
-            "carbohydrates": 1.0,
-            "carbohydrates_units": None,
-            "energy": 1.0,
-            "energy_units": None,
-            "fibre": 1.0,
-            "fibre_units": None,
-        },
-    )
